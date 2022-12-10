@@ -19,5 +19,11 @@ namespace VyrokovaLogika
             //TODO kontrola spravnosti cele vety musim si to dodelat zde
             return true;
         }
+
+        public static bool ContainsOperator(string vl)
+        {
+            if (vl.Contains('&') || vl.Contains('|') || vl.Contains('>')) return true;
+            else return false;
+        }
     }
 }

@@ -30,20 +30,37 @@ namespace VyrokovaLogika
                 mSplitter.FindSplitPoint();
                 //split string at that point
                 var splitterParts = mSplitter.SplitString();
+                
                 //check if first part had parenthesses if had then strip them
-                if (Validator.CheckParenthesses(splitterParts.Item1))
-                {
-                    splitterParts.Item1 = splitterParts.Item1.Substring(1, splitterParts.Item1.Length - 2);
-                }
-                //create new first node and proceed it
+                splitterParts.Item1 = CheckAndPreparePart(splitterParts.Item1);
                 mLeftNode = new Node(splitterParts.Item1);
                 mLeftNode.Process();
+
                 //get operator between this two parts
                 mOperator = GetOperator(splitterParts.Item2);
+
+                //check if third part had parenthesses if had then strip them
                 splitterParts.Item3 = CheckAndPreparePart(splitterParts.Item3);
                 mRightNode = new Node(splitterParts.Item3);
                 mRightNode.Process();
             }
+            else if(!Validator.CheckParenthesses(mSentence))
+            {
+                if(Validator.ContainsOperator(mSentence))
+                {
+                    mLeftNode = new Node(mSentence[0].ToString());
+                    mLeftNode.Process();
+                    mOperator = GetOperator(mSentence[1].ToString());
+                    mRightNode = new Node(mSentence[2].ToString());
+                    mRightNode.Process();
+                }
+                //b&c
+                else
+                {
+                    Console.WriteLine("Narazil jsi na konec!!");
+                }
+            }
+            
         }
 
         private string CheckAndPreparePart(string part)
@@ -53,6 +70,11 @@ namespace VyrokovaLogika
                 part = part.Substring(1, part.Length - 2);
             }
             return part;
+        }
+
+        public override string ToString()
+        {
+            return "Zdar";
         }
     }
 }
