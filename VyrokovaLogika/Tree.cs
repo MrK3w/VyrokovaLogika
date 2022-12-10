@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 
 namespace VyrokovaLogika
 {
-    public class Tree
+    public class Tree<T>
     {
-        string mSentence = string.Empty;
-        Node mainNode;
-        public Tree(string sentence)
+        List<Tree<T>> childNode = new List<Tree<T>>();
+        T Item { get; set; }
+        public Tree(T item)
         {
-            mSentence = sentence;
+            Item = item;
         }
 
-        public void Process()
+        public Tree<T> AddChild(T item)
         {
-           //create first main node of this tree
-           mainNode = new Node(mSentence);
-           mainNode.Process();
+            Tree<T> nodeItem = new Tree<T>(item);
+            childNode.Add(nodeItem);
+            return nodeItem;
         }
     }
 }
