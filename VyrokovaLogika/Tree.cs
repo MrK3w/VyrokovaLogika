@@ -36,7 +36,7 @@ namespace VyrokovaLogika
                 Tree<T>? directChild = childNode[i];
                 foreach (var anyChild in directChild)
                 {
-                    Node node = anyChild.Item as Node;
+                    Node? node = anyChild.Item as Node;
                     yield return anyChild;
                 }
             }
@@ -50,7 +50,7 @@ namespace VyrokovaLogika
             {
                 foreach (var anyChild in directChild)
                 {
-                    Node node = anyChild.Item as Node;
+                    Node? node = anyChild.Item as Node;
                     if (node.level == level) list.Add(node);
                 }
             }

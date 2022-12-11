@@ -14,7 +14,7 @@ namespace VyrokovaLogika
         int upperEquals;
         public int level;
 
-        public Node(string sentence, int level)
+        public Node(string sentence, int level = 1)
         {
             mSentence = sentence;
             this.level = level;
