@@ -25,5 +25,11 @@ namespace VyrokovaLogika
             if (vl.Contains('&') || vl.Contains('|') || vl.Contains('>')) return true;
             else return false;
         }
+
+        public static bool ContainsNegation(string vl)
+        {
+            if (vl.Contains('-')) return true;
+            else return false;
+        }
     }
 }

@@ -74,13 +74,37 @@ namespace VyrokovaLogika
             {
                 if (Validator.ContainsOperator(node.mSentence))
                 {
-                    mLeftNode = new Node(node.mSentence[0].ToString(), node.level + 1);
-                    node.mOperator = Operator.GetOperator(node.mSentence[1].ToString());
-                    mRightNode = new Node(node.mSentence[2].ToString(), node.level + 1);
+                    if (!Validator.ContainsNegation(node.mSentence))
+                    {
+                        mLeftNode = new Node(node.mSentence[0].ToString(), node.level + 1);
+                        node.mOperator = Operator.GetOperator(node.mSentence[1].ToString());
+                        mRightNode = new Node(node.mSentence[2].ToString(), node.level + 1);
+                    }
+                    else
+                    {
+                        mSplitter = new Splitter(node.mSentence);
+                        mSplitter.FindSplitPointForNegation();
+                        var splitterParts = mSplitter.SplitString();
+                        mLeftNode = new Node(splitterParts.Item1, node.level + 1);
+                        node.mOperator = Operator.GetOperator(splitterParts.Item2);
+                        mRightNode = new Node(splitterParts.Item3, node.level + 1);
+                    }
                 }
                 //b&c
-                else
+                else if(Validator.ContainsNegation(node.mSentence) && !Validator.ContainsOperator(node.mSentence))
                 {
+                    node.mOperator = Operator.GetOperator(node.mSentence[0].ToString());
+                    //remove first sign
+                    string sen = node.mSentence.Substring(1);
+                    mLeftNode = new Node(sen, node.level + 1);
+                    var temp = tree.AddChild(mLeftNode);
+                    BuildTree(mLeftNode, temp);
+                    return;
+                }
+                else
+                { 
+                    node.isFinal = true;
+                    if (node.level > deepestLevel) deepestLevel = node.level;
                     return;
                 }
             }
@@ -94,16 +118,49 @@ namespace VyrokovaLogika
             BuildTree(mLeftNode, first);
             BuildTree(mRightNode, second);
         }
-        
-
 
         private string CheckAndPreparePart(string part)
         {
             if (Validator.CheckParenthesses(part))
             {
-                part = part.Substring(1, part.Length - 2);
+                if (Validator.ContainsNegation(part[0].ToString()))
+                {
+                    return RemoveParenthessesWithNegation(part);
+                }
+                else return part.Substring(1, part.Length - 2);
             }
             return part;
         }
+
+        private string RemoveParenthessesWithNegation(string part)
+        {
+            StringBuilder newPart = new StringBuilder();
+            char negation = '-';
+            newPart.Append(negation);
+            bool insideParenthesses = false;
+            part = part.Substring(2, part.Length - 3);
+            foreach (var item in part)
+            {
+                if (item == '(') insideParenthesses = true;
+                if (item == ')') insideParenthesses = false;
+                if(insideParenthesses)
+                {
+                    newPart.Append(item);
+                    continue;
+                }
+                if ((item == '&') || (item == '|') || (item == '>'))
+                {
+                    newPart.Append(item);
+                    newPart.Append(negation);
+                }
+                else
+                {
+                    newPart.Append(item);
+                }
+            }
+            return newPart.ToString();
+        }
     }
+
+
 }

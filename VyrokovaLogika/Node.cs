@@ -13,6 +13,7 @@ namespace VyrokovaLogika
         public Operator.OperatorEnum mOperator { get; set; }
         int upperEquals;
         public int level;
+        public bool isFinal = false;
 
         public Node(string sentence, int level = 1)
         {
