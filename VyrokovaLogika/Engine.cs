@@ -44,8 +44,13 @@ namespace VyrokovaLogika
                 {
                     Console.Write(item + "\t");
                 }
-                Console.WriteLine("");
+                Console.WriteLine("\n");
             }
+            //var list = tree.getFinal();
+            //foreach (var item in list)
+            //{
+            //    Console.WriteLine(item);
+            //}
         }
 
         private void BuildTree(Node node, Tree<Node> tree)
@@ -63,11 +68,11 @@ namespace VyrokovaLogika
                 //remove brackets if part has it
                 splitterParts.Item1 = CheckAndPreparePart(splitterParts.Item1);
                 mLeftNode = new Node(splitterParts.Item1,node.level+1);
-               
+                
                 node.mOperator = Operator.GetOperator(splitterParts.Item2);
+                
                 splitterParts.Item3 = CheckAndPreparePart(splitterParts.Item3);
                 mRightNode = new Node(splitterParts.Item3, node.level + 1);
-               
             }
 
             else if (!Validator.CheckParenthesses(node.mSentence))
@@ -91,16 +96,16 @@ namespace VyrokovaLogika
                     }
                 }
                 //b&c
-                else if(Validator.ContainsNegation(node.mSentence) && !Validator.ContainsOperator(node.mSentence))
-                {
-                    node.mOperator = Operator.GetOperator(node.mSentence[0].ToString());
-                    //remove first sign
-                    string sen = node.mSentence.Substring(1);
-                    mLeftNode = new Node(sen, node.level + 1);
-                    var temp = tree.AddChild(mLeftNode);
-                    BuildTree(mLeftNode, temp);
-                    return;
-                }
+                //else if(Validator.ContainsNegation(node.mSentence) && !Validator.ContainsOperator(node.mSentence))
+                //{
+                //    node.mOperator = Operator.GetOperator(node.mSentence[0].ToString());
+                //    //remove first sign
+                //    string sen = node.mSentence.Substring(1);
+                //    mLeftNode = new Node(sen, node.level + 1);
+                //    var temp = tree.AddChild(mLeftNode);
+                //    BuildTree(mLeftNode, temp);
+                //    return;
+                //}
                 else
                 { 
                     node.isFinal = true;

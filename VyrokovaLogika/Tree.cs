@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,6 +27,35 @@ namespace VyrokovaLogika
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public List<string> getFinal()
+        {
+            List<string> list = new List<string>();
+            if ((Item as Node).isFinal)
+            {
+                Node node = Item as Node;
+                list.Add(node.mSentence + "=" + node.valueMustBe);
+            }
+           
+            foreach (var directChild in childNode)
+            {
+                foreach (var anyChild in directChild)
+                {
+                    Node? node = anyChild.Item as Node;
+                    if ((Item as Node).isFinal)
+                    {
+                        list.Add(node.mSentence + "=" + node.valueMustBe);
+                    }
+                }
+            }
+            return list;
+        }
+
+        public bool validateTree()
+        {
+
+            return true;
         }
 
         public IEnumerator<Tree<T>> GetEnumerator()
