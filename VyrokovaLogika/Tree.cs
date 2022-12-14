@@ -11,17 +11,37 @@ namespace VyrokovaLogika
     public class Tree<T> : IEnumerable<Tree<T>>
     {
         List<Tree<T>> childNode = new List<Tree<T>>();
+
+        public Tree<T> Parent { get; set; }
+
+        bool root = true;
+
         public T Item { get; set; }
         public Tree(T item)
         {
             Item = item;
         }
 
-        public Tree<T> AddChild(T item)
+        public bool IsRoot
         {
-            Tree<T> nodeItem = new Tree<T>(item);
-            childNode.Add(nodeItem);
-            return nodeItem;
+            get { return Parent == null; }
+        }
+
+        public bool IsLeaf
+        {
+            get { return childNode.Count == 0; }
+        }
+
+        public Tree<T> AddChild(T child)
+        {
+            Tree<T> childNode = new Tree<T>(child);
+            childNode.Parent = this;
+            if (childNode.Parent != null)
+            {
+                root = false;
+            }
+            this.childNode.Add(childNode);
+            return childNode;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

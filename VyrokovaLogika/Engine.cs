@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,10 +47,14 @@ namespace VyrokovaLogika
                 }
                 Console.WriteLine("\n");
             }
-            //var list = tree.getFinal();
-            //foreach (var item in list)
+            //var list = tree.getfinal();
+            //foreach (Tree<Node> node in tree)
             //{
-            //    Console.WriteLine(item);
+            //    if(node.IsLeaf)
+            //    {
+            //        Console.WriteLine(node.Item);
+            //    }
+            //    Console.WriteLine(node.Item);  
             //}
         }
 
