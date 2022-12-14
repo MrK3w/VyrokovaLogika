@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -113,7 +114,6 @@ namespace VyrokovaLogika
                 //}
                 else
                 { 
-                    node.isFinal = true;
                     if (node.level > deepestLevel) deepestLevel = node.level;
                     return;
                 }
@@ -145,28 +145,27 @@ namespace VyrokovaLogika
         private string RemoveParenthessesWithNegation(string part)
         {
             StringBuilder newPart = new StringBuilder();
-            char negation = '-';
-            newPart.Append(negation);
-            bool insideParenthesses = false;
             part = part.Substring(2, part.Length - 3);
-            foreach (var item in part)
+            if (part.Contains('&'))
             {
-                if (item == '(') insideParenthesses = true;
-                if (item == ')') insideParenthesses = false;
-                if(insideParenthesses)
-                {
-                    newPart.Append(item);
-                    continue;
-                }
-                if ((item == '&') || (item == '|') || (item == '>'))
-                {
-                    newPart.Append(item);
-                    newPart.Append(negation);
-                }
-                else
-                {
-                    newPart.Append(item);
-                }
+                var parts = part.Split('&');
+                var part1 = parts[0];
+                var part2 = parts[1];
+                newPart.Append('-' + part1 + "|-" + part2);
+            }
+            else if(part.Contains('|'))
+            {
+                var parts = part.Split('|');
+                var part1 = parts[0];
+                var part2 = parts[1];
+                newPart.Append('-' + part1 + "&-" + part2);
+            }
+            else if(part.Contains('>'))
+            {
+                var parts = part.Split('>');
+                var part1 = parts[0].Substring(1);
+                var part2 = parts[1];
+                newPart.Append(part1 + "&-" + part2);
             }
             return newPart.ToString();
         }

@@ -52,21 +52,12 @@ namespace VyrokovaLogika
         public List<string> getFinal()
         {
             List<string> list = new List<string>();
-            if ((Item as Node).isFinal)
-            {
-                Node node = Item as Node;
-                list.Add(node.mSentence + "=" + node.valueMustBe);
-            }
            
             foreach (var directChild in childNode)
             {
                 foreach (var anyChild in directChild)
                 {
                     Node? node = anyChild.Item as Node;
-                    if ((Item as Node).isFinal)
-                    {
-                        list.Add(node.mSentence + "=" + node.valueMustBe);
-                    }
                 }
             }
             return list;

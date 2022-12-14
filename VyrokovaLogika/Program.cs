@@ -2,7 +2,7 @@
 
 //my sentence - negation & and | or > implication
 
-string vl = "-(-a&-B)|-B";
+string vl = "-(-a>-B)|-B";
 string vl1 = "a>b";
 
 string vl2 = "-((-a&-B)&(B&-a))|-B";
