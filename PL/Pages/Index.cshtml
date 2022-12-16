@@ -1,0 +1,48 @@
+﻿@page
+@using Microsoft.AspNetCore.Html
+@model IndexModel
+@{
+    ViewData["Title"] = "PL";
+}
+<html>
+    <head>
+        <link rel="stylesheet" href="https://unpkg.com/treeflex/dist/css/treeflex.css">
+    </head>
+    <body>
+<div class="text-center">
+    <h1 class="display-4">Vyrokova logika</h1>
+
+        @{
+            List<SelectListItem> listItems = new List<SelectListItem>();
+            listItems.Add(new SelectListItem
+            {
+                Text = "-(-a>-B)|-B",
+                Value = "-(-a>-B)|-B",
+                Selected = true
+            });
+            listItems.Add(new SelectListItem
+            {
+                Text = "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))",
+                Value = "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))"
+            });
+        }
+
+    @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "TheForm" }))
+    {
+        @Html.DropDownList( "formula", 
+        listItems, 
+        "--Select Formula--", 
+        new{ onchange = "document.getElementById('TheForm').submit();" }
+    ) 
+
+                <input type='submit' class="btn btn-primary" value='Create tree' />
+    }
+    @if (Model.ConvertedTree != null)
+        {
+            
+                HtmlString msg = new HtmlString(Model.ConvertedTree);
+                <p> @msg  </p>
+        }
+       </body>
+</div>
+</html>

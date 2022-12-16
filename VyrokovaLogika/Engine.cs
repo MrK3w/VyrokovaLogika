@@ -9,13 +9,14 @@ using System.Xml.Linq;
 
 namespace VyrokovaLogika
 {
-    class Engine
+    public class Engine
     {
         string mPropositionalSentence;
-        Tree<Node> tree;
+        public Tree tree { get; set; }
         Splitter mSplitter;
         Node mainNode;
         int deepestLevel = 0;
+        List<List<string>> treeNodes = new List<List<string>>();
         public Engine(string propositionalSentence)
         {
             mPropositionalSentence = propositionalSentence;
@@ -30,36 +31,49 @@ namespace VyrokovaLogika
             if (Validator.Check(mPropositionalSentence))
             {
                 mainNode = new Node(mPropositionalSentence);
-                tree = new Tree<Node>(mainNode);
+                tree = new Tree(mainNode);
                 BuildTree(mainNode, tree);
-                PrintTree();
-                
+                PrintData(tree,0);                
             }
         }
 
-        private void PrintTree()
+        void PrintData(Tree p, int indent)
         {
-            for (int i = 1; i <= deepestLevel; i++)
+            // Print me
+            if (p.childNodeLeft != null)
             {
-                var list = tree.ReturnNode(i);
-                foreach (var item in list)
-                {
-                    Console.Write(item + "\t");
-                }
-                Console.WriteLine("\n");
+                PrintData(p.childNodeLeft, indent + 1); // Increase the indent for children
             }
-            //var list = tree.getfinal();
-            //foreach (Tree<Node> node in tree)
-            //{
-            //    if(node.IsLeaf)
-            //    {
-            //        Console.WriteLine(node.Item);
-            //    }
-            //    Console.WriteLine(node.Item);  
-            //}
+
+            if (p.childNodeRight != null)
+            {
+                PrintData(p.childNodeRight, indent + 1); // Increase the indent for children
+            }
         }
 
-        private void BuildTree(Node node, Tree<Node> tree)
+
+
+    
+
+    //private void PrintTree(Tree node, int indent)
+    //{
+    //    PrintWithIndent(node.Item.mSentence, indent);
+    //    List<Tree> list = new List<Tree>(); 
+    //    if (!node.childNodeLeft.IsLeaf && !node.childNodeRight.IsLeaf)
+    //    {
+    //        list = new List<Tree>() { node.childNodeLeft, node.childNodeRight };
+    //    }
+    //    foreach (var child in list)
+    //    {
+    //        PrintTree(child, indent + 1); // Increase the indent for children
+    //    }
+    //}
+    //private void PrintWithIndent(string value, int indent)
+    //{
+    //    Console.WriteLine("{0}{1}", new string(' ', indent * 2), value);
+    //}
+
+    private void BuildTree(Node node, Tree tree)
         {
 
             Node mRightNode = null;
@@ -122,8 +136,8 @@ namespace VyrokovaLogika
             if (deepestLevel < mLeftNode.level) deepestLevel = mLeftNode.level;
             if (deepestLevel < mRightNode.level) deepestLevel = mRightNode.level;
 
-            var first = tree.AddChild(mLeftNode);
-            var second = tree.AddChild(mRightNode);
+            var first = tree.AddChild(mLeftNode,"left");
+            var second = tree.AddChild(mRightNode,"right");
          
             BuildTree(mLeftNode, first);
             BuildTree(mRightNode, second);

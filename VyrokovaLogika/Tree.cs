@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 
 namespace VyrokovaLogika
 {
-    public class Tree<T> : IEnumerable<Tree<T>>
+    public class Tree
     {
-        List<Tree<T>> childNode = new List<Tree<T>>();
-
-        public Tree<T> Parent { get; set; }
+        public Tree childNodeLeft;
+        public Tree childNodeRight;
+        public Tree Parent { get; set; }
 
         bool root = true;
 
-        public T Item { get; set; }
-        public Tree(T item)
+        public Node Item { get; set; }
+        public Tree(Node item)
         {
+
             Item = item;
         }
 
@@ -29,37 +30,36 @@ namespace VyrokovaLogika
 
         public bool IsLeaf
         {
-            get { return childNode.Count == 0; }
+            get { return childNodeLeft == null && childNodeRight == null; }
         }
 
-        public Tree<T> AddChild(T child)
+        public Tree AddChild(Node child, string side)
         {
-            Tree<T> childNode = new Tree<T>(child);
-            childNode.Parent = this;
-            if (childNode.Parent != null)
+            if (side == "left")
             {
-                root = false;
+                childNodeLeft = new Tree(child);
+                childNodeLeft.Parent = this;
+                return childNodeLeft;
             }
-            this.childNode.Add(childNode);
-            return childNode;
+            else if (side == "right")
+            {
+                childNodeRight = new Tree(child);
+                childNodeRight.Parent = this;
+                return childNodeRight;
+            }
+            return null;
         }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public List<string> getFinal()
         {
             List<string> list = new List<string>();
            
-            foreach (var directChild in childNode)
-            {
-                foreach (var anyChild in directChild)
-                {
-                    Node? node = anyChild.Item as Node;
-                }
-            }
+            //foreach (var directChild in childNode)
+            //{
+            //    foreach (var anyChild in directChild)
+            //    {
+            //        Node? node = anyChild.Item as Node;
+            //    }
+            //}
             return list;
         }
 
@@ -69,32 +69,19 @@ namespace VyrokovaLogika
             return true;
         }
 
-        public IEnumerator<Tree<T>> GetEnumerator()
-        {
-            yield return this;
-            for (int i = 0; i < childNode.Count; i++)
-            {
-                Tree<T>? directChild = childNode[i];
-                foreach (var anyChild in directChild)
-                {
-                    Node? node = anyChild.Item as Node;
-                    yield return anyChild;
-                }
-            }
-        }
 
         public List<Node> ReturnNode(int level)
         {
             List<Node> list = new List<Node>();
-            if ((Item as Node).level == level) list.Add(Item as Node);
-            foreach(var directChild in childNode)
-            {
-                foreach (var anyChild in directChild)
-                {
-                    Node? node = anyChild.Item as Node;
-                    if (node.level == level) list.Add(node);
-                }
-            }
+            //if ((Item as Node).level == level) list.Add(Item as Node);
+            //foreach(var directChild in childNode)
+            //{
+            //    foreach (var anyChild in directChild)
+            //    {
+            //        Node? node = anyChild.Item as Node;
+            //        if (node.level == level) list.Add(node);
+            //    }
+            //}
             return list;
         }
     }
