@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -12,14 +13,30 @@ namespace PL.Pages
         private string vl;
         private List<string> htmlTree = new List<string>();
         public string ConvertedTree { get; set; }
+
+        public List<SelectListItem> listItems { get;set; }
+
+        SelectListItem item1 = new SelectListItem("-(-a>-B)|-B", "-(-a>-B)|-B");
+        SelectListItem item2 = new SelectListItem("(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))", "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))");
+     
         public IndexModel()
         {
-
+            listItems = new List<SelectListItem>();
+            listItems.Add(item1);
+            listItems.Add(item2);
         }
 
         public void OnPost()
         {
             vl = Request.Form["formula"];
+            if (vl == "") return;
+            htmlTree.Clear();
+            foreach(var item in listItems)
+            {
+                item.Selected = false;
+                if (vl == item.Value) item.Selected = true;
+            }
+            
             Engine tree1 = new Engine(vl);
             tree1.ProcessSentence();
             var tree = tree1.tree;

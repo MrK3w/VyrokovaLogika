@@ -9,7 +9,7 @@ namespace VyrokovaLogika
 {
     public static class Rule
     {
-        public static (int, int) Getxy(int parentMustBe, OperatorEnum op)
+        public static (int, int) GetValuesOfBothSides(int parentMustBe, OperatorEnum op)
         {
             if(op == OperatorEnum.IMPLICATION)
             {
