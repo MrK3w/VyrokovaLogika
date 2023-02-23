@@ -18,12 +18,14 @@ namespace PL.Pages
 
         SelectListItem item1 = new SelectListItem("-(-a>-B)|-B", "-(-a>-B)|-B");
         SelectListItem item2 = new SelectListItem("(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))", "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))");
-     
+        SelectListItem item3 = new SelectListItem("((((-x|b)&(x|a))))","((((-x|b)&(x|a))))");
+
         public IndexModel()
         {
             listItems = new List<SelectListItem>();
             listItems.Add(item1);
             listItems.Add(item2);
+            listItems.Add(item3);
         }
 
         public void OnPost()

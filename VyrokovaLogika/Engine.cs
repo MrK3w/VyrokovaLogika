@@ -26,7 +26,6 @@ namespace VyrokovaLogika
         {
             //Replace white spaces to better organize this sentence
             mPropositionalSentence = mPropositionalSentence.Replace(" ", string.Empty).ToLowerInvariant();
-
             //check if sentence is valid
             if (Validator.Check(mPropositionalSentence))
             {
@@ -82,17 +81,29 @@ namespace VyrokovaLogika
             {
                 mSplitter = new Splitter(node.mSentence);
                 //find spot where we should split that sentence
-                mSplitter.FindSplitPoint();
-                //split string at that point
-                var splitterParts = mSplitter.SplitString();
-                //remove brackets if part has it
-                splitterParts.Item1 = CheckAndPreparePart(splitterParts.Item1);
-                mLeftNode = new Node(splitterParts.Item1,node.level+1);
-                
-                node.mOperator = Operator.GetOperator(splitterParts.Item2);
-                
-                splitterParts.Item3 = CheckAndPreparePart(splitterParts.Item3);
-                mRightNode = new Node(splitterParts.Item3, node.level + 1);
+                if (mSplitter.FindSplitPoint())
+                {
+                    //split string at that point
+                    var splitterParts = mSplitter.SplitString();
+                    //remove brackets if part has it
+                    splitterParts.Item1 = CheckAndPreparePart(splitterParts.Item1);
+                    mLeftNode = new Node(splitterParts.Item1, node.level + 1);
+
+                    node.mOperator = Operator.GetOperator(splitterParts.Item2);
+
+                    splitterParts.Item3 = CheckAndPreparePart(splitterParts.Item3);
+                    mRightNode = new Node(splitterParts.Item3, node.level + 1);
+                }
+                else
+                {
+                    var item = CheckAndPreparePart(node.mSentence);
+                    mLeftNode = new Node(item, node.level + 1);
+                    if (deepestLevel < mLeftNode.level) deepestLevel = mLeftNode.level;
+                    var pokus = tree.AddChild(mLeftNode, "left");
+
+                    BuildTree(mLeftNode, pokus);
+                    return;
+                }
             }
 
             else if (!Validator.CheckParenthesses(node.mSentence))
@@ -116,16 +127,16 @@ namespace VyrokovaLogika
                     }
                 }
                 //b&c
-                //else if(Validator.ContainsNegation(node.mSentence) && !Validator.ContainsOperator(node.mSentence))
-                //{
-                //    node.mOperator = Operator.GetOperator(node.mSentence[0].ToString());
-                //    //remove first sign
-                //    string sen = node.mSentence.Substring(1);
-                //    mLeftNode = new Node(sen, node.level + 1);
-                //    var temp = tree.AddChild(mLeftNode);
-                //    BuildTree(mLeftNode, temp);
-                //    return;
-                //}
+                else if (Validator.ContainsNegation(node.mSentence) && !Validator.ContainsOperator(node.mSentence))
+                {
+                    node.mOperator = Operator.GetOperator(node.mSentence[0].ToString());
+                    //remove first sign
+                    string sen = node.mSentence.Substring(1);
+                    mLeftNode = new Node(sen, node.level + 1);
+                    var temp = tree.AddChild(mLeftNode, "left") ;
+                    BuildTree(mLeftNode, temp);
+                    return;
+                }
                 else
                 { 
                     if (node.level > deepestLevel) deepestLevel = node.level;

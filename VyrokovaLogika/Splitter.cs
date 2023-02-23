@@ -16,7 +16,7 @@ namespace VyrokovaLogika
         {
             vl = sentence;
         }
-        public void FindSplitPoint()
+        public bool FindSplitPoint()
         {
             int parenthesses = 0;
             //must be here to not break foreach before I even met first parenthesses
@@ -28,10 +28,18 @@ namespace VyrokovaLogika
                     parenthesses++;
                     metParenthesses = true;
                 }
+                if (position  == vl.Length - 1)
+                {
+                    return false;
+                }
                 else if (letter == ')') parenthesses--;
                 position++;
-                if (parenthesses == 0 && metParenthesses == true) break;
+                if (parenthesses == 0 && metParenthesses == true)
+                {
+                    break;
+                }
             }
+                return true;
         }
 
         public (string, string,string) SplitString() // tuple return type
