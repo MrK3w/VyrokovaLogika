@@ -139,10 +139,17 @@ namespace VyrokovaLogika
             
             if(!tree.IsLeaf)
             {
-                tree.childNodeLeft.Item.valueMustBe = valuesOfNodes.Item1;
-                tree.childNodeRight.Item.valueMustBe = valuesOfNodes.Item2;
-                TreeProof(tree.childNodeRight.Item, tree.childNodeRight);
-                TreeProof(tree.childNodeLeft.Item, tree.childNodeLeft);
+                if (tree.childNodeLeft != null)
+                {
+                    TreeProof(tree.childNodeLeft.Item, tree.childNodeLeft);
+                    tree.childNodeLeft.Item.valueMustBe = valuesOfNodes.Item1;
+                }
+
+                if (tree.childNodeRight != null)
+                {
+                    tree.childNodeRight.Item.valueMustBe = valuesOfNodes.Item2;
+                    TreeProof(tree.childNodeRight.Item, tree.childNodeRight);
+                }
             }
             else
             {
