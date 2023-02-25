@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -11,18 +12,19 @@ namespace PL.Pages
     public class IndexModel : PageModel
     {
         private string vl;
+        private string vl1;
         private List<string> htmlTree = new List<string>();
         public string ConvertedTree { get; set; }
+        public string TautologyDecision { get; set; }
 
-        public List<SelectListItem> listItems { get;set; }
+        public List<SelectListItem> listItems { get;set; }  = new List<SelectListItem>();
 
-        SelectListItem item1 = new SelectListItem("-(-a>-B)|-B", "-(-a>-B)|-B");
+        SelectListItem item1 = new SelectListItem("(B>A)>A", "(B>A)>A");
         SelectListItem item2 = new SelectListItem("(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))", "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))");
         SelectListItem item3 = new SelectListItem("((((-x|b)&(x|a))))","((((-x|b)&(x|a))))");
 
         public IndexModel()
         {
-            listItems = new List<SelectListItem>();
             listItems.Add(item1);
             listItems.Add(item2);
             listItems.Add(item3);
@@ -31,20 +33,39 @@ namespace PL.Pages
         public void OnPost()
         {
             vl = Request.Form["formula"];
-            if (vl == "") return;
+            vl1 = Request.Form["UserInput"];
+            Engine engine = new Engine("");
+            if (vl == "" && vl1 == "") return;
             htmlTree.Clear();
-            foreach(var item in listItems)
+
+            if (vl1 != "")
             {
-                item.Selected = false;
-                if (vl == item.Value) item.Selected = true;
+                listItems.Add(new SelectListItem(vl1, vl1));
+                var selected = listItems.Where(x => x.Value == vl1).First();
+                selected.Selected = true;
+                engine = new Engine(vl1);
             }
-            
-            Engine tree1 = new Engine(vl);
-            tree1.ProcessSentence();
-            var tree = tree1.tree;
+
+            else if (vl != "")
+            {
+                foreach (var item in listItems)
+                {
+                    item.Selected = false;
+                    if (vl == item.Value) item.Selected = true;
+                }
+                engine = new Engine(vl);
+            }
+           
+            engine.ProcessSentence();
+            var tree = engine.tree;
             PrintTree(tree);
             string div = "<div class='tf-tree tf-gap-lg'>".Replace("'", "\"");
             ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+            if (engine.Tautology)
+            {
+                TautologyDecision = "Propositional sentence is Tautology";
+            }
+            else TautologyDecision = "Propositional sentence is not Tautology";
         }
 
         private void PrintTree(Tree tree)

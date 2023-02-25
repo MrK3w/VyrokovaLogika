@@ -13,10 +13,11 @@ namespace VyrokovaLogika
     {
         string mPropositionalSentence;
         public Tree tree { get; set; }
+        public bool Tautology {get; private set; }
         Splitter mSplitter;
         Node mainNode;
         int deepestLevel = 0;
-        List<List<string>> treeNodes = new List<List<string>>();
+        List<Tuple<int, string>> myFinals = new List<Tuple<int, string>>();
         public Engine(string propositionalSentence)
         {
             mPropositionalSentence = propositionalSentence;
@@ -32,117 +33,94 @@ namespace VyrokovaLogika
                 mainNode = new Node(mPropositionalSentence);
                 tree = new Tree(mainNode);
                 BuildTree(mainNode, tree);
-                PrintData(tree,0);                
+                TreeProof(mainNode, tree);
+                Tautology = CheckIfIsItTautology();
             }
         }
 
-        void PrintData(Tree p, int indent)
+        private bool CheckIfIsItTautology()
         {
-            // Print me
-            if (p.childNodeLeft != null)
+            for (int i = 0; i < myFinals.Count; i++)
             {
-                PrintData(p.childNodeLeft, indent + 1); // Increase the indent for children
-            }
-
-            if (p.childNodeRight != null)
-            {
-                PrintData(p.childNodeRight, indent + 1); // Increase the indent for children
-            }
-        }
-
-
-
-    
-
-    //private void PrintTree(Tree node, int indent)
-    //{
-    //    PrintWithIndent(node.Item.mSentence, indent);
-    //    List<Tree> list = new List<Tree>(); 
-    //    if (!node.childNodeLeft.IsLeaf && !node.childNodeRight.IsLeaf)
-    //    {
-    //        list = new List<Tree>() { node.childNodeLeft, node.childNodeRight };
-    //    }
-    //    foreach (var child in list)
-    //    {
-    //        PrintTree(child, indent + 1); // Increase the indent for children
-    //    }
-    //}
-    //private void PrintWithIndent(string value, int indent)
-    //{
-    //    Console.WriteLine("{0}{1}", new string(' ', indent * 2), value);
-    //}
-
-    private void BuildTree(Node node, Tree tree)
-        {
-
-            Node mRightNode = null;
-            Node mLeftNode = null;
-            if (Validator.CheckParenthesses(node.mSentence))
-            {
-                mSplitter = new Splitter(node.mSentence);
-                //find spot where we should split that sentence
-                if (mSplitter.FindSplitPoint())
+                for (int j = 0; j < myFinals.Count; j++)
                 {
-                    //split string at that point
+                    if (myFinals[i].Item2 == myFinals[j].Item2)
+                    {
+                        if (myFinals[i].Item1 != myFinals[j].Item1)
+                            return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private void BuildTree(Node node, Tree tree)
+    { 
+        Node mRightNode = null;
+        Node mLeftNode = null;
+        if (Validator.CheckParenthesses(node.mSentence))
+        {
+            mSplitter = new Splitter(node.mSentence);
+            //find spot where we should split that sentence
+            if (mSplitter.FindSplitPoint())
+            {
+                //split string at that point
+                var splitterParts = mSplitter.SplitString();
+                //remove brackets if part has it
+                splitterParts.Item1 = CheckAndPreparePart(splitterParts.Item1);
+                mLeftNode = new Node(splitterParts.Item1, node.level + 1);
+
+                node.mOperator = Operator.GetOperator(splitterParts.Item2);
+
+                splitterParts.Item3 = CheckAndPreparePart(splitterParts.Item3);
+                mRightNode = new Node(splitterParts.Item3, node.level + 1);
+            }
+            else
+            {
+                var item = CheckAndPreparePart(node.mSentence);
+                mainNode.mSentence = item;
+                BuildTree(mainNode, tree);
+                return;
+            }
+        }
+
+        else if (!Validator.CheckParenthesses(node.mSentence))
+        {
+            if (Validator.ContainsOperator(node.mSentence))
+            {
+                if (!Validator.ContainsNegation(node.mSentence))
+                {
+                    mLeftNode = new Node(node.mSentence[0].ToString(), node.level + 1);
+                    node.mOperator = Operator.GetOperator(node.mSentence[1].ToString());
+                    mRightNode = new Node(node.mSentence[2].ToString(), node.level + 1);
+                }
+                else
+                {
+                    mSplitter = new Splitter(node.mSentence);
+                    mSplitter.FindSplitPointForNegation();
                     var splitterParts = mSplitter.SplitString();
-                    //remove brackets if part has it
-                    splitterParts.Item1 = CheckAndPreparePart(splitterParts.Item1);
                     mLeftNode = new Node(splitterParts.Item1, node.level + 1);
-
                     node.mOperator = Operator.GetOperator(splitterParts.Item2);
-
-                    splitterParts.Item3 = CheckAndPreparePart(splitterParts.Item3);
                     mRightNode = new Node(splitterParts.Item3, node.level + 1);
                 }
-                else
-                {
-                    var item = CheckAndPreparePart(node.mSentence);
-                    mLeftNode = new Node(item, node.level + 1);
-                    if (deepestLevel < mLeftNode.level) deepestLevel = mLeftNode.level;
-                    var pokus = tree.AddChild(mLeftNode, "left");
-
-                    BuildTree(mLeftNode, pokus);
-                    return;
-                }
             }
-
-            else if (!Validator.CheckParenthesses(node.mSentence))
+            //b&c
+            else if (Validator.ContainsNegation(node.mSentence) && !Validator.ContainsOperator(node.mSentence))
             {
-                if (Validator.ContainsOperator(node.mSentence))
-                {
-                    if (!Validator.ContainsNegation(node.mSentence))
-                    {
-                        mLeftNode = new Node(node.mSentence[0].ToString(), node.level + 1);
-                        node.mOperator = Operator.GetOperator(node.mSentence[1].ToString());
-                        mRightNode = new Node(node.mSentence[2].ToString(), node.level + 1);
-                    }
-                    else
-                    {
-                        mSplitter = new Splitter(node.mSentence);
-                        mSplitter.FindSplitPointForNegation();
-                        var splitterParts = mSplitter.SplitString();
-                        mLeftNode = new Node(splitterParts.Item1, node.level + 1);
-                        node.mOperator = Operator.GetOperator(splitterParts.Item2);
-                        mRightNode = new Node(splitterParts.Item3, node.level + 1);
-                    }
-                }
-                //b&c
-                else if (Validator.ContainsNegation(node.mSentence) && !Validator.ContainsOperator(node.mSentence))
-                {
-                    node.mOperator = Operator.GetOperator(node.mSentence[0].ToString());
-                    //remove first sign
-                    string sen = node.mSentence.Substring(1);
-                    mLeftNode = new Node(sen, node.level + 1);
-                    var temp = tree.AddChild(mLeftNode, "left") ;
-                    BuildTree(mLeftNode, temp);
-                    return;
-                }
-                else
-                { 
-                    if (node.level > deepestLevel) deepestLevel = node.level;
-                    return;
-                }
+                node.mOperator = Operator.GetOperator(node.mSentence[0].ToString());
+                //remove first sign
+                string sen = node.mSentence.Substring(1);
+                mLeftNode = new Node(sen, node.level + 1);
+                var temp = tree.AddChild(mLeftNode, "left") ;
+                BuildTree(mLeftNode, temp);
+                return;
             }
+            else
+            { 
+                if (node.level > deepestLevel) deepestLevel = node.level;
+                return;
+            }
+        }
 
             if (deepestLevel < mLeftNode.level) deepestLevel = mLeftNode.level;
             if (deepestLevel < mRightNode.level) deepestLevel = mRightNode.level;
@@ -152,6 +130,25 @@ namespace VyrokovaLogika
          
             BuildTree(mLeftNode, first);
             BuildTree(mRightNode, second);
+    }
+
+    private void TreeProof(Node node, Tree tree)
+    {
+            if (tree.IsRoot) tree.Item.valueMustBe = 0;
+            var valuesOfNodes = Rule.GetValuesOfBothSides(tree.Item.valueMustBe, tree.Item.mOperator);
+            
+            if(!tree.IsLeaf)
+            {
+                tree.childNodeLeft.Item.valueMustBe = valuesOfNodes.Item1;
+                tree.childNodeRight.Item.valueMustBe = valuesOfNodes.Item2;
+                TreeProof(tree.childNodeRight.Item, tree.childNodeRight);
+                TreeProof(tree.childNodeLeft.Item, tree.childNodeLeft);
+            }
+            else
+            {
+                myFinals.Add(new(node.valueMustBe, node.mSentence));
+            }
+                
         }
 
         private string CheckAndPreparePart(string part)
@@ -166,6 +163,8 @@ namespace VyrokovaLogika
             }
             return part;
         }
+
+      
 
         private string RemoveParenthessesWithNegation(string part)
         {

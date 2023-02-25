@@ -16,7 +16,7 @@ namespace VyrokovaLogika
 
         public static bool Check(string vl)
         {
-            //TODO kontrola spravnosti cele vety musim si to dodelat zde
+            
             return true;
         }
 

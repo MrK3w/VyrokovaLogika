@@ -20,6 +20,7 @@
         @Html.DropDownList( "formula", 
         Model.listItems, "select formula"
     ) 
+    @Html.TextBox("UserInput", "", new { @maxlength = "64" });
 
     <input type='submit' class="btn btn-primary" value='Create tree' />
     }
@@ -27,6 +28,8 @@
         {
             
                 HtmlString msg = new HtmlString(Model.ConvertedTree);
+                HtmlString msg1 = new HtmlString(Model.TautologyDecision);
+                <p> @msg1  </p>
                 <p> @msg  </p>
         }
        </body>
