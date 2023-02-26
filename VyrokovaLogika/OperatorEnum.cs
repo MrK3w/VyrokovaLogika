@@ -18,13 +18,13 @@ namespace VyrokovaLogika
         {
             switch (sign)
             {
-                case "|":
+                case "∨":
                     return OperatorEnum.OR;
-                case "&":
+                case "∧":
                     return OperatorEnum.AND;
-                case ">":
+                case "⇒":
                     return OperatorEnum.IMPLICATION;
-                case "-":
+                case "¬":
                     return OperatorEnum.NEGATION;
                 default:
                     return OperatorEnum.EMPTY;

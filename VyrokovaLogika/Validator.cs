@@ -22,13 +22,13 @@ namespace VyrokovaLogika
 
         public static bool ContainsOperator(string vl)
         {
-            if (vl.Contains('&') || vl.Contains('|') || vl.Contains('>')) return true;
+            if (vl.Contains('∧') || vl.Contains('∨') || vl.Contains('⇒')) return true;
             else return false;
         }
 
         public static bool ContainsNegation(string vl)
         {
-            if (vl.Contains('-')) return true;
+            if (vl.Contains('¬')) return true;
             else return false;
         }
     }

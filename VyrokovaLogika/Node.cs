@@ -16,7 +16,6 @@ namespace VyrokovaLogika
 
         public Node(string sentence, int level = 1)
         {
-            string div = "<div class='tf-tree tf-gap-lg'>".Replace("'","\"");
             if (level == 1) valueMustBe = 0;
             mSentence = sentence;
             this.level = level;

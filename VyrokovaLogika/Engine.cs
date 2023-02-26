@@ -27,6 +27,7 @@ namespace VyrokovaLogika
         {
             //Replace white spaces to better organize this sentence
             mPropositionalSentence = mPropositionalSentence.Replace(" ", string.Empty).ToLowerInvariant();
+            Converter.ConvertSentence(ref mPropositionalSentence);
             //check if sentence is valid
             if (Validator.Check(mPropositionalSentence))
             {
@@ -177,26 +178,26 @@ namespace VyrokovaLogika
         {
             StringBuilder newPart = new StringBuilder();
             part = part.Substring(2, part.Length - 3);
-            if (part.Contains('&'))
+            if (part.Contains('∧'))
             {
-                var parts = part.Split('&');
+                var parts = part.Split('∧');
                 var part1 = parts[0];
                 var part2 = parts[1];
-                newPart.Append('-' + part1 + "|-" + part2);
+                newPart.Append('¬' + part1 + "∨¬" + part2);
             }
-            else if(part.Contains('|'))
+            else if(part.Contains('∨'))
             {
-                var parts = part.Split('|');
+                var parts = part.Split('∨');
                 var part1 = parts[0];
                 var part2 = parts[1];
-                newPart.Append('-' + part1 + "&-" + part2);
+                newPart.Append('¬' + part1 + "∧¬" + part2);
             }
             else if(part.Contains('>'))
             {
                 var parts = part.Split('>');
                 var part1 = parts[0].Substring(1);
                 var part2 = parts[1];
-                newPart.Append(part1 + "&-" + part2);
+                newPart.Append(part1 + "∧¬" + part2);
             }
             return newPart.ToString();
         }

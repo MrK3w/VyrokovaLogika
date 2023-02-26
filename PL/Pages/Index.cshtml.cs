@@ -19,12 +19,20 @@ namespace PL.Pages
 
         public List<SelectListItem> listItems { get;set; }  = new List<SelectListItem>();
 
-        SelectListItem item1 = new SelectListItem("(B>A)>A", "(B>A)>A");
-        SelectListItem item2 = new SelectListItem("(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))", "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))");
-        SelectListItem item3 = new SelectListItem("((((-x|b)&(x|a))))","((((-x|b)&(x|a))))");
-
         public IndexModel()
         {
+            string mPropositionalSentence = "(B > A) > A";
+            Converter.ConvertSentence(ref mPropositionalSentence);
+
+            string mPropositionalSentence1 = "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))";
+            Converter.ConvertSentence(ref mPropositionalSentence1);
+
+            string mPropositionalSentence2 = "((((-x|b)&(x|a))))";
+            Converter.ConvertSentence(ref mPropositionalSentence2);
+
+            SelectListItem item1 = new SelectListItem(mPropositionalSentence, mPropositionalSentence);
+            SelectListItem item2 = new SelectListItem(mPropositionalSentence1, mPropositionalSentence1);
+            SelectListItem item3 = new SelectListItem(mPropositionalSentence2, mPropositionalSentence2);
             listItems.Add(item1);
             listItems.Add(item2);
             listItems.Add(item3);
