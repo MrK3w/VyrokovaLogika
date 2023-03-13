@@ -18,9 +18,59 @@ namespace VyrokovaLogika
         Node mainNode;
         int deepestLevel = 0;
         List<Tuple<int, string>> myFinals = new List<Tuple<int, string>>();
+        Tree FullDag;
+        Tree dagS;
+        Tree foundDAG;
+
         public Engine(string propositionalSentence)
         {
             mPropositionalSentence = propositionalSentence;
+        }
+
+        public void MakeGraph()
+        {
+            FullDag = tree;
+            BuildDAG(FullDag);
+        }
+
+        //search tree if there is not same node to be able to do dag
+        public Tree SearchNode(Tree dag)
+        {
+            dagS = dag;
+            Traversing(FullDag);
+            return foundDAG;
+        }
+
+        //Traversing the dag
+        public void Traversing(Tree dag)
+        {
+            if (dagS.Item.mSentence == dag.Item.mSentence && dagS.Item != dag.Item)
+            {
+                foundDAG = dag;
+            }
+            if (dag.childNodeLeft != null)
+            {
+                Traversing(dag.childNodeLeft);
+            }
+            if (dag.childNodeRight != null)
+            {
+                Traversing(dag.childNodeRight);
+            }
+            return;
+        }
+
+        public void BuildDAG(Tree Dag)
+        {
+            var found = SearchNode(Dag);
+            if(found != null)
+            {
+
+            }
+            //if(Dag.Item)
+            if(Dag.childNodeLeft != null)
+                BuildDAG(Dag.childNodeLeft);
+            if (Dag.childNodeRight != null)
+                BuildDAG(Dag.childNodeRight);
         }
 
         public void ProcessSentence()
@@ -36,6 +86,7 @@ namespace VyrokovaLogika
                 BuildTree(mainNode, tree);
                 TreeProof(mainNode, tree);
                 Tautology = CheckIfIsItTautology();
+                MakeGraph();
             }
         }
 
@@ -136,21 +187,25 @@ namespace VyrokovaLogika
     private void TreeProof(Node node, Tree tree)
     {
             if (tree.IsRoot) tree.Item.valueMustBe = 0;
-            var valuesOfNodes = Rule.GetValuesOfBothSides(tree.Item.valueMustBe, tree.Item.mOperator);
+            var valuesOfNodesList = Rule.GetValuesOfBothSides(tree.Item.valueMustBe, tree.Item.mOperator);
             
             if(!tree.IsLeaf)
             {
-                if (tree.childNodeLeft != null)
+                foreach (var valuesOfNodes in valuesOfNodesList)
                 {
-                    TreeProof(tree.childNodeLeft.Item, tree.childNodeLeft);
-                    tree.childNodeLeft.Item.valueMustBe = valuesOfNodes.Item1;
+                    if (tree.childNodeLeft != null)
+                    {
+                        tree.childNodeLeft.Item.valueMustBe = valuesOfNodes.Item1;
+                        TreeProof(tree.childNodeLeft.Item, tree.childNodeLeft);    
+                    }
+
+                    if (tree.childNodeRight != null)
+                    {
+                        tree.childNodeRight.Item.valueMustBe = valuesOfNodes.Item2;
+                        TreeProof(tree.childNodeRight.Item, tree.childNodeRight);
+                    }
                 }
 
-                if (tree.childNodeRight != null)
-                {
-                    tree.childNodeRight.Item.valueMustBe = valuesOfNodes.Item2;
-                    TreeProof(tree.childNodeRight.Item, tree.childNodeRight);
-                }
             }
             else
             {

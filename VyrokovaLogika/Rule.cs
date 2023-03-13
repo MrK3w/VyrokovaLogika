@@ -9,20 +9,24 @@ namespace VyrokovaLogika
 {
     public static class Rule
     {
-        //B&A a vyslo 1
-        public static (int, int) GetValuesOfBothSides(int parentMustBe, OperatorEnum op)
+        public static List<(int, int)> GetValuesOfBothSides(int parentMustBe, OperatorEnum op)
         {
+            List<(int,int)> valuesList = new List<(int, int)>();
             if(op == OperatorEnum.IMPLICATION)
             {
-                if (parentMustBe == 0) return (1, 0);
-                else return (0, 0);
+                if (parentMustBe == 0)
+                {
+                   valuesList.Add((1, 0));
+                }
+                else
+                {
+                    valuesList.Add((0, 1));
+                    valuesList.Add((1, 1));
+                    valuesList.Add((0, 0));
+                }
+                return valuesList;
             }
-            
-            if(op == OperatorEnum.AND)
-            {
-                if (parentMustBe == 1) return (0, 1);
-            }    
-            return (0, 0);
+            return valuesList;
         }
     }
 }

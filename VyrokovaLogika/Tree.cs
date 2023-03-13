@@ -15,7 +15,7 @@ namespace VyrokovaLogika
         public Tree Parent { get; set; }
 
         bool root = true;
-
+        string dagS;
         public Node Item { get; set; }
         public Tree(Node item)
         {
@@ -48,41 +48,6 @@ namespace VyrokovaLogika
                 return childNodeRight;
             }
             return null;
-        }
-        public List<string> getFinal()
-        {
-            List<string> list = new List<string>();
-           
-            //foreach (var directChild in childNode)
-            //{
-            //    foreach (var anyChild in directChild)
-            //    {
-            //        Node? node = anyChild.Item as Node;
-            //    }
-            //}
-            return list;
-        }
-
-        public bool validateTree()
-        {
-
-            return true;
-        }
-
-
-        public List<Node> ReturnNode(int level)
-        {
-            List<Node> list = new List<Node>();
-            //if ((Item as Node).level == level) list.Add(Item as Node);
-            //foreach(var directChild in childNode)
-            //{
-            //    foreach (var anyChild in directChild)
-            //    {
-            //        Node? node = anyChild.Item as Node;
-            //        if (node.level == level) list.Add(node);
-            //    }
-            //}
-            return list;
         }
     }
 }
