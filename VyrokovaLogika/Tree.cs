@@ -14,8 +14,7 @@ namespace VyrokovaLogika
         public Tree childNodeRight;
         public Tree Parent { get; set; }
 
-        bool root = true;
-        string dagS;
+        
         public Node Item { get; set; }
         public Tree(Node item)
         {

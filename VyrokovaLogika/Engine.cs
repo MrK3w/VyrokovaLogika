@@ -156,7 +156,6 @@ namespace VyrokovaLogika
                     mRightNode = new Node(splitterParts.Item3, node.level + 1);
                 }
             }
-            //b&c
             else if (Validator.ContainsNegation(node.mSentence) && !Validator.ContainsOperator(node.mSentence))
             {
                 node.mOperator = Operator.GetOperator(node.mSentence[0].ToString());
@@ -205,13 +204,11 @@ namespace VyrokovaLogika
                         TreeProof(tree.childNodeRight.Item, tree.childNodeRight);
                     }
                 }
-
             }
             else
             {
                 myFinals.Add(new(node.valueMustBe, node.mSentence));
             }
-                
         }
 
         private string CheckAndPreparePart(string part)
