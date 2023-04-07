@@ -15,6 +15,8 @@ namespace PL.Pages
         private string vl1;
         private List<string> htmlTree = new List<string>();
         public string ConvertedTree { get; set; }
+
+        public bool DAG { get; set; } = false;
         public string TautologyDecision { get; set; }
 
         public List<string> DAGNodes { get; set; } = new List<string>();
@@ -26,6 +28,11 @@ namespace PL.Pages
         public List<SelectListItem> listItems { get; set; } = new List<SelectListItem>();
 
         public IndexModel()
+        {
+            PrepareList();
+        }
+
+        private void PrepareList()
         {
             string mPropositionalSentence = "(B > A) > A";
             Converter.ConvertSentence(ref mPropositionalSentence);
@@ -44,14 +51,25 @@ namespace PL.Pages
             listItems.Add(item3);
         }
 
-        public void OnPost()
+        public void OnPost(string submit)
         {
+            switch (submit)
+            {
+                case "Create tree":
+                    break;
+                case "Create DAG":
+                    DAG = true;
+                    break;
+                default:
+                    throw new Exception();
+            }
             vl = Request.Form["formula"];
             vl1 = Request.Form["UserInput"];
             Engine engine = new Engine("");
             if (vl == "" && vl1 == "") return;
             htmlTree.Clear();
 
+           
             if (vl1 != "")
             {
                 listItems.Add(new SelectListItem(vl1, vl1));

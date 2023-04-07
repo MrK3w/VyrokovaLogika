@@ -1,37 +1,50 @@
 ﻿@page
-@using Microsoft.AspNetCore.Html
 @model IndexModel
 @{
     ViewData["Title"] = "PL";
 }
 
+<!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" href="https://unpkg.com/treeflex/dist/css/treeflex.css">
-    </head>
-    <body>
-<div class="text-center">
-    <h1 class="display-4">Vyrokova logika</h1>
+<head>
+    <title>My Page</title>
+    <link rel="stylesheet" href="https://unpkg.com/treeflex/dist/css/treeflex.css">
+    <script src="~/js/vivagraph.js"></script>
+    <script src="~/js/DAG.js"></script>
+    <link rel="stylesheet" href="~/css/styles.css" />
+</head>
+<body>
+    <div class="text-center">
+        <h1 class="display-4">Vyrokova logika</h1>
 
-     
+        <form method="post" asp-action="Index" asp-controller="Home" id="TheForm">
+            @Html.DropDownList("formula", Model.listItems, "select formula")
+            @Html.TextBox("UserInput", "", new { @maxlength = "64" });
 
-    @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "TheForm" }))
-    {
-        @Html.DropDownList( "formula", 
-        Model.listItems, "select formula"
-    ) 
-    @Html.TextBox("UserInput", "", new { @maxlength = "64" });
+            <input type='submit' class="btn btn-primary" value='Create tree' name='submit' />
+            <input type='submit' class="btn btn-primary" value='Create DAG' name='submit' />
+        </form>
 
-    <input type='submit' class="btn btn-primary" value='Create tree' />
-    }
-    @if (Model.ConvertedTree != null)
+        @if(Model.DAG)
         {
-            
-                HtmlString msg = new HtmlString(Model.ConvertedTree);
-                HtmlString msg1 = new HtmlString(Model.TautologyDecision);
-                <p> @msg1  </p>
-                <p> @msg  </p>
+            <script>
+                var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
+                var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
+                console.log(myList);
+                console.log(treeConnections);
+                makeDAG(myList, treeConnections);
+            </script>
         }
-       </body>
-</div>
+
+        @if(!Model.DAG)
+        {
+            @if (Model.ConvertedTree != null)
+            {
+                <p>@Html.Raw(Model.TautologyDecision)</p>
+                <p>@Html.Raw(Model.ConvertedTree)</p>
+            }
+        }
+        
+    </div>
+</body>
 </html>
