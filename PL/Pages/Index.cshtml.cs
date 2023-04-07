@@ -79,8 +79,15 @@ namespace PL.Pages
         private void PrintTree(Tree tree)
         {
             htmlTree.Add("<li>");
-            htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
-
+            if (tree.Item.mOperator != Operator.OperatorEnum.EMPTY)
+            {
+                htmlTree.Add("<span class=tf-nc>" + tree.Item.mOperator + "</span>");
+            }
+            else
+            {
+                htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
+            }
+            //htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
             if (tree.childNodeLeft != null)
             {
                 htmlTree.Add("<ul>");

@@ -10,6 +10,7 @@ namespace VyrokovaLogika
     public class Node
     {
         public string mSentence { get; set; }
+        public int number;
         public Operator.OperatorEnum mOperator { get; set; }
         public int valueMustBe { get; set; }
         public int level;

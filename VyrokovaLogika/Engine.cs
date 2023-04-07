@@ -13,66 +13,21 @@ namespace VyrokovaLogika
     {
         string mPropositionalSentence;
         public Tree tree { get; set; }
+        public DAGNode Dag { get; set; }
         public bool Tautology {get; private set; }
         Splitter mSplitter;
         Node mainNode;
         int deepestLevel = 0;
         List<Tuple<int, string>> myFinals = new List<Tuple<int, string>>();
-        Tree FullDag;
-        Tree dagS;
-        Tree foundDAG;
+
+        int number = 1;
 
         public Engine(string propositionalSentence)
         {
             mPropositionalSentence = propositionalSentence;
         }
 
-        public void MakeGraph()
-        {
-            FullDag = tree;
-            BuildDAG(FullDag);
-        }
-
-        //search tree if there is not same node to be able to do dag
-        public Tree SearchNode(Tree dag)
-        {
-            dagS = dag;
-            Traversing(FullDag);
-            return foundDAG;
-        }
-
-        //Traversing the dag
-        public void Traversing(Tree dag)
-        {
-            if (dagS.Item.mSentence == dag.Item.mSentence && dagS.Item != dag.Item)
-            {
-                foundDAG = dag;
-            }
-            if (dag.childNodeLeft != null)
-            {
-                Traversing(dag.childNodeLeft);
-            }
-            if (dag.childNodeRight != null)
-            {
-                Traversing(dag.childNodeRight);
-            }
-            return;
-        }
-
-        public void BuildDAG(Tree Dag)
-        {
-            var found = SearchNode(Dag);
-            if(found != null)
-            {
-
-            }
-            //if(Dag.Item)
-            if(Dag.childNodeLeft != null)
-                BuildDAG(Dag.childNodeLeft);
-            if (Dag.childNodeRight != null)
-                BuildDAG(Dag.childNodeRight);
-        }
-
+    
         public void ProcessSentence()
         {
             //Replace white spaces to better organize this sentence
@@ -82,11 +37,13 @@ namespace VyrokovaLogika
             if (Validator.Check(mPropositionalSentence))
             {
                 mainNode = new Node(mPropositionalSentence);
+                number++;
                 tree = new Tree(mainNode);
                 BuildTree(mainNode, tree);
                 TreeProof(mainNode, tree);
                 Tautology = CheckIfIsItTautology();
-                MakeGraph();
+                var dagConverter = new ASTtoDAGConverter();
+                Dag = dagConverter.Convert(tree);
             }
         }
 
@@ -162,7 +119,8 @@ namespace VyrokovaLogika
                 //remove first sign
                 string sen = node.mSentence.Substring(1);
                 mLeftNode = new Node(sen, node.level + 1);
-                var temp = tree.AddChild(mLeftNode, "left") ;
+                number++;
+                var temp = tree.AddChild(mLeftNode, "left", number) ;
                 BuildTree(mLeftNode, temp);
                 return;
             }
@@ -176,8 +134,10 @@ namespace VyrokovaLogika
             if (deepestLevel < mLeftNode.level) deepestLevel = mLeftNode.level;
             if (deepestLevel < mRightNode.level) deepestLevel = mRightNode.level;
 
-            var first = tree.AddChild(mLeftNode,"left");
-            var second = tree.AddChild(mRightNode,"right");
+            number++;
+            var first = tree.AddChild(mLeftNode,"left",number);
+            number++;
+            var second = tree.AddChild(mRightNode,"right", number);
          
             BuildTree(mLeftNode, first);
             BuildTree(mRightNode, second);

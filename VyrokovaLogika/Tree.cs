@@ -18,8 +18,8 @@ namespace VyrokovaLogika
         public Node Item { get; set; }
         public Tree(Node item)
         {
-
             Item = item;
+            Item.number = 1;
         }
 
         public bool IsRoot
@@ -32,17 +32,20 @@ namespace VyrokovaLogika
             get { return childNodeLeft == null && childNodeRight == null; }
         }
 
-        public Tree AddChild(Node child, string side)
+        public Tree AddChild(Node child, string side, int number)
         {
+  
             if (side == "left")
             {
                 childNodeLeft = new Tree(child);
+                childNodeLeft.Item.number = number;
                 childNodeLeft.Parent = this;
                 return childNodeLeft;
             }
             else if (side == "right")
             {
                 childNodeRight = new Tree(child);
+                childNodeRight.Item.number = number;
                 childNodeRight.Parent = this;
                 return childNodeRight;
             }
