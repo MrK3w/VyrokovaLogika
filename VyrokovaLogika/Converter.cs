@@ -9,9 +9,24 @@ namespace VyrokovaLogika
     public static class Converter
     {
 
-        public static void ConvertSentence(ref string sentence)
+        public static void ConvertLogicalOperators(ref string sentence)
         {
             sentence = sentence.Replace("&", "∧").Replace("|", "∨").Replace("-", "¬").Replace(">", "⇒");
+        }
+
+        public static void ConvertParenthessis(ref string sentence)
+        {
+            sentence = sentence.Replace("[", "(").Replace("]", ")")
+                     .Replace("{", "(").Replace("}", ")");
+        }
+
+        public static void ReduceParenthessis(ref string sentence)
+        {
+            while(sentence.StartsWith("(") && sentence.EndsWith(")"))
+            {
+                sentence = sentence.Substring(1, sentence.Length - 2);
+            }
+
         }
     }
 }

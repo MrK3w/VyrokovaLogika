@@ -36,18 +36,18 @@ namespace VyrokovaLogika
         {
             //Replace white spaces to better organize this sentence
             mPropositionalSentence = mPropositionalSentence.Replace(" ", string.Empty).ToLowerInvariant();
-            Converter.ConvertSentence(ref mPropositionalSentence);
+            Converter.ConvertLogicalOperators(ref mPropositionalSentence);
+            Converter.ConvertParenthessis(ref mPropositionalSentence);
+            Converter.ReduceParenthessis(ref mPropositionalSentence);
             //check if sentence is valid
-            if (Validator.Check(mPropositionalSentence))
-            {
-                mainNode = new Node(mPropositionalSentence);
-                tree = new Tree(mainNode);
-                BuildTree(mainNode, tree);
-                TreeProof(mainNode, tree);
-                Tautology = CheckIfIsItTautology();
-                var dagConverter = new ASTtoDAGConverter();
-                Dag = dagConverter.Convert(tree);
-            }
+            mainNode = new Node(mPropositionalSentence);
+            tree = new Tree(mainNode);
+            BuildTree1(mainNode, tree);
+            TreeProof(mainNode, tree);
+            Tautology = CheckIfIsItTautology();
+            var dagConverter = new ASTtoDAGConverter();
+            Dag = dagConverter.Convert(tree);
+            
         }
 
         private bool CheckIfIsItTautology()
@@ -66,11 +66,29 @@ namespace VyrokovaLogika
             return true;
         }
 
+        private void BuildTree1(Node node, Tree tree)
+        {
+            NewSplitter splitter = new NewSplitter(node);
+            splitter.Split();
+            if (splitter.mLeftNode != null)
+            {
+                number++;
+                var first = tree.AddChild(splitter.mLeftNode, "left", number);
+                BuildTree1(splitter.mLeftNode, first);
+            }
+            if (splitter.mRightNode != null)
+            {
+                number++;
+                var second = tree.AddChild(splitter.mRightNode, "right", number);
+                BuildTree1(splitter.mRightNode, second);
+            }
+        }
+
         private void BuildTree(Node node, Tree tree)
         { 
             Node mRightNode = null;
             Node mLeftNode = null;
-            if (Validator.CheckParenthesses(node.mSentence))
+            if (Validator.ValidateParenthesses(node.mSentence))
             {
                 mSplitter = new Splitter(node.mSentence);
                 //find spot where we should split that sentence
@@ -81,6 +99,7 @@ namespace VyrokovaLogika
                     //remove brackets if part has it
                     splitterParts.Item1 = CheckAndPreparePart(splitterParts.Item1);
                     mLeftNode = new Node(splitterParts.Item1, node.level + 1);
+                    var op = node.mOperator;
                     node.mOperator = Operator.GetOperator(splitterParts.Item2);
                     splitterParts.Item3 = CheckAndPreparePart(splitterParts.Item3);
                     mRightNode = new Node(splitterParts.Item3, node.level + 1);
@@ -93,7 +112,7 @@ namespace VyrokovaLogika
                     return;
                 }
             }
-            else if (!Validator.CheckParenthesses(node.mSentence))
+            else if (!Validator.ValidateParenthesses(node.mSentence))
             {
                 if (Validator.ContainsOperator(node.mSentence))
                 {
@@ -101,6 +120,7 @@ namespace VyrokovaLogika
                     {
                         mLeftNode = new Node(node.mSentence[0].ToString(), node.level + 1);
                         node.mOperator = Operator.GetOperator(node.mSentence[1].ToString());
+                        var xd = node.mOperator;
                         mRightNode = new Node(node.mSentence[2].ToString(), node.level + 1);
                     }
                     else
@@ -173,7 +193,7 @@ namespace VyrokovaLogika
 
         private string CheckAndPreparePart(string part)
         {
-            if (Validator.CheckParenthesses(part))
+            if (Validator.ValidateParenthesses(part))
             {
                 if (Validator.ContainsNegation(part[0].ToString()))
                 {

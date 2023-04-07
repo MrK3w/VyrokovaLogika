@@ -31,13 +31,13 @@ namespace PL.Pages
         private void PrepareList()
         {
             string mPropositionalSentence = "(B > A) > A";
-            Converter.ConvertSentence(ref mPropositionalSentence);
+            Converter.ConvertLogicalOperators(ref mPropositionalSentence);
 
             string mPropositionalSentence1 = "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))";
-            Converter.ConvertSentence(ref mPropositionalSentence1);
+            Converter.ConvertLogicalOperators(ref mPropositionalSentence1);
 
             string mPropositionalSentence2 = "((((-x|b)&(x|a))))";
-            Converter.ConvertSentence(ref mPropositionalSentence2);
+            Converter.ConvertLogicalOperators(ref mPropositionalSentence2);
 
             SelectListItem item1 = new SelectListItem(mPropositionalSentence, mPropositionalSentence);
             SelectListItem item2 = new SelectListItem(mPropositionalSentence1, mPropositionalSentence1);
@@ -107,15 +107,15 @@ namespace PL.Pages
         private void PrintTree(Tree tree)
         {
             htmlTree.Add("<li>");
-            if (tree.Item.mOperator != Operator.OperatorEnum.EMPTY)
-            {
-                htmlTree.Add("<span class=tf-nc>" + tree.Item.mOperator + "</span>");
-            }
-            else
-            {
-                htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
-            }
-            //htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
+            //if (tree.Item.mOperator != Operator.OperatorEnum.EMPTY)
+            //{
+            //    htmlTree.Add("<span class=tf-nc>" + tree.Item.mOperator + "</span>");
+            //}
+            //else
+            //{
+            //    htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
+            //}
+            htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
             if (tree.childNodeLeft != null)
             {
                 htmlTree.Add("<ul>");

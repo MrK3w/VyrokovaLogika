@@ -44,6 +44,7 @@ namespace VyrokovaLogika
 
         public (string, string,string) SplitString() // tuple return type
         {
+
             string firstPart = vl.Substring(0, position);
             string conditional = vl.Substring(position,1);
             string secondPart = vl.Substring(position+1);
