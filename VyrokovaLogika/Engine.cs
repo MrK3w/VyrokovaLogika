@@ -37,7 +37,6 @@ namespace VyrokovaLogika
             if (Validator.Check(mPropositionalSentence))
             {
                 mainNode = new Node(mPropositionalSentence);
-                number++;
                 tree = new Tree(mainNode);
                 BuildTree(mainNode, tree);
                 TreeProof(mainNode, tree);
