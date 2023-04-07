@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static VyrokovaLogika.IndexModel;
 
 namespace VyrokovaLogika
 {
@@ -19,6 +20,9 @@ namespace VyrokovaLogika
         Node mainNode;
         int deepestLevel = 0;
         List<Tuple<int, string>> myFinals = new List<Tuple<int, string>>();
+        public List<string> DAGNodes { get; private set; } = new List<string>();
+        public List<Tuple<string, string>> TreeConnections { get; private set; } = new List<Tuple<string, string>>();
+
 
         int number = 1;
 
@@ -183,8 +187,6 @@ namespace VyrokovaLogika
             return part;
         }
 
-      
-
         private string RemoveParenthessesWithNegation(string part)
         {
             StringBuilder newPart = new StringBuilder();
@@ -211,6 +213,14 @@ namespace VyrokovaLogika
                 newPart.Append(part1 + "∧¬" + part2);
             }
             return newPart.ToString();
+        }
+
+        public void PrepareDAG()
+        {
+            DAG dagConvert = new DAG(Dag);
+            dagConvert.PrepareDAG();
+            DAGNodes = dagConvert.DAGNodes;
+            TreeConnections = dagConvert.TreeConnections;
         }
     }
 

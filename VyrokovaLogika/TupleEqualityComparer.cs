@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace PL.Pages
+namespace VyrokovaLogika
 {
     public partial class IndexModel
     {
