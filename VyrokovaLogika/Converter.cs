@@ -20,13 +20,13 @@ namespace VyrokovaLogika
                      .Replace("{", "(").Replace("}", ")");
         }
 
-        public static void ReduceParenthessis(ref string sentence)
+        public static string ReduceParenthessis(string sentence)
         {
-            while(sentence.StartsWith("(") && sentence.EndsWith(")"))
+            if(sentence.StartsWith("(") && sentence.EndsWith(")"))
             {
-                sentence = sentence.Substring(1, sentence.Length - 2);
+                return sentence.Substring(1, sentence.Length - 2);
             }
-
+            return sentence;
         }
     }
 }

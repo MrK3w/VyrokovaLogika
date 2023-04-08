@@ -28,9 +28,9 @@ namespace VyrokovaLogika
             else return false;
         }
 
-        public static bool ContainsNegation(string vl)
+        public static bool ContainsNegationOnFirstPlace(string vl)
         {
-            if (vl.Contains('¬')) return true;
+            if (vl[0] == '¬') return true;
             else return false;
         }
 

@@ -11,7 +11,7 @@ namespace VyrokovaLogika
     {
         public enum OperatorEnum
         {
-            EMPTY, AND, OR, IMPLICATION, NEGATION, EQUIVALENCE
+            EMPTY, AND, OR, IMPLICATION, NEGATION, EQUIVALENCE, DOUBLENEGATION
         }
   
         public static OperatorEnum GetOperator(string sign)
@@ -28,6 +28,8 @@ namespace VyrokovaLogika
                     return OperatorEnum.NEGATION;
                 case "≡":
                     return OperatorEnum.EQUIVALENCE;
+                case "¬¬":
+                    return OperatorEnum.DOUBLENEGATION;
                 default:
                     return OperatorEnum.EMPTY;
             }

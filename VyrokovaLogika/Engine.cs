@@ -16,9 +16,7 @@ namespace VyrokovaLogika
         public Tree tree { get; set; }
         public DAGNode Dag { get; set; }
         public bool Tautology {get; private set; }
-        Splitter mSplitter;
         Node mainNode;
-        int deepestLevel = 0;
         List<Tuple<int, string>> myFinals = new List<Tuple<int, string>>();
         public List<string> DAGNodes { get; private set; } = new List<string>();
         public List<Tuple<string, string>> TreeConnections { get; private set; } = new List<Tuple<string, string>>();
@@ -31,23 +29,22 @@ namespace VyrokovaLogika
             mPropositionalSentence = propositionalSentence;
         }
 
-    
-        public void ProcessSentence()
+        public bool ProcessSentence()
         {
             //Replace white spaces to better organize this sentence
             mPropositionalSentence = mPropositionalSentence.Replace(" ", string.Empty).ToLowerInvariant();
             Converter.ConvertLogicalOperators(ref mPropositionalSentence);
             Converter.ConvertParenthessis(ref mPropositionalSentence);
-            Converter.ReduceParenthessis(ref mPropositionalSentence);
             //check if sentence is valid
+            if (!Validator.ValidateParenthesses(mPropositionalSentence)) return false;
             mainNode = new Node(mPropositionalSentence);
             tree = new Tree(mainNode);
-            BuildTree1(mainNode, tree);
+            BuildTree(mainNode, tree);
             TreeProof(mainNode, tree);
             Tautology = CheckIfIsItTautology();
             var dagConverter = new ASTtoDAGConverter();
             Dag = dagConverter.Convert(tree);
-            
+            return true;
         }
 
         private bool CheckIfIsItTautology()
@@ -66,7 +63,7 @@ namespace VyrokovaLogika
             return true;
         }
 
-        private void BuildTree1(Node node, Tree tree)
+        private void BuildTree(Node node, Tree tree)
         {
             NewSplitter splitter = new NewSplitter(node);
             splitter.Split();
@@ -74,94 +71,15 @@ namespace VyrokovaLogika
             {
                 number++;
                 var first = tree.AddChild(splitter.mLeftNode, "left", number);
-                BuildTree1(splitter.mLeftNode, first);
+                BuildTree(splitter.mLeftNode, first);
             }
             if (splitter.mRightNode != null)
             {
                 number++;
                 var second = tree.AddChild(splitter.mRightNode, "right", number);
-                BuildTree1(splitter.mRightNode, second);
+                BuildTree(splitter.mRightNode, second);
             }
         }
-
-        private void BuildTree(Node node, Tree tree)
-        { 
-            Node mRightNode = null;
-            Node mLeftNode = null;
-            if (Validator.ValidateParenthesses(node.mSentence))
-            {
-                mSplitter = new Splitter(node.mSentence);
-                //find spot where we should split that sentence
-                if (mSplitter.FindSplitPoint())
-                {
-                    //split string at that point
-                    var splitterParts = mSplitter.SplitString();
-                    //remove brackets if part has it
-                    splitterParts.Item1 = CheckAndPreparePart(splitterParts.Item1);
-                    mLeftNode = new Node(splitterParts.Item1, node.level + 1);
-                    var op = node.mOperator;
-                    node.mOperator = Operator.GetOperator(splitterParts.Item2);
-                    splitterParts.Item3 = CheckAndPreparePart(splitterParts.Item3);
-                    mRightNode = new Node(splitterParts.Item3, node.level + 1);
-                }
-                else
-                {
-                    var item = CheckAndPreparePart(node.mSentence);
-                    mainNode.mSentence = item;
-                    BuildTree(mainNode, tree);
-                    return;
-                }
-            }
-            else if (!Validator.ValidateParenthesses(node.mSentence))
-            {
-                if (Validator.ContainsOperator(node.mSentence))
-                {
-                    if (!Validator.ContainsNegation(node.mSentence))
-                    {
-                        mLeftNode = new Node(node.mSentence[0].ToString(), node.level + 1);
-                        node.mOperator = Operator.GetOperator(node.mSentence[1].ToString());
-                        var xd = node.mOperator;
-                        mRightNode = new Node(node.mSentence[2].ToString(), node.level + 1);
-                    }
-                    else
-                    {
-                        mSplitter = new Splitter(node.mSentence);
-                        mSplitter.FindSplitPointForNegation();
-                        var splitterParts = mSplitter.SplitString();
-                        mLeftNode = new Node(splitterParts.Item1, node.level + 1);
-                        node.mOperator = Operator.GetOperator(splitterParts.Item2);
-                        mRightNode = new Node(splitterParts.Item3, node.level + 1);
-                    }
-                }
-                else if (Validator.ContainsNegation(node.mSentence) && !Validator.ContainsOperator(node.mSentence))
-                {
-                    node.mOperator = Operator.GetOperator(node.mSentence[0].ToString());
-                    //remove first sign
-                    string sen = node.mSentence.Substring(1);
-                    mLeftNode = new Node(sen, node.level + 1);
-                    number++;
-                    var temp = tree.AddChild(mLeftNode, "left", number) ;
-                    BuildTree(mLeftNode, temp);
-                    return;
-                }
-                else
-                { 
-                    if (node.level > deepestLevel) deepestLevel = node.level;
-                    return;
-                }
-            }
-
-            if (deepestLevel < mLeftNode.level) deepestLevel = mLeftNode.level;
-            if (deepestLevel < mRightNode.level) deepestLevel = mRightNode.level;
-
-            number++;
-            var first = tree.AddChild(mLeftNode,"left",number);
-            number++;
-            var second = tree.AddChild(mRightNode,"right", number);
-         
-            BuildTree(mLeftNode, first);
-            BuildTree(mRightNode, second);
-    }
 
     private void TreeProof(Node node, Tree tree)
     {
@@ -190,48 +108,7 @@ namespace VyrokovaLogika
                 myFinals.Add(new(node.valueMustBe, node.mSentence));
             }
     }
-
-        private string CheckAndPreparePart(string part)
-        {
-            if (Validator.ValidateParenthesses(part))
-            {
-                if (Validator.ContainsNegation(part[0].ToString()))
-                {
-                    return RemoveParenthessesWithNegation(part);
-                }
-                else return part.Substring(1, part.Length - 2);
-            }
-            return part;
-        }
-
-        private string RemoveParenthessesWithNegation(string part)
-        {
-            StringBuilder newPart = new StringBuilder();
-            part = part.Substring(2, part.Length - 3);
-            if (part.Contains('∧'))
-            {
-                var parts = part.Split('∧');
-                var part1 = parts[0];
-                var part2 = parts[1];
-                newPart.Append('¬' + part1 + "∨¬" + part2);
-            }
-            else if(part.Contains('∨'))
-            {
-                var parts = part.Split('∨');
-                var part1 = parts[0];
-                var part2 = parts[1];
-                newPart.Append('¬' + part1 + "∧¬" + part2);
-            }
-            else if(part.Contains('>'))
-            {
-                var parts = part.Split('>');
-                var part1 = parts[0].Substring(1);
-                var part2 = parts[1];
-                newPart.Append(part1 + "∧¬" + part2);
-            }
-            return newPart.ToString();
-        }
-
+     
         public void PrepareDAG()
         {
             DAG dagConvert = new DAG(Dag);

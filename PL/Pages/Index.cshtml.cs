@@ -22,6 +22,7 @@ namespace PL.Pages
         public string TautologyDecision { get; set; }
 
         public List<SelectListItem> listItems { get; set; } = new List<SelectListItem>();
+        public bool Valid { get; private set; } = true;
 
         public IndexModel()
         {
@@ -83,18 +84,21 @@ namespace PL.Pages
                 }
                 engine = new Engine(vl);
             }
-            engine.ProcessSentence();
-            if (DAG)
+            Valid = engine.ProcessSentence();
+            if (Valid)
             {
-                engine.PrepareDAG();
-                TreeConnections = engine.TreeConnections;
-                DAGNodes = engine.DAGNodes;
-            }
-            else
-            {
-                PrintTree(engine.tree);
-                string div = "<div class='tf-tree tf-gap-lg'>".Replace("'", "\"");
-                ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+                if (DAG)
+                {
+                    engine.PrepareDAG();
+                    TreeConnections = engine.TreeConnections;
+                    DAGNodes = engine.DAGNodes;
+                }
+                else
+                {
+                    PrintTree(engine.tree);
+                    string div = "<div class='tf-tree tf-gap-lg'>".Replace("'", "\"");
+                    ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+                }
             }
            
             if (engine.Tautology)
@@ -107,15 +111,15 @@ namespace PL.Pages
         private void PrintTree(Tree tree)
         {
             htmlTree.Add("<li>");
-            //if (tree.Item.mOperator != Operator.OperatorEnum.EMPTY)
-            //{
-            //    htmlTree.Add("<span class=tf-nc>" + tree.Item.mOperator + "</span>");
-            //}
-            //else
-            //{
-            //    htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
-            //}
-            htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
+            if (tree.Item.mOperator != Operator.OperatorEnum.EMPTY)
+            {
+                htmlTree.Add("<span class=tf-nc>" + tree.Item.mOperator + "</span>");
+            }
+            else
+            {
+                htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
+            }
+            //htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
             if (tree.childNodeLeft != null)
             {
                 htmlTree.Add("<ul>");

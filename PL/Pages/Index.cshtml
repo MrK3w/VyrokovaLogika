@@ -25,24 +25,32 @@
             <input type='submit' class="btn btn-primary" value='Create DAG' name='submit' />
         </form>
 
-        @if(Model.DAG)
-        {
-            <script>
-                var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
-                var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
-                console.log(myList);
-                console.log(treeConnections);
-                makeDAG(myList, treeConnections);
-            </script>
-        }
-
-        @if(!Model.DAG)
-        {
-            @if (Model.ConvertedTree != null)
+            @if (Model.DAG)
             {
-                <p>@Html.Raw(Model.TautologyDecision)</p>
-                <p>@Html.Raw(Model.ConvertedTree)</p>
+                <script>
+                    var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
+                    var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
+                    console.log(myList);
+                    console.log(treeConnections);
+                    makeDAG(myList, treeConnections);
+                </script>
             }
+
+            @if (!Model.DAG)
+            {
+                @if (Model.ConvertedTree != null)
+                {
+                    <p>@Html.Raw(Model.TautologyDecision)</p>
+                    <p>@Html.Raw(Model.ConvertedTree)</p>
+                }
+
+            }
+        
+        @if(!Model.Valid)
+        {
+            <div class="alert alert-danger" role="alert" id="errorAlert">
+                Formula is invalid
+            </div>
         }
         
     </div>
