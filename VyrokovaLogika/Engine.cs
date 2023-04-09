@@ -65,7 +65,8 @@ namespace VyrokovaLogika
 
         private void BuildTree(Node node, Tree tree)
         {
-            NewSplitter splitter = new NewSplitter(node);
+            Splitter splitter = new Splitter(node);
+            node.mOperator = splitter.mNode.mOperator;
             splitter.Split();
             if (splitter.mLeftNode != null)
             {

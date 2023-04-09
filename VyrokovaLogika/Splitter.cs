@@ -11,7 +11,7 @@ namespace VyrokovaLogika
         public Node mLeftNode { get; set; } = null;
         public Node mRightNode { get; set; } = null;
 
-        private Node mNode;
+        public Node mNode { get; set; }
         private bool isNegation = false;
 
         public Splitter(Node node)
@@ -21,35 +21,23 @@ namespace VyrokovaLogika
 
         public void Split()
         {
+            //get formula from node
             string vl = mNode.mSentence;
+            //vl is final variable
             if (Validator.IsVariable(vl))
             {
                 return;
             }
+            //we need to take of negation on start of formula
             if (Validator.ContainsNegationOnFirstPlace(vl))
             {
-                if (vl.Length == 2 )
-                {
-                    mNode.mOperator = Operator.OperatorEnum.NEGATION;
-                    mLeftNode = new Node(vl[1].ToString(), mNode.level + 1);
-                    return;
-                }
-                else if(vl.Length == 3 && vl[0] == '¬' && vl[1] == '¬')
-                {
-                    mNode.mOperator = Operator.OperatorEnum.DOUBLENEGATION;
-                    mLeftNode = new Node(vl[2].ToString(), mNode.level + 1);
-                    return;
-                }
-                else if (vl[1] == '(')
-                {
-                    isNegation = true;
-                    SeparateByBrackets(vl);
-                    return;
-
-                }
+                SeparateWithNegation(vl);
+                return;
             }
+            //we need to take of brackets on start of formula
             if (Validator.ContainsParenthesses(vl) && vl[0] == '(')
             {
+                //Validate parenthesses
                 if(Validator.ValidateParenthesses(vl))
                 {
                     SeparateByBrackets(vl);
@@ -60,6 +48,7 @@ namespace VyrokovaLogika
                     Console.WriteLine("error");
                 }
             }
+            //if we need to separate by operator firstly
             if(Validator.ContainsOperator(vl))
             {
                 SeparateByOperator(vl);
@@ -68,21 +57,47 @@ namespace VyrokovaLogika
             }
         }
 
+        private void SeparateWithNegation(string vl)
+        {
+            //¬x
+            if (vl.Length == 2)
+            {
+                mNode.mOperator = Operator.OperatorEnum.NEGATION;
+                mLeftNode = new Node(vl[1].ToString(), mNode.level + 1);
+            }
+            //¬¬x
+            else if (vl.Length == 3 && vl[0] == '¬' && vl[1] == '¬')
+            {
+                mNode.mOperator = Operator.OperatorEnum.DOUBLENEGATION;
+                mLeftNode = new Node(vl[2].ToString(), mNode.level + 1);
+            }
+            //¬(
+            else if (vl[1] == '(')
+            {
+                isNegation = true;
+                SeparateByBrackets(vl);
+            }
+        }
+
         private void SeparateByBrackets(string vl)
         {
             var parts = SplitStringByParenthessis(vl);
+            //reduces start and closing brackets of formula
             for (int i = 0; i < parts.Count; i++)
             {
                 parts[i] = Converter.ReduceParenthessis(parts[i]);
             }
+            //check if new part is not same like upper just without brackets
             if (mNode.mSentence != '(' + parts[0] + ')')
             {
                 mLeftNode = new Node(parts[0], mNode.level + 1);
             }
+            //otherwise separate by operator
             else
             {
                 SeparateByOperator(parts[0]);
             }
+            //if we have more than one part
             if (parts.Count > 1)
             {
                 if (mNode.mSentence != '(' + parts[2] + ')')
@@ -100,6 +115,7 @@ namespace VyrokovaLogika
 
         private void SeparateByOperator(string vl)
         {
+            //separate parts by operator
             var parts = SplitStringByOperator(vl);
             mLeftNode = new Node(parts[0], mNode.level + 1);
             mNode.mOperator = Operator.GetOperator(parts[1]);
@@ -112,10 +128,13 @@ namespace VyrokovaLogika
             List<string> parts = new List<string>();
             char[] separators = { '∧', '∨', '⇒', '≡' };
             StringBuilder sb = new StringBuilder();
+
             foreach (char s in vl)
             {
+                //if we have just found operator
                 if (separators.Contains(s) && firstPart)
                 {
+                    //first part is part of formula, second part is operator
                     parts.Add(sb.ToString());
                     parts.Add(s.ToString());
                     firstPart = false;
@@ -150,6 +169,7 @@ namespace VyrokovaLogika
                         throw new Exception();
                     }
                 }
+                //separating by brackets
                 if (metParenthesses && parenthessesStack.Count == 0)
                 {
                     string part = sb.ToString();
@@ -181,6 +201,7 @@ namespace VyrokovaLogika
             return null;
         }
 
+        //DE MORGANS LAWS
         private static void Laws(ref string part, ref string op, ref string secondPart)
         {
             switch (op[0])
