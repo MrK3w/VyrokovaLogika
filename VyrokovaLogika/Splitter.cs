@@ -77,6 +77,10 @@ namespace VyrokovaLogika
                 isNegation = true;
                 SeparateByBrackets(vl);
             }
+            else
+            {
+                SeparateByOperator(vl);
+            }
         }
 
         private void SeparateByBrackets(string vl)

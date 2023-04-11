@@ -6,9 +6,9 @@ string vl = "(-a>-B)|-B&C";
 string vl1 = "(a>b)|(a>b)";
 string vl3 = "(a|b)>((a&c) | ((a|b) & (a|b)))";
 string vl2 = "-((-a&-B)&(B&-a))|-B";
-string vl5 = "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))";
-string vl4 = "A>B";
+string vl5 = "(p∨(q∧r))→((p∨q)∧(p∨r))";
+string vl4 = "(p∨(q∧r))⇒((p∨q)∧(p∧r))";
 string vl7 = "-A";
 //create instance of engine which will proceed my sentece/s?
-Engine tree1 = new Engine(vl7);
+Engine tree1 = new Engine(vl4);
 tree1.ProcessSentence();

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace VyrokovaLogika
 {
@@ -32,6 +33,11 @@ namespace VyrokovaLogika
             get { return childNodeLeft == null && childNodeRight == null; }
         }
 
+        public Tree GetParent(Tree tree)
+        {
+            if(tree.Parent != null) return GetParent(tree.Parent);
+            return tree;
+        }
         public Tree AddChild(Node child, string side, int number)
         {
   
@@ -50,6 +56,32 @@ namespace VyrokovaLogika
                 return childNodeRight;
             }
             return null;
+        }
+
+        // Method to return the leaf nodes of the tree
+        public List<Tree> GetLeafNodes()
+        {
+            List<Tree> leafNodes = new List<Tree>();
+            Traverse(this, leafNodes);
+            return leafNodes;
+        }
+
+        // Private helper method to recursively traverse the tree
+        private void Traverse(Tree node, List<Tree> leafNodes)
+        {
+            if (node == null) return;
+
+            if (node.childNodeLeft == null && node.childNodeRight == null)
+            {
+                // Node has no children, so it's a leaf node
+                leafNodes.Add(node);
+            }
+            else
+            {
+                // Node has children, so recursively traverse its children
+                Traverse(node.childNodeLeft, leafNodes);
+                Traverse(node.childNodeRight, leafNodes);
+            }
         }
     }
 }

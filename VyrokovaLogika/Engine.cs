@@ -17,7 +17,6 @@ namespace VyrokovaLogika
         public DAGNode Dag { get; set; }
         public bool Tautology {get; private set; }
         Node mainNode;
-        List<Tuple<int, string>> myFinals = new List<Tuple<int, string>>();
         public List<string> DAGNodes { get; private set; } = new List<string>();
         public List<Tuple<string, string>> TreeConnections { get; private set; } = new List<Tuple<string, string>>();
 
@@ -31,36 +30,28 @@ namespace VyrokovaLogika
 
         public bool ProcessSentence()
         {
-            //Replace white spaces to better organize this sentence
-            mPropositionalSentence = mPropositionalSentence.Replace(" ", string.Empty).ToLowerInvariant();
-            Converter.ConvertLogicalOperators(ref mPropositionalSentence);
-            Converter.ConvertParenthessis(ref mPropositionalSentence);
+            ConvertSentenceToRightFormat();
             //check if sentence is valid
             if (!Validator.ValidateParenthesses(mPropositionalSentence)) return false;
             mainNode = new Node(mPropositionalSentence);
+            //BUILD TREE
             tree = new Tree(mainNode);
             BuildTree(mainNode, tree);
-            TreeProof(mainNode, tree);
-            Tautology = CheckIfIsItTautology();
+            //CONVERT TREE TO DAG
             var dagConverter = new ASTtoDAGConverter();
             Dag = dagConverter.Convert(tree);
+            //TODO TreeProof
+            TreeProof proofSolver = new TreeProof();
+            proofSolver.ProcessTree(tree);
+            Tautology = proofSolver.isTautology();
             return true;
         }
 
-        private bool CheckIfIsItTautology()
+        private void ConvertSentenceToRightFormat()
         {
-            for (int i = 0; i < myFinals.Count; i++)
-            {
-                for (int j = 0; j < myFinals.Count; j++)
-                {
-                    if (myFinals[i].Item2 == myFinals[j].Item2)
-                    {
-                        if (myFinals[i].Item1 != myFinals[j].Item1)
-                            return false;
-                    }
-                }
-            }
-            return true;
+            mPropositionalSentence = mPropositionalSentence.Replace(" ", string.Empty).ToLowerInvariant();
+            Converter.ConvertLogicalOperators(ref mPropositionalSentence);
+            Converter.ConvertParenthessis(ref mPropositionalSentence);
         }
 
         private void BuildTree(Node node, Tree tree)
@@ -71,45 +62,17 @@ namespace VyrokovaLogika
             if (splitter.mLeftNode != null)
             {
                 number++;
-                var first = tree.AddChild(splitter.mLeftNode, "left", number);
-                BuildTree(splitter.mLeftNode, first);
+                var leftTree = tree.AddChild(splitter.mLeftNode, "left", number);
+                BuildTree(splitter.mLeftNode, leftTree);
             }
             if (splitter.mRightNode != null)
             {
                 number++;
-                var second = tree.AddChild(splitter.mRightNode, "right", number);
-                BuildTree(splitter.mRightNode, second);
+                var rightTree = tree.AddChild(splitter.mRightNode, "right", number);
+                BuildTree(splitter.mRightNode, rightTree);
             }
         }
-
-    private void TreeProof(Node node, Tree tree)
-    {
-            if (tree.IsRoot) tree.Item.valueMustBe = 0;
-            var valuesOfNodesList = Rule.GetValuesOfBothSides(tree.Item.valueMustBe, tree.Item.mOperator);
-            
-            if(!tree.IsLeaf)
-            {
-                foreach (var valuesOfNodes in valuesOfNodesList)
-                {
-                    if (tree.childNodeLeft != null)
-                    {
-                        tree.childNodeLeft.Item.valueMustBe = valuesOfNodes.Item1;
-                        TreeProof(tree.childNodeLeft.Item, tree.childNodeLeft);    
-                    }
-
-                    if (tree.childNodeRight != null)
-                    {
-                        tree.childNodeRight.Item.valueMustBe = valuesOfNodes.Item2;
-                        TreeProof(tree.childNodeRight.Item, tree.childNodeRight);
-                    }
-                }
-            }
-            else
-            {
-                myFinals.Add(new(node.valueMustBe, node.mSentence));
-            }
-    }
-     
+        
         public void PrepareDAG()
         {
             DAG dagConvert = new DAG(Dag);

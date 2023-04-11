@@ -12,72 +12,57 @@ namespace VyrokovaLogika
         public static List<(int, int)> GetValuesOfBothSides(int parentMustBe, OperatorEnum op)
         {
             List<(int,int)> valuesList = new List<(int, int)>();
-            if(op == OperatorEnum.IMPLICATION)
+            switch (op)
             {
-                if (parentMustBe == 0)
-                {
-                   valuesList.Add((1, 0));
-                }
-                else
-                {
-                    valuesList.Add((0, 1));
-                    valuesList.Add((1, 1));
-                    valuesList.Add((0, 0));
-                }
-                return valuesList;
-            }
-            else if(op == OperatorEnum.OR)
-            {
-                if (parentMustBe == 0)
-                {
-                    valuesList.Add((0, 0));
-                }
-                else
-                {
-                    valuesList.Add((0, 1));
-                    valuesList.Add((1, 0));
-                    valuesList.Add((1, 1));
-                }
-            }
-            else if (op == OperatorEnum.AND)
-            {
-                if (parentMustBe == 1)
-                {
-                    valuesList.Add((1, 1));
-                }
-                else
-                {
-                    valuesList.Add((0, 1));
-                    valuesList.Add((1, 0));
-                    valuesList.Add((0, 0));
-                }
-            }
-            else if (op == OperatorEnum.AND)
-            {
-                if (parentMustBe == 1)
-                {
-                    valuesList.Add((1, 1));
-                }
-                else
-                {
-                    valuesList.Add((0, 1));
-                    valuesList.Add((1, 0));
-                    valuesList.Add((0, 0));
-                }
-            }
-            else if(op == OperatorEnum.EQUIVALENCE)
-            {
-                if(parentMustBe == 1)
-                {
-                    valuesList.Add((1, 1));
-                    valuesList.Add((0, 0));
-                }
-                else
-                {
-                    valuesList.Add((0, 1));
-                    valuesList.Add((1, 0));
-                }
-                    
+                case OperatorEnum.IMPLICATION:
+                    if (parentMustBe == 0)
+                    {
+                        valuesList.Add((1, 0));
+                    }
+                    else
+                    {
+                        valuesList.Add((0, 1));
+                        valuesList.Add((1, 1));
+                        valuesList.Add((0, 0));
+                    }
+                    break;
+                case OperatorEnum.OR:
+                    if (parentMustBe == 0)
+                    {
+                        valuesList.Add((0, 0));
+                    }
+                    else
+                    {
+                        valuesList.Add((0, 1));
+                        valuesList.Add((1, 0));
+                        valuesList.Add((1, 1));
+                    }
+                    break;
+                case OperatorEnum.AND:
+                    if (parentMustBe == 1)
+                    {
+                        valuesList.Add((1, 1));
+                    }
+                    else
+                    {
+                        valuesList.Add((0, 1));
+                        valuesList.Add((1, 0));
+                        valuesList.Add((0, 0));
+                    }
+                    break;
+                case OperatorEnum.EQUIVALENCE:
+                    if (parentMustBe == 1)
+                    {
+                        valuesList.Add((1, 1));
+                        valuesList.Add((0, 0));
+                    }
+                    else
+                    {
+                        valuesList.Add((0, 1));
+                        valuesList.Add((1, 0));
+                    }
+
+                    break;
             }
             return valuesList;
         }
