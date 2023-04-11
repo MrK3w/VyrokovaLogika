@@ -27,9 +27,10 @@ namespace VyrokovaLogika
                 return;
             }    
             var sideValues = Rule.GetValuesOfBothSides(tree.Item.valueMustBe, tree.Item.mOperator);
+            //it's just a copy of previous tree must be redone
             foreach (var sideValue in sideValues)
             {
-                Tree newTree = tree;
+                Tree newTree = tree.Clone();
                 if(newTree.childNodeLeft != null)
                 {
                     newTree.childNodeLeft.Item.valueMustBe = sideValue.Item1;    
