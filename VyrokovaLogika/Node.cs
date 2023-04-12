@@ -27,14 +27,5 @@ namespace VyrokovaLogika
             return mSentence;
         }
 
-        public Node Clone()
-        {
-            return new Node(this.mSentence, this.level)
-            {
-                number = this.number,
-                mOperator = this.mOperator,
-                valueMustBe = this.valueMustBe
-            };
-        }
     }
 }

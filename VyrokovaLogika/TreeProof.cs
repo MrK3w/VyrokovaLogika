@@ -10,49 +10,45 @@ namespace VyrokovaLogika
 {
     public class TreeProof
     {
-        List<Tree> Trees = new List<Tree>();
+        List<TruthTree> Trees = new List<TruthTree>();
         public TreeProof()
         {
         }
 
-        public void ProcessTree(Tree tree)
+        public void ProcessTree(Tree tree, TruthTree truthTree = null)
         {
-            List<Tree> TempTrees = new List<Tree>();
+            List<TruthTree> TempTrees = new List<TruthTree>();
             if (tree.IsRoot)
             {
-                tree.Item.valueMustBe = 0;
+                truthTree = new TruthTree(0);
             }
-            if(tree.IsLeaf)
-            {
-                return;
-            }    
-            var sideValues = Rule.GetValuesOfBothSides(tree.Item.valueMustBe, tree.Item.mOperator);
+            var sideValues = Rule.GetValuesOfBothSides(truthTree.Item, tree.Item.mOperator);
             //it's just a copy of previous tree must be redone
             foreach (var sideValue in sideValues)
             {
-                Tree newTree = tree.Clone();
-                if(newTree.childNodeLeft != null)
+                //TruthTree newTree = truthTree.Clone();
+                if(tree.childNodeLeft != null)
                 {
-                    newTree.childNodeLeft.Item.valueMustBe = sideValue.Item1;    
+                    newTree.AddChild(sideValue.Item1, "left");   
                 }
-                if (newTree.childNodeRight != null)
+                if (tree.childNodeRight != null)
                 {
-                    newTree.childNodeRight.Item.valueMustBe = sideValue.Item2;
+                    newTree.AddChild(sideValue.Item2, "right");
                 }
                 TempTrees.Add(newTree);
             }
+            
             foreach (var newTree in TempTrees)
             {
-                var parent = newTree.GetParent(newTree);
-                Trees.Add(parent); 
-                if (newTree.childNodeLeft != null)
+                if (tree.childNodeLeft != null)
                 {
-                    ProcessTree(newTree.childNodeLeft);
+                    ProcessTree(tree.childNodeLeft, newTree.ChildNodeLeft);
                 }
-                if(newTree.childNodeRight != null)
+                if(tree.childNodeRight != null)
                 {
-                    ProcessTree(newTree.childNodeRight);
+                    ProcessTree(tree.childNodeRight, newTree.ChildNodeRight);
                 }
+               
             }
         }
 
@@ -62,7 +58,8 @@ namespace VyrokovaLogika
             {
                 int number = 0;
                 bool contradiction = false;
-                var elementalNodes = tree.GetLeafNodes();
+                var treeParent = tree.GetParent(tree);
+                var elementalNodes = treeParent.GetLeafNodes();
 
                 foreach (var node in elementalNodes)
                 {
@@ -70,10 +67,10 @@ namespace VyrokovaLogika
                     if (contradiction) break;
                     foreach (var node1 in elementalNodes)
                     {
-                        if (node1.Item.mSentence == node.Item.mSentence && node1.Item.valueMustBe != node.Item.valueMustBe)
+                        if (node1.literal == node.literal && node1.Item != node.Item)
                             contradiction = true;
                     }
-                }
+                    }
                 if (contradiction == false)
                 {
                     return false;

@@ -33,25 +33,7 @@ namespace VyrokovaLogika
             get { return childNodeLeft == null && childNodeRight == null; }
         }
 
-        public Tree Clone()
-        {
-            Tree clonedTree = new Tree(this.Item.Clone()); // assuming Item is a cloneable object, implement Clone method in Node class if needed
-
-            if (this.childNodeLeft != null)
-            {
-                clonedTree.childNodeLeft = this.childNodeLeft.Clone();
-                clonedTree.childNodeLeft.Parent = clonedTree;
-            }
-
-            if (this.childNodeRight != null)
-            {
-                clonedTree.childNodeRight = this.childNodeRight.Clone();
-                clonedTree.childNodeRight.Parent = clonedTree;
-            }
-
-            return clonedTree;
-        }
-
+      
         public Tree GetParent(Tree tree)
         {
             if(tree.Parent != null) return GetParent(tree.Parent);
