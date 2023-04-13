@@ -31,9 +31,10 @@
                     var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
                     var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
                     makeDAG(myList, treeConnections);
-                <p>@Html.Raw(Model.TautologyDecision)</p>
+               
 
                 </script>
+            <p>@Html.Raw(Model.TautologyDecision)</p>
             }
 
             @if (!Model.DAG)
@@ -47,19 +48,19 @@
                     <!-- Define the table structure -->
                     <div class="table-container">
 
-                    <table>
-                        <tr>
-                            <th>Item</th>
-                            <th>Literal</th>
-                        </tr>
-                        @foreach (var node in Model.distinctNodes)
-                        {
+                        <table>
                             <tr>
-                                <td>@node.Item1</td>
-                                <td>@node.Item2</td>
+                                <th>Item</th>
+                                <th>Literal</th>
                             </tr>
-                        }
-                    </table>
+                            @foreach (var node in Model.distinctNodes)
+                            {
+                                <tr>
+                                    <td>@node.Item1</td>
+                                    <td>@node.Item2</td>
+                                </tr>
+                            }
+                        </table>
                     </div>
                 }
                 else
@@ -69,8 +70,8 @@
                 <p>@Html.Raw(Model.ConvertedTree)</p>
             }
 
-            }
-        
+        }
+
         @if(!Model.Valid)
         {
             <div class="alert alert-danger" role="alert" id="errorAlert">

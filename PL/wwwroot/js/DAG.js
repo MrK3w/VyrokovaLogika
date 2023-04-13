@@ -105,7 +105,9 @@ function makeDAG(myList, treeConnections) {
 
     // Render the graph
     var renderer = Viva.Graph.View.renderer(graph, {
-        graphics: graphics
+        graphics: graphics,
+        width: 800, // Set the desired width
+        height: 600 // Set the desired height
     });
     renderer.run();
 }
