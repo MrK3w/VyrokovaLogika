@@ -60,12 +60,12 @@ namespace VyrokovaLogika
                             {
                                 tTree.AddChild(tyhlestromy.ChildNodeRight, "right");
                             }
-                        else
-                        {
-                            tTree.AddChild(tyhlestromy.Item, "left");
-                            tTree.ChildNodeLeft.literal = tyhlestromy.literal;
-                        }
-                        tempTreeListLeft.Add(tTree);
+                            if(tyhlestromy.ChildNodeLeft == null && tyhlestromy.ChildNodeRight == null)
+                            {
+                                tTree.AddChild(tyhlestromy.Item, "left");
+                                tTree.ChildNodeLeft.literal = tyhlestromy.literal;
+                            }
+                            tempTreeListLeft.Add(tTree);
                     }
 
 
@@ -85,7 +85,7 @@ namespace VyrokovaLogika
                         {
                             tTree.AddChild(tyhlestromy.ChildNodeRight, "right");
                         }
-                        else
+                        if (tyhlestromy.ChildNodeLeft == null && tyhlestromy.ChildNodeRight == null)
                         {
                             tTree.AddChild(tyhlestromy.Item, "right");
                             tTree.ChildNodeRight.literal = tyhlestromy.literal;
@@ -130,6 +130,24 @@ namespace VyrokovaLogika
                         if (tempTreeListRight[j].ChildNodeLeft == null && tempTreeListLeft[i].ChildNodeRight == null)
                         {
                             newtru.AddChild(tempTreeListLeft[i].ChildNodeLeft, tempTreeListRight[j].ChildNodeRight);
+
+                        }
+                        if (tempTreeListRight[j].ChildNodeLeft == null && tempTreeListLeft[i].ChildNodeRight == null)
+                        {
+                            newtru.AddChild(tempTreeListLeft[i].ChildNodeLeft, tempTreeListRight[j].ChildNodeRight);
+                        }
+                        treePairs.Add(newtru);
+                    }
+                    if (tempTreeListRight.Count == 0)
+                    {
+                        var newtru = new TruthTree(truthValue);
+                        if (tempTreeListLeft[i].ChildNodeLeft != null)
+                        {
+                            newtru.AddChild(tempTreeListLeft[i], "left");
+                        }
+                        if (tempTreeListLeft[i].ChildNodeRight != null)
+                        {
+                            newtru.AddChild(tempTreeListLeft[i].ChildNodeRight, "right");
                         }
                         treePairs.Add(newtru);
                     }
@@ -143,6 +161,27 @@ namespace VyrokovaLogika
         {
             TruthTree tTree = new TruthTree(truthValue);
             tTree.literal = tree.Item.mSentence;
+            List<TruthTree> treeees = new List<TruthTree>();
+
+            // Add a tuple with tTree as the first element and null as the second element to the list
+            treeees.Add(tTree);
+
+            return treeees;
+        }
+
+        private static List<TruthTree> GetNegation(Tree tree, int truthValue)
+        {
+            TruthTree tTree = new TruthTree(truthValue);
+            if(truthValue == 0)
+            {
+                truthValue = 1;
+            }
+            else if(truthValue == 1)
+            {
+                truthValue = 0;
+            }
+            tTree.AddChild(truthValue, "left");
+            tTree.ChildNodeLeft.literal = tree.Item.mSentence;
             List<TruthTree> treeees = new List<TruthTree>();
 
             // Add a tuple with tTree as the first element and null as the second element to the list

@@ -63,6 +63,18 @@ namespace VyrokovaLogika
                     }
 
                     break;
+
+                case OperatorEnum.NEGATION:
+                    if (parentMustBe == 1)
+                    {
+                        valuesList.Add((0, -1));
+                    }
+                    else
+                    {
+                        valuesList.Add((1, -1));
+                    }
+
+                    break;
             }
             return valuesList;
         }
