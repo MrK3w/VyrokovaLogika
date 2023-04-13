@@ -8,7 +8,7 @@ string vl3 = "(a|b)>((a&c) | ((a|b) & (a|b)))";
 string vl2 = "-((-a&-B)&(B&-a))|-B";
 string vl5 = "(p∨(q∧r))>((p∨q)∧(p∨r))";
 string vl4 = "(p∨(q∧r))⇒((p∨q)∧(p∧r))";
-string vl7 = "a > ( b > a ) ";
+string vl7 = "(p>q) ∨ (q∧p) ";
 //create instance of engine which will proceed my sentece/s?
 Engine tree1 = new Engine(vl7);
 tree1.ProcessSentence();

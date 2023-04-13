@@ -42,8 +42,8 @@ namespace VyrokovaLogika
             Dag = dagConverter.Convert(tree);
             //TODO TreeProof
             TreeProof proofSolver = new TreeProof();
-            proofSolver.ProcessTree(tree);
-            Tautology = proofSolver.isTautology();
+            var xdd = proofSolver.ProcessTree(tree);
+            Tautology = proofSolver.isTautology(xdd);
             return true;
         }
 

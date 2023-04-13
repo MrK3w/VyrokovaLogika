@@ -54,6 +54,33 @@ namespace VyrokovaLogika
             return null;
         }
 
+        public TruthTree AddChild(TruthTree child, string side)
+        {
+
+            if (side == "left")
+            {
+                ChildNodeLeft = child;
+                ChildNodeLeft.Parent = this;
+                return ChildNodeLeft;
+            }
+            else if (side == "right")
+            {
+                ChildNodeRight = child;
+                ChildNodeRight.Parent = this;
+                return ChildNodeRight;
+            }
+            return null;
+        }
+
+        public void AddChild(TruthTree childNodeLeft, TruthTree childNodeRight)
+        {
+
+            ChildNodeLeft = childNodeLeft;
+            ChildNodeRight = childNodeRight;
+            ChildNodeLeft.Parent = this;
+            ChildNodeRight.Parent = this;
+        }
+
         // Method to return the leaf nodes of the tree
         public List<TruthTree> GetLeafNodes()
         {
