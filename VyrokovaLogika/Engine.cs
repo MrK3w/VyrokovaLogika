@@ -44,6 +44,7 @@ namespace VyrokovaLogika
             TreeProof proofSolver = new TreeProof();
             var xdd = proofSolver.ProcessTree(tree);
             Tautology = proofSolver.isTautology(xdd);
+            
             return true;
         }
 
