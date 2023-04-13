@@ -31,7 +31,7 @@ namespace PL.Pages
 
         private void PrepareList()
         {
-            string mPropositionalSentence = "(B > A) > A";
+            string mPropositionalSentence = "(p>q)≡(-q>-p)";
             Converter.ConvertLogicalOperators(ref mPropositionalSentence);
 
             string mPropositionalSentence1 = "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))";
