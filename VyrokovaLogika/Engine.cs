@@ -20,6 +20,8 @@ namespace VyrokovaLogika
         public List<string> DAGNodes { get; private set; } = new List<string>();
         public List<Tuple<string, string>> TreeConnections { get; private set; } = new List<Tuple<string, string>>();
 
+        public List<Tuple<string, int>> distinctNodes { get; set; } = new List<Tuple<string, int>>();
+
 
         int number = 1;
 
@@ -44,7 +46,7 @@ namespace VyrokovaLogika
             TreeProof proofSolver = new TreeProof();
             var xdd = proofSolver.ProcessTree(tree);
             Tautology = proofSolver.isTautology(xdd);
-            
+            distinctNodes = proofSolver.distinctNodes;
             return true;
         }
 
@@ -57,9 +59,15 @@ namespace VyrokovaLogika
 
         private void BuildTree(Node node, Tree tree)
         {
+            if (Validator.isVariableWithNegation(node.mSentence))
+            {
+                node.mSentence = node.mSentence.Replace("(", "").Replace(")", "");
+            }
             Splitter splitter = new Splitter(node);
+           
             node.mOperator = splitter.mNode.mOperator;
             splitter.Split();
+          
             if (splitter.mLeftNode != null)
             {
                 number++;

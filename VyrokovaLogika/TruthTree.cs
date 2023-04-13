@@ -107,27 +107,6 @@ namespace VyrokovaLogika
             }
         }
 
-        public TruthTree Clone()
-        {
-            TruthTree clonedTree = new TruthTree(this.Item);
-
-            if (ChildNodeLeft != null)
-            {
-                clonedTree.ChildNodeLeft = ChildNodeLeft.Clone();
-                clonedTree.ChildNodeLeft.Parent = clonedTree;
-            }
-
-            if (ChildNodeRight != null)
-            {
-                clonedTree.ChildNodeRight = ChildNodeRight.Clone();
-                clonedTree.ChildNodeRight.Parent = clonedTree;
-            }
-
-            // The cloned tree will have the same parent as the original tree
-            clonedTree.Parent = this.Parent;
-
-            return clonedTree;
-        }
     }
 }
 

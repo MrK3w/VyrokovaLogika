@@ -24,14 +24,16 @@ namespace VyrokovaLogika
             //get formula from node
             string vl = mNode.mSentence;
             //vl is final variable
-            if (Validator.IsVariable(vl))
+            if (Validator.isVariable(vl))
             {
+                
                 return;
             }
             //we need to take of negation on start of formula
             if (Validator.ContainsNegationOnFirstPlace(vl))
             {
                 SeparateWithNegation(vl);
+                vl = Converter.ReduceParenthessis(vl);
                 return;
             }
             //we need to take of brackets on start of formula

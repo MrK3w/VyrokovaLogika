@@ -10,7 +10,8 @@ namespace VyrokovaLogika
 {
     public class TreeProof
     {
-        
+        public List<Tuple<string, int>> distinctNodes { get; set; } = new List<Tuple<string, int>>();
+
         public TreeProof()
         {
         }
@@ -19,8 +20,8 @@ namespace VyrokovaLogika
         {
             List<TruthTree> treePairsFinal = new List<TruthTree>();
             List<TruthTree> listOftrees = new List<TruthTree>();
-
-            if(tree.IsLeaf)
+           
+            if (tree.IsLeaf)
             {
                 return GetLeave(tree, truthValue);
             }
@@ -141,17 +142,16 @@ namespace VyrokovaLogika
 
                         if (tempTreeListRight[j].ChildNodeLeft == null && tempTreeListLeft[i].ChildNodeRight == null)
                         {
-                            //tady uprava
-                            if(tempTreeListLeft[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.NEGATION)
+                            if (tempTreeListLeft[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.NEGATION || tempTreeListLeft[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.DOUBLENEGATION)
                             {
                                 newtru.AddChild(tempTreeListLeft[i], tempTreeListRight[j].ChildNodeRight);
                             }
-                            else if(tempTreeListRight[j].ChildNodeRight.mOperator == Operator.OperatorEnum.NEGATION)
+                            else if (tempTreeListRight[j].ChildNodeRight.mOperator == Operator.OperatorEnum.NEGATION || tempTreeListRight[j].ChildNodeRight.mOperator == Operator.OperatorEnum.DOUBLENEGATION)
                             {
                                 newtru.AddChild(tempTreeListLeft[i].ChildNodeLeft, tempTreeListRight[j]);
                             }
-                            else if(tempTreeListRight[j].ChildNodeRight.mOperator == Operator.OperatorEnum.NEGATION 
-                                && tempTreeListLeft[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.NEGATION)
+                            else if ((tempTreeListRight[j].ChildNodeRight.mOperator == Operator.OperatorEnum.NEGATION || tempTreeListRight[j].ChildNodeRight.mOperator == Operator.OperatorEnum.DOUBLENEGATION)
+                                && (tempTreeListLeft[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.NEGATION || tempTreeListLeft[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.DOUBLENEGATION))
                             {
                                 newtru.AddChild(tempTreeListLeft[i], tempTreeListRight[j]);
                             }
@@ -200,8 +200,7 @@ namespace VyrokovaLogika
             {
                 int number = 0;
                 bool contradiction = false;
-                var treeParent = tree.GetParent(tree);
-                var elementalNodes = treeParent.GetLeafNodes();
+                var elementalNodes = tree.GetLeafNodes();
                 foreach (var node in elementalNodes)
                 {
                     number++;
@@ -214,6 +213,10 @@ namespace VyrokovaLogika
                     }
                 if (contradiction == false)
                 {
+                    distinctNodes = elementalNodes
+            .DistinctBy(node => new { node.literal, node.Item })
+            .Select(node => new Tuple<string, int>(node.literal, node.Item))
+            .ToList();
                     return false;
                 }
             }

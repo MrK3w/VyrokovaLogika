@@ -15,10 +15,16 @@ namespace VyrokovaLogika
             else return false;
         }
 
-        public static bool IsVariable(string vl)
+        public static bool isVariableWithNegation(string vl)
         {
 
-            string pattern = @"^[a-zA-Z]$";
+            string pattern = @"^[a-zA-Z()\u00AC]*$";
+            return Regex.IsMatch(vl, pattern);
+        }
+
+        public static bool isVariable(string vl)
+        {
+            string pattern = @"^[a-zA-Z]*$";
             return Regex.IsMatch(vl, pattern);
         }
 

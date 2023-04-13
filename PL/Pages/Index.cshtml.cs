@@ -18,8 +18,9 @@ namespace PL.Pages
         public List<string> DAGNodes { get; set; } = new List<string>();
         public List<Tuple<string, string>> TreeConnections { get; set; } = new List<Tuple<string, string>>();
 
+        public List<Tuple<string, int>> distinctNodes { get; set; } = new List<Tuple<string, int>>();
         public bool DAG { get; set; } = false;
-        public string TautologyDecision { get; set; }
+        public bool TautologyDecision { get; set; }
 
         public List<SelectListItem> listItems { get; set; } = new List<SelectListItem>();
         public bool Valid { get; private set; } = true;
@@ -100,12 +101,12 @@ namespace PL.Pages
                     ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
                 }
             }
-           
-            if (engine.Tautology)
+            TautologyDecision = engine.Tautology;
+            if (!TautologyDecision)
             {
-                TautologyDecision = "Propositional sentence is Tautology";
+                distinctNodes = engine.distinctNodes;
             }
-            else TautologyDecision = "Propositional sentence is not Tautology";
+            
         }
 
         private void PrintTree(Tree tree)

@@ -30,19 +30,44 @@
                 <script>
                     var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
                     var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
-                    console.log(myList);
-                    console.log(treeConnections);
                     makeDAG(myList, treeConnections);
+                <p>@Html.Raw(Model.TautologyDecision)</p>
+
                 </script>
             }
 
             @if (!Model.DAG)
             {
-                @if (Model.ConvertedTree != null)
+            @if (Model.ConvertedTree != null)
+            {
+                if (!Model.TautologyDecision)
                 {
-                    <p>@Html.Raw(Model.TautologyDecision)</p>
-                    <p>@Html.Raw(Model.ConvertedTree)</p>
+                    <p> This is not tautology!</p>
+                    <p>Counterarguments</p>
+                    <!-- Define the table structure -->
+                    <div class="table-container">
+
+                    <table>
+                        <tr>
+                            <th>Item</th>
+                            <th>Literal</th>
+                        </tr>
+                        @foreach (var node in Model.distinctNodes)
+                        {
+                            <tr>
+                                <td>@node.Item1</td>
+                                <td>@node.Item2</td>
+                            </tr>
+                        }
+                    </table>
+                    </div>
                 }
+                else
+                {
+                    <p> This is tautology!</p>
+                }
+                <p>@Html.Raw(Model.ConvertedTree)</p>
+            }
 
             }
         

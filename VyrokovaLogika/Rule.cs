@@ -75,6 +75,17 @@ namespace VyrokovaLogika
                     }
 
                     break;
+                case OperatorEnum.DOUBLENEGATION:
+                    if (parentMustBe == 1)
+                    {
+                        valuesList.Add((1, -1));
+                    }
+                    else
+                    {
+                        valuesList.Add((0, -1));
+                    }
+
+                    break;
             }
             return valuesList;
         }
