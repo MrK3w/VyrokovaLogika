@@ -14,8 +14,7 @@ namespace VyrokovaLogika
         public List<TruthTree> ProcessTree(Tree tree, int truthValue = 0)
         {
             List<TruthTree> treePairsFinal = new List<TruthTree>();
-            List<TruthTree> listOftrees = new List<TruthTree>();
-           
+
             if (tree.IsLeaf)
             {
                 return GetLeave(tree, truthValue);

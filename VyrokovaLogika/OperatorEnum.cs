@@ -11,9 +11,33 @@ namespace VyrokovaLogika
     {
         public enum OperatorEnum
         {
-            EMPTY, AND, OR, IMPLICATION, NEGATION, EQUIVALENCE, DOUBLENEGATION
+            [System.ComponentModel.Description("")]
+            EMPTY,
+            [System.ComponentModel.Description("∧")]
+            AND,
+            [System.ComponentModel.Description("∨")]
+            OR,
+            [System.ComponentModel.Description("⇒")]
+            IMPLICATION,
+            [System.ComponentModel.Description("¬")]
+            NEGATION,
+            [System.ComponentModel.Description("≡")]
+            EQUIVALENCE,
+            [System.ComponentModel.Description("¬¬")]
+            DOUBLENEGATION
         }
-  
+
+        public static string GetEnumDescription(Enum value)
+        {
+            var fieldInfo = value.GetType().GetField(value.ToString());
+            var attributes = fieldInfo.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false) as System.ComponentModel.DescriptionAttribute[];
+            if (attributes != null && attributes.Length > 0)
+            {
+                return attributes[0].Description;
+            }
+            return value.ToString();
+        }
+
         public static OperatorEnum GetOperator(string sign)
         {
             switch (sign)

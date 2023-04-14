@@ -4,7 +4,7 @@ function makeDAG(myList, treeConnections) {
     //get myList from controller to use it for later
 
     var graphics = Viva.Graph.View.svgGraphics(),
-        nodeSize = 32;
+        nodeSize = 16;
 
 
 
@@ -12,7 +12,7 @@ function makeDAG(myList, treeConnections) {
         // This time it's a group of elements: http://www.w3.org/TR/SVG/struct.html#Groups
         var ui = Viva.Graph.svg('g'),
             // Create SVG text element with user id as content
-            svgText = Viva.Graph.svg('text').attr('y', '-4px').text(node.id),
+            svgText = Viva.Graph.svg('text').attr('y', '-2px').attr('x','-4').text(node.id),
             img = Viva.Graph.svg('rect')
                 .attr('width', nodeSize)
                 .attr('height', nodeSize)
@@ -102,10 +102,19 @@ function makeDAG(myList, treeConnections) {
         graph.addLink(treeConnections[i].item1, treeConnections[i].item2);
     }
 
+    var container = document.createElement('div');
+    container.style.position = 'relative'; // Set the container's position property to 'relative'
+    container.style.width = '800px'; // Set the container's width
+    container.style.height = '600px'; // Set the container's height
+    container.style.left = '0px'; // Set the initial left position to 0px
+    document.body.appendChild(container); // Append the container to the DOM
 
+    container.style.left = '100px';
+    container.style.bottom = '-150px';
     // Render the graph
     var renderer = Viva.Graph.View.renderer(graph, {
         graphics: graphics,
+        container: container,
         width: 800, // Set the desired width
         height: 600 // Set the desired height
     });

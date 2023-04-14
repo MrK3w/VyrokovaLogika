@@ -13,7 +13,24 @@
     <script src="~/js/DAG.js"></script>
     <link rel="stylesheet" href="~/css/styles.css" />
 </head>
+
 <body>
+    <div class="container mx-auto">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="square-div">
+                    <p>
+                        For writing logical operators you can use this signs <br />
+                        <ul>
+                            <li>Conjunction: (&amp;, &and;)</li>
+                            <li>Disjunction: (|, &or;)</li>
+                            <li>Negation: (-, &not;)</li>
+                            <li>Implication: (&gt;, &rarr;)</li>
+                            <li>Equation: (= , &equiv;)</li>
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-10">
     <div class="text-center">
         <h1 class="display-4">Vyrokova logika</h1>
 
@@ -26,9 +43,10 @@
             <input type='submit' class="btn btn-primary" value='Check Tautology' name='submit' />
             <input type='submit' class="btn btn-primary" value='Check Contradiction' name='submit' />
         </form>
-
+       
             @if (Model.button == IndexModel.ButtonType.DAG)
             {
+
                 <script>
                     var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
                     var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
@@ -37,8 +55,10 @@
             }
             @if (Model.button == IndexModel.ButtonType.SyntaxTree)
             {
+
                 @if (Model.ConvertedTree != null)
                 {
+
                     <p>@Html.Raw(Model.ConvertedTree)</p>
                 }
             }
@@ -65,7 +85,6 @@
                             }
                         </table>
                     </div>
-                <p>@Html.Raw(Model.ConvertedTree)</p>
                 <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
                 }
                 else
@@ -96,7 +115,6 @@
                         }
                     </table>
                 </div>
-                <p>@Html.Raw(Model.ConvertedTree)</p>
                 <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
             }
             else
@@ -110,10 +128,12 @@
         @if(!Model.Valid)
         {
             <div class="alert alert-danger" role="alert" id="errorAlert">
-                Formula is invalid
+                Formula is invalid or not selected
             </div>
         }
-        
+        </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

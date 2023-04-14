@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using VyrokovaLogika;
+using static VyrokovaLogika.Operator;
 
 namespace PL.Pages
 {
@@ -48,7 +49,7 @@ namespace PL.Pages
             string mPropositionalSentence1 = "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))";
             Converter.ConvertLogicalOperators(ref mPropositionalSentence1);
 
-            string mPropositionalSentence2 = "((((-x|b)&(x|a))))";
+            string mPropositionalSentence2 = "(-x|b)&(x|a)";
             Converter.ConvertLogicalOperators(ref mPropositionalSentence2);
 
             SelectListItem item1 = new SelectListItem(mPropositionalSentence, mPropositionalSentence);
@@ -61,6 +62,13 @@ namespace PL.Pages
 
         public void OnPost(string submit)
         {
+            vl = Request.Form["formula"];
+            vl1 = Request.Form["UserInput"];
+            if (vl == "" && vl1 == "")
+            {
+                Valid = false;
+                return;
+            }
             switch (submit)
             {
                 case "Create tree":
@@ -78,10 +86,9 @@ namespace PL.Pages
                 default:
                     throw new Exception();
             }
-            vl = Request.Form["formula"];
-            vl1 = Request.Form["UserInput"];
+           
             Engine engine = new Engine("");
-            if (vl == "" && vl1 == "") return;
+          
             htmlTree.Clear();
             htmlTreeTruth.Clear();
 
@@ -89,6 +96,7 @@ namespace PL.Pages
 
             if (vl1 != "")
             {
+                Converter.ConvertLogicalOperators(ref vl1);
                 listItems.Add(new SelectListItem(vl1, vl1));
                 var selected = listItems.Where(x => x.Value == vl1).First();
                 selected.Selected = true;
@@ -115,8 +123,8 @@ namespace PL.Pages
                         DAGNodes = engine.DAGNodes;
                         break;
                     case ButtonType.SyntaxTree:
-                        PrintTree(engine.tree);
-                        string div = "<div class='tf-tree tf-gap-lg'>".Replace("'", "\"");
+                        PrintTree(engine.tree, 1);
+                        string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
                         ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
                         break;
                     case ButtonType.CheckTautology:
@@ -128,7 +136,7 @@ namespace PL.Pages
                             ConvertedTree = di + string.Join("", htmlTree.ToArray()) + "</div>";
                             distinctNodes = engine.distinctNodes;
                             PrintTree(engine.counterModel);
-                            string d = "<div class='tf-tree tf-gap-lg'>".Replace("'", "\"");
+                            string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
                             ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
                         }
                         break;
@@ -139,7 +147,7 @@ namespace PL.Pages
                         {
                             distinctNodes = engine.distinctNodes;
                             PrintTree(engine.counterModel);
-                            string d = "<div class='tf-tree tf-gap-lg'>".Replace("'", "\"");
+                            string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
                             ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
                         }
                         break;
@@ -147,25 +155,25 @@ namespace PL.Pages
             }   
         }
 
-        private void PrintTree(Tree tree)
+        private void PrintTree(Tree tree, int i = 0)
         {
             htmlTree.Add("<li>");
             if (tree.Item.mOperator != Operator.OperatorEnum.EMPTY)
             {
-                htmlTree.Add("<span class=tf-nc>" + tree.Item.mOperator + "</span>");
+                htmlTree.Add("<span class=tf-nc>" + GetEnumDescription(tree.Item.mOperator) + "</span>");
             }
             else
             {
                 htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
             }
             //htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
-            if (tree.childNodeLeft != null)
+            if (tree.childNodeLeft != null && i < 1000)
             {
                 htmlTree.Add("<ul>");
-                PrintTree(tree.childNodeLeft);
+                PrintTree(tree.childNodeLeft, i+1);
                 if (tree.childNodeRight != null)
                 {
-                    PrintTree(tree.childNodeRight);
+                    PrintTree(tree.childNodeRight, i+1);
                 }
                 htmlTree.Add("</ul>");
             }
@@ -176,7 +184,7 @@ namespace PL.Pages
         {
             htmlTreeTruth.Add("<li>");
             if(tree.literal == null)
-                htmlTreeTruth.Add("<span class=tf-nc>" + tree.mOperator + "=" + tree.Item + "</span>");
+                htmlTreeTruth.Add("<span class=tf-nc>" + GetEnumDescription(tree.mOperator) + "=" + tree.Item + "</span>");
             else
             {
                 htmlTreeTruth.Add("<span class=tf-nc>" + tree.literal + "=" + tree.Item + "</span>");
