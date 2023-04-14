@@ -19,29 +19,32 @@
 
         <form method="post" asp-action="Index" asp-controller="Home" id="TheForm">
             @Html.DropDownList("formula", Model.listItems, "select formula")
-            @Html.TextBox("UserInput", "", new { @maxlength = "64" });
+            @Html.TextBox("UserInput", "", new { @maxlength = "64" })
 
             <input type='submit' class="btn btn-primary" value='Create tree' name='submit' />
             <input type='submit' class="btn btn-primary" value='Create DAG' name='submit' />
+            <input type='submit' class="btn btn-primary" value='Check Tautology' name='submit' />
+            <input type='submit' class="btn btn-primary" value='Check Contradiction' name='submit' />
         </form>
 
-            @if (Model.DAG)
+            @if (Model.button == IndexModel.ButtonType.DAG)
             {
                 <script>
                     var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
                     var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
                     makeDAG(myList, treeConnections);
-               
-
                 </script>
-            <p>@Html.Raw(Model.TautologyDecision)</p>
             }
-
-            @if (!Model.DAG)
+            @if (Model.button == IndexModel.ButtonType.SyntaxTree)
             {
-            @if (Model.ConvertedTree != null)
+                @if (Model.ConvertedTree != null)
+                {
+                    <p>@Html.Raw(Model.ConvertedTree)</p>
+                }
+            }
+            @if (Model.button == IndexModel.ButtonType.CheckTautology)
             {
-                if (!Model.TautologyDecision)
+                @if (!Model.IsTautologyOrContradiction)
                 {
                     <p> This is not tautology!</p>
                     <p>Counterarguments</p>
@@ -62,15 +65,47 @@
                             }
                         </table>
                     </div>
+                <p>@Html.Raw(Model.ConvertedTree)</p>
+                <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
                 }
                 else
                 {
                     <p> This is tautology!</p>
                 }
-                <p>@Html.Raw(Model.ConvertedTree)</p>
             }
+        @if (Model.button == IndexModel.ButtonType.CheckContradiction)
+        {
+            @if (!Model.IsTautologyOrContradiction)
+            {
+                <p> This is not contradiction!</p>
+                <p>Counterarguments</p>
+                <!-- Define the table structure -->
+                <div class="table-container">
 
+                    <table>
+                        <tr>
+                            <th>Item</th>
+                            <th>Literal</th>
+                        </tr>
+                        @foreach (var node in Model.distinctNodes)
+                        {
+                            <tr>
+                                <td>@node.Item1</td>
+                                <td>@node.Item2</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+                <p>@Html.Raw(Model.ConvertedTree)</p>
+                <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
+            }
+            else
+            {
+                <p> This is contradiction!</p>
+            }
         }
+
+        
 
         @if(!Model.Valid)
         {

@@ -15,8 +15,8 @@ namespace VyrokovaLogika
         string mPropositionalSentence;
         public Tree tree { get; set; }
         public DAGNode Dag { get; set; }
-        public bool Tautology {get; private set; }
         Node mainNode;
+        public TruthTree counterModel { get; set; } = new TruthTree(0);
         public List<string> DAGNodes { get; private set; } = new List<string>();
         public List<Tuple<string, string>> TreeConnections { get; private set; } = new List<Tuple<string, string>>();
 
@@ -42,12 +42,30 @@ namespace VyrokovaLogika
             //CONVERT TREE TO DAG
             var dagConverter = new ASTtoDAGConverter();
             Dag = dagConverter.Convert(tree);
+            return true;
+        }
+
+        public bool ProofSolver(string proofSearch)
+        {
+            bool isTautologyOrContradiction = false;
             //TODO TreeProof
             TreeProof proofSolver = new TreeProof();
-            var xdd = proofSolver.ProcessTree(tree);
-            Tautology = proofSolver.isTautology(xdd);
-            distinctNodes = proofSolver.distinctNodes;
-            return true;
+            if (proofSearch == "Tautology")
+            {
+                var pathTrees = proofSolver.ProcessTree(tree);
+                isTautologyOrContradiction = proofSolver.FindContradiction(pathTrees);       
+            }
+            else if(proofSearch == "Contradiction")
+            {
+                var pathTrees = proofSolver.ProcessTree(tree,1);
+                isTautologyOrContradiction = proofSolver.FindContradiction(pathTrees);
+            }
+            if (!isTautologyOrContradiction)
+            {
+                distinctNodes = proofSolver.distinctNodes;
+                counterModel = proofSolver.counterModel;
+            }
+            return isTautologyOrContradiction;
         }
 
         private void ConvertSentenceToRightFormat()

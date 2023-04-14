@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+﻿using System.Data;
 
 namespace VyrokovaLogika
 {
     public class TreeProof
     {
         public List<Tuple<string, int>> distinctNodes { get; set; } = new List<Tuple<string, int>>();
+        public TruthTree counterModel { get; set; } = new TruthTree(0);
 
         public TreeProof()
         {
@@ -53,11 +48,10 @@ namespace VyrokovaLogika
                     foreach (var tyhlestromy in xd)
                     {
                        tTree = new TruthTree(tyhlestromy.Item);
-                        tTree.mOperator = tree.Item.mOperator;
-                        //check here if treees have right and left
-                            if(tyhlestromy.ChildNodeLeft != null)
-                            {
-                                tTree.AddChild(tyhlestromy.ChildNodeLeft, "left");
+                       tTree.mOperator = tyhlestromy.mOperator;
+                       if (tyhlestromy.ChildNodeLeft != null)
+                       {
+                          tTree.AddChild(tyhlestromy.ChildNodeLeft, "left");
                             }
                             if(tyhlestromy.ChildNodeRight != null)
                             {
@@ -80,8 +74,7 @@ namespace VyrokovaLogika
                     foreach (var tyhlestromy in xd)
                     {
                         tTree = new TruthTree(tyhlestromy.Item);
-                        tTree.mOperator = tree.Item.mOperator;
-                        //check here if treees have right and left
+                        tTree.mOperator = tyhlestromy.mOperator;
                         if (tyhlestromy.ChildNodeLeft != null)
                         {
                             tTree.AddChild(tyhlestromy.ChildNodeLeft, "left");
@@ -108,7 +101,7 @@ namespace VyrokovaLogika
                     for (int j = 0; j < tempTreeListRight.Count; j++)
                     {
                         var newtru = new TruthTree(truthValue);
-
+                        newtru.mOperator = tree.Item.mOperator;
                         if (tempTreeListRight[j].ChildNodeLeft != null && tempTreeListRight[j].ChildNodeRight == null && tempTreeListLeft[i].ChildNodeLeft
                             != null && tempTreeListLeft[i].ChildNodeRight == null)
                         {
@@ -165,13 +158,22 @@ namespace VyrokovaLogika
                     if (tempTreeListRight.Count == 0)
                     {
                         var newtru = new TruthTree(truthValue);
-                        if (tempTreeListLeft[i].ChildNodeLeft != null)
+                        newtru.mOperator = tree.Item.mOperator;
+                        if (newtru.mOperator != Operator.OperatorEnum.NEGATION)
+                        {
+                            if (tempTreeListLeft[i].ChildNodeLeft != null)
+                            {
+                                newtru.AddChild(tempTreeListLeft[i].ChildNodeLeft, "left");
+                            }
+                            if (tempTreeListLeft[i].ChildNodeRight != null)
+                            {
+                                newtru.AddChild(tempTreeListLeft[i].ChildNodeRight, "right");
+                            }
+                        }
+                        else
                         {
                             newtru.AddChild(tempTreeListLeft[i].ChildNodeLeft, "left");
-                        }
-                        if (tempTreeListLeft[i].ChildNodeRight != null)
-                        {
-                            newtru.AddChild(tempTreeListLeft[i].ChildNodeRight, "right");
+      
                         }
                         treePairs.Add(newtru);
                     }
@@ -183,18 +185,14 @@ namespace VyrokovaLogika
 
         private static List<TruthTree> GetLeave(Tree tree, int truthValue)
         {
-            TruthTree tTree = new TruthTree(truthValue);
-            tTree.literal = tree.Item.mSentence;
-            tTree.mOperator = tree.Parent.Item.mOperator;
+            TruthTree leafTree = new TruthTree(truthValue);
+            leafTree.literal = tree.Item.mSentence;
+            leafTree.mOperator = tree.Parent.Item.mOperator;
             List<TruthTree> treeees = new List<TruthTree>();
-
-            // Add a tuple with tTree as the first element and null as the second element to the list
-            treeees.Add(tTree);
-
-            return treeees;
+            return new List<TruthTree> { leafTree};
         }
 
-        public bool isTautology(List<TruthTree> Trees)
+        public bool FindContradiction(List<TruthTree> Trees)
         {
             foreach (var tree in Trees)
             {
@@ -217,7 +215,9 @@ namespace VyrokovaLogika
             .DistinctBy(node => new { node.literal, node.Item })
             .Select(node => new Tuple<string, int>(node.literal, node.Item))
             .ToList();
+                    counterModel = tree;
                     return false;
+
                 }
             }
             return true;

@@ -76,6 +76,7 @@ namespace VyrokovaLogika
             //¬(
             else if (vl[1] == '(')
             {
+                mNode.mOperator = Operator.OperatorEnum.NEGATION;
                 isNegation = true;
                 SeparateByBrackets(vl);
             }

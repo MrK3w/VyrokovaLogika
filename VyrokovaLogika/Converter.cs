@@ -11,7 +11,7 @@ namespace VyrokovaLogika
 
         public static void ConvertLogicalOperators(ref string sentence)
         {
-            sentence = sentence.Replace("&", "∧").Replace("|", "∨").Replace("-", "¬").Replace(">", "⇒");
+            sentence = sentence.Replace("&", "∧").Replace("|", "∨").Replace("-", "¬").Replace(">", "⇒").Replace("=", "≡");
         }
 
         public static void ConvertParenthessis(ref string sentence)

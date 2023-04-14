@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -11,16 +12,25 @@ namespace PL.Pages
 {
     public partial class IndexModel : PageModel
     {
+        public enum ButtonType
+        {
+            DAG,
+            SyntaxTree,
+            CheckTautology,
+            CheckContradiction
+        }
         private string vl;
         private string vl1;
+        public ButtonType button { get; set; }
         private List<string> htmlTree = new List<string>();
+        private List<string> htmlTreeTruth = new List<string>();
         public string ConvertedTree { get; set; }
+        public string ConvertedTreeTruth { get; set; }
         public List<string> DAGNodes { get; set; } = new List<string>();
         public List<Tuple<string, string>> TreeConnections { get; set; } = new List<Tuple<string, string>>();
 
         public List<Tuple<string, int>> distinctNodes { get; set; } = new List<Tuple<string, int>>();
-        public bool DAG { get; set; } = false;
-        public bool TautologyDecision { get; set; }
+        public bool IsTautologyOrContradiction { get; set; }
 
         public List<SelectListItem> listItems { get; set; } = new List<SelectListItem>();
         public bool Valid { get; private set; } = true;
@@ -54,9 +64,16 @@ namespace PL.Pages
             switch (submit)
             {
                 case "Create tree":
+                 button  = ButtonType.SyntaxTree;
                     break;
                 case "Create DAG":
-                    DAG = true;
+                    button = ButtonType.DAG;
+                        break;
+                case "Check Tautology":
+                    button = ButtonType.CheckTautology;
+                    break;
+                case "Check Contradiction":
+                    button = ButtonType.CheckContradiction;
                     break;
                 default:
                     throw new Exception();
@@ -66,8 +83,10 @@ namespace PL.Pages
             Engine engine = new Engine("");
             if (vl == "" && vl1 == "") return;
             htmlTree.Clear();
+            htmlTreeTruth.Clear();
 
-           
+
+
             if (vl1 != "")
             {
                 listItems.Add(new SelectListItem(vl1, vl1));
@@ -88,25 +107,44 @@ namespace PL.Pages
             Valid = engine.ProcessSentence();
             if (Valid)
             {
-                if (DAG)
+                switch (button)
                 {
-                    engine.PrepareDAG();
-                    TreeConnections = engine.TreeConnections;
-                    DAGNodes = engine.DAGNodes;
+                    case ButtonType.DAG:
+                        engine.PrepareDAG();
+                        TreeConnections = engine.TreeConnections;
+                        DAGNodes = engine.DAGNodes;
+                        break;
+                    case ButtonType.SyntaxTree:
+                        PrintTree(engine.tree);
+                        string div = "<div class='tf-tree tf-gap-lg'>".Replace("'", "\"");
+                        ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+                        break;
+                    case ButtonType.CheckTautology:
+                        IsTautologyOrContradiction = engine.ProofSolver("Tautology");
+                        if (!IsTautologyOrContradiction)
+                        {
+                            PrintTree(engine.tree);
+                            string di = "<div class='tf-tree tf-gap-lg'>".Replace("'", "\"");
+                            ConvertedTree = di + string.Join("", htmlTree.ToArray()) + "</div>";
+                            distinctNodes = engine.distinctNodes;
+                            PrintTree(engine.counterModel);
+                            string d = "<div class='tf-tree tf-gap-lg'>".Replace("'", "\"");
+                            ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
+                        }
+                        break;
+                    case ButtonType.CheckContradiction:
+                       
+                        IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
+                        if (!IsTautologyOrContradiction)
+                        {
+                            distinctNodes = engine.distinctNodes;
+                            PrintTree(engine.counterModel);
+                            string d = "<div class='tf-tree tf-gap-lg'>".Replace("'", "\"");
+                            ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
+                        }
+                        break;
                 }
-                else
-                {
-                    PrintTree(engine.tree);
-                    string div = "<div class='tf-tree tf-gap-lg'>".Replace("'", "\"");
-                    ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
-                }
-            }
-            TautologyDecision = engine.Tautology;
-            if (!TautologyDecision)
-            {
-                distinctNodes = engine.distinctNodes;
-            }
-            
+            }   
         }
 
         private void PrintTree(Tree tree)
@@ -132,6 +170,28 @@ namespace PL.Pages
                 htmlTree.Add("</ul>");
             }
             htmlTree.Add("</li>");
+        }
+
+        private void PrintTree(TruthTree tree)
+        {
+            htmlTreeTruth.Add("<li>");
+            if(tree.literal == null)
+                htmlTreeTruth.Add("<span class=tf-nc>" + tree.mOperator + "=" + tree.Item + "</span>");
+            else
+            {
+                htmlTreeTruth.Add("<span class=tf-nc>" + tree.literal + "=" + tree.Item + "</span>");
+            }
+            if (tree.ChildNodeLeft != null)
+            {
+                htmlTreeTruth.Add("<ul>");
+                PrintTree(tree.ChildNodeLeft);
+                if (tree.ChildNodeRight != null)
+                {
+                    PrintTree(tree.ChildNodeRight);
+                }
+                htmlTreeTruth.Add("</ul>");
+            }
+            htmlTreeTruth.Add("</li>");
         }
     }
 }
