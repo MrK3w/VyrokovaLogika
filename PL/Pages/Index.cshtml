@@ -1,4 +1,5 @@
 ﻿@page
+@using Microsoft.JSInterop;
 @model IndexModel
 @{
     ViewData["Title"] = "PL";
@@ -29,20 +30,33 @@
                             <li>Equation: (= , &equiv;)</li>
                     </p>
                 </div>
+                <div class="square-div">
+                    <p>
+                        When checking for tautology or contradiction, we search for formulas without logical contradictions. They should have consistent evaluations for all elemental logical propositions. We can then show counterarguments. For logical trees, we indicate the operators used for separation and truth value searched for in evaluations.
+                    </p>
+                </div>
             </div>
             <div class="col-md-10">
     <div class="text-center">
         <h1 class="display-4">Vyrokova logika</h1>
 
-        <form method="post" asp-action="Index" asp-controller="Home" id="TheForm">
-            @Html.DropDownList("formula", Model.listItems, "select formula")
-            @Html.TextBox("UserInput", "", new { @maxlength = "64" })
+                    <form method="post" asp-action="Index" asp-controller="Home" id="TheForm" class="d-flex flex-column">
+                        <div class="d-flex">
+                            @Html.DropDownList("formula", Model.listItems, "select formula")
+                            @Html.TextBox("UserInput", "", new { @maxlength = "64", @class = "form-control" })
 
-            <input type='submit' class="btn btn-primary" value='Create tree' name='submit' />
-            <input type='submit' class="btn btn-primary" value='Create DAG' name='submit' />
-            <input type='submit' class="btn btn-primary" value='Check Tautology' name='submit' />
-            <input type='submit' class="btn btn-primary" value='Check Contradiction' name='submit' />
-        </form>
+                            <div class="btn-group ml-2">
+                                <input type='submit' class="btn btn-primary" value='Create tree' name='submit' />
+                                <input type='submit' class="btn btn-primary" value='Create DAG' name='submit' />
+                            </div>
+                        </div>
+                        <div class="d-flex mt-2">
+                            <div class="btn-group">
+                                <input type='submit' class="btn btn-primary" value='Check Tautology' name='submit' />
+                                <input type='submit' class="btn btn-primary" value='Check Contradiction' name='submit' />
+                            </div>
+                        </div>
+                    </form>
        
             @if (Model.button == IndexModel.ButtonType.DAG)
             {
@@ -55,12 +69,19 @@
             }
             @if (Model.button == IndexModel.ButtonType.SyntaxTree)
             {
+                        
 
                 @if (Model.ConvertedTree != null)
                 {
 
                     <p>@Html.Raw(Model.ConvertedTree)</p>
                 }
+                <script>
+                            var elements = document.querySelectorAll(".tf-tree.tf-gap-sm");
+                            console.log(elements[0]);
+                           
+                </script>
+           
             }
             @if (Model.button == IndexModel.ButtonType.CheckTautology)
             {

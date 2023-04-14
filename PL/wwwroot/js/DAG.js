@@ -94,7 +94,6 @@ function makeDAG(myList, treeConnections) {
     });
 
     for (let i = 0; i < myList.length; i++) {
-        console.log(myList[i]);
         graph.addNode(myList[i]);
     }
 
@@ -110,7 +109,7 @@ function makeDAG(myList, treeConnections) {
     document.body.appendChild(container); // Append the container to the DOM
 
     container.style.left = '100px';
-    container.style.bottom = '-150px';
+    container.style.bottom = '-1200px';
     // Render the graph
     var renderer = Viva.Graph.View.renderer(graph, {
         graphics: graphics,

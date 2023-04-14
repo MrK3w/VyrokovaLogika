@@ -6,7 +6,7 @@
 svg {
     width: 800px;
     height: 600px;
-    transform: translate(250px, -300px);
+    transform: translate(250px, -800px);
     pointer-events: none;
 }
 
@@ -42,5 +42,6 @@ th {
     background-color: #c8e6c9;
     display: inline-block;
     vertical-align: top;
+    margin-bottom: 15px;
 }
 

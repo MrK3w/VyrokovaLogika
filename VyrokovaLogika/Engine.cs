@@ -30,11 +30,18 @@ namespace VyrokovaLogika
             mPropositionalSentence = propositionalSentence;
         }
 
-        public bool ProcessSentence()
+        public bool ValidateSentence()
         {
             ConvertSentenceToRightFormat();
             //check if sentence is valid
             if (!Validator.ValidateParenthesses(mPropositionalSentence)) return false;
+            if (!Validator.RightCharacters(mPropositionalSentence)) return false;
+            return true;
+        }
+
+        public void ProcessSentence()
+        {
+            
             mainNode = new Node(mPropositionalSentence);
             //BUILD TREE
             tree = new Tree(mainNode);
@@ -42,7 +49,6 @@ namespace VyrokovaLogika
             //CONVERT TREE TO DAG
             var dagConverter = new ASTtoDAGConverter();
             Dag = dagConverter.Convert(tree);
-            return true;
         }
 
         public bool ProofSolver(string proofSearch)

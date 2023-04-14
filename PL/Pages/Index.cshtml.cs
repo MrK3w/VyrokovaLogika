@@ -41,33 +41,53 @@ namespace PL.Pages
             PrepareList();
         }
 
+
         private void PrepareList()
         {
-            string mPropositionalSentence = "(p>q)≡(-q>-p)";
-            Converter.ConvertLogicalOperators(ref mPropositionalSentence);
-
-            string mPropositionalSentence1 = "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))";
-            Converter.ConvertLogicalOperators(ref mPropositionalSentence1);
-
-            string mPropositionalSentence2 = "(-x|b)&(x|a)";
-            Converter.ConvertLogicalOperators(ref mPropositionalSentence2);
-
-            SelectListItem item1 = new SelectListItem(mPropositionalSentence, mPropositionalSentence);
-            SelectListItem item2 = new SelectListItem(mPropositionalSentence1, mPropositionalSentence1);
-            SelectListItem item3 = new SelectListItem(mPropositionalSentence2, mPropositionalSentence2);
-            listItems.Add(item1);
-            listItems.Add(item2);
-            listItems.Add(item3);
+            listItems = ListItemsHelper.ListItems;
         }
 
         public void OnPost(string submit)
         {
+            Engine engine = new Engine("");
             vl = Request.Form["formula"];
             vl1 = Request.Form["UserInput"];
             if (vl == "" && vl1 == "")
             {
                 Valid = false;
                 return;
+            }
+            if (vl1 != "")
+            {
+                engine = new Engine(vl1);
+                if (!engine.ValidateSentence())
+                {
+                    Valid = false;
+                    return;
+                }
+                Converter.ConvertLogicalOperators(ref vl1);
+                ListItemsHelper.SetListItems(vl1);
+                var selected = listItems.Where(x => x.Value == vl1).First();
+                selected.Selected = true;
+               
+            }
+
+            else if (vl != "")
+            {
+                engine = new Engine(vl);
+                if (!engine.ValidateSentence())
+                {
+                    Valid = false;
+                    return;
+                }
+                foreach (var item in listItems)
+                {
+                    item.Selected = false;
+                    if (vl == item.Value)
+                    {
+                        item.Selected = true;
+                    }
+                }
             }
             switch (submit)
             {
@@ -86,33 +106,10 @@ namespace PL.Pages
                 default:
                     throw new Exception();
             }
-           
-            Engine engine = new Engine("");
-          
+         
             htmlTree.Clear();
             htmlTreeTruth.Clear();
-
-
-
-            if (vl1 != "")
-            {
-                Converter.ConvertLogicalOperators(ref vl1);
-                listItems.Add(new SelectListItem(vl1, vl1));
-                var selected = listItems.Where(x => x.Value == vl1).First();
-                selected.Selected = true;
-                engine = new Engine(vl1);
-            }
-
-            else if (vl != "")
-            {
-                foreach (var item in listItems)
-                {
-                    item.Selected = false;
-                    if (vl == item.Value) item.Selected = true;
-                }
-                engine = new Engine(vl);
-            }
-            Valid = engine.ProcessSentence();
+            engine.ProcessSentence();
             if (Valid)
             {
                 switch (button)

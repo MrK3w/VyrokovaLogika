@@ -61,5 +61,11 @@ namespace VyrokovaLogika
 
             return parenthessesStack.Count == 0; // check if stack is empty, which means all opening parentheses have matching closing parentheses
         }
+
+        public static bool RightCharacters(string mPropositionalSentence)
+        {
+            string allowedRegex = @"^[\s&∧|∨¬>⇒=≡a-zA-Z[\]{}()\-]+$";
+            return Regex.IsMatch(mPropositionalSentence, allowedRegex);
+        }
     }
 }
