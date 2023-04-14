@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PL.Helpers;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
@@ -36,6 +37,8 @@ namespace PL.Pages
         public List<SelectListItem> listItems { get; set; } = new List<SelectListItem>();
         public bool Valid { get; private set; } = true;
 
+        public ImageCoordinates x1 { get; set; }
+
         public IndexModel()
         {
             PrepareList();
@@ -47,8 +50,9 @@ namespace PL.Pages
             listItems = ListItemsHelper.ListItems;
         }
 
-        public void OnPost(string submit)
+        public void OnPost(string submit, string hiddenNumber)
         {
+            string hiddenNumberValue = hiddenNumber;
             Engine engine = new Engine("");
             vl = Request.Form["formula"];
             vl1 = Request.Form["UserInput"];

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://unpkg.com/treeflex/dist/css/treeflex.css">
     <script src="~/js/vivagraph.js"></script>
     <script src="~/js/DAG.js"></script>
+    <script src="~/js/jquery-1.10.2.min.js"></script>
     <link rel="stylesheet" href="~/css/styles.css" />
 </head>
 
@@ -48,6 +49,7 @@
                             <div class="btn-group ml-2">
                                 <input type='submit' class="btn btn-primary" value='Create tree' name='submit' />
                                 <input type='submit' class="btn btn-primary" value='Create DAG' name='submit' />
+                                <input type="hidden" id="hiddenNumber" name="hiddenNumber" value="" />
                             </div>
                         </div>
                         <div class="d-flex mt-2">
@@ -79,9 +81,12 @@
                 <script>
                             var elements = document.querySelectorAll(".tf-tree.tf-gap-sm");
                             console.log(elements[0]);
-                           
+                            var number = elements[0].innerHTML;
+                            document.getElementById('hiddenNumber').value = number;
+
+                            
                 </script>
-           
+
             }
             @if (Model.button == IndexModel.ButtonType.CheckTautology)
             {
