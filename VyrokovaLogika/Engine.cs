@@ -30,18 +30,11 @@ namespace VyrokovaLogika
             mPropositionalSentence = propositionalSentence;
         }
 
-        public bool ValidateSentence()
-        {
-            ConvertSentenceToRightFormat();
-            //check if sentence is valid
-            if (!Validator.ValidateParenthesses(mPropositionalSentence)) return false;
-            if (!Validator.RightCharacters(mPropositionalSentence)) return false;
-            return true;
-        }
+
 
         public void ProcessSentence()
         {
-            
+
             mainNode = new Node(mPropositionalSentence);
             //BUILD TREE
             tree = new Tree(mainNode);
@@ -59,11 +52,11 @@ namespace VyrokovaLogika
             if (proofSearch == "Tautology")
             {
                 var pathTrees = proofSolver.ProcessTree(tree);
-                isTautologyOrContradiction = proofSolver.FindContradiction(pathTrees);       
+                isTautologyOrContradiction = proofSolver.FindContradiction(pathTrees);
             }
-            else if(proofSearch == "Contradiction")
+            else if (proofSearch == "Contradiction")
             {
-                var pathTrees = proofSolver.ProcessTree(tree,1);
+                var pathTrees = proofSolver.ProcessTree(tree, 1);
                 isTautologyOrContradiction = proofSolver.FindContradiction(pathTrees);
             }
             if (!isTautologyOrContradiction)
@@ -74,13 +67,6 @@ namespace VyrokovaLogika
             return isTautologyOrContradiction;
         }
 
-        private void ConvertSentenceToRightFormat()
-        {
-            mPropositionalSentence = mPropositionalSentence.Replace(" ", string.Empty).ToLowerInvariant();
-            Converter.ConvertLogicalOperators(ref mPropositionalSentence);
-            Converter.ConvertParenthessis(ref mPropositionalSentence);
-        }
-
         private void BuildTree(Node node, Tree tree)
         {
             if (Validator.isVariableWithNegation(node.mSentence))
@@ -88,10 +74,10 @@ namespace VyrokovaLogika
                 node.mSentence = node.mSentence.Replace("(", "").Replace(")", "");
             }
             Splitter splitter = new Splitter(node);
-           
-            node.mOperator = splitter.mNode.mOperator;
             splitter.Split();
-          
+            node.mOperator = splitter.mNode.mOperator;
+
+
             if (splitter.mLeftNode != null)
             {
                 number++;
@@ -105,7 +91,7 @@ namespace VyrokovaLogika
                 BuildTree(splitter.mRightNode, rightTree);
             }
         }
-        
+
         public void PrepareDAG()
         {
             DAG dagConvert = new DAG(Dag);

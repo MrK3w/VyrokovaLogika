@@ -7,12 +7,23 @@ using System.Threading.Tasks;
 
 namespace VyrokovaLogika
 {
-    static class Validator
+    public static class Validator
     {
         public static bool ContainsParenthesses(string vl)
         {
             if (vl.Contains('(') || vl.Contains(')')) return true;
             else return false;
+        }
+
+        public static bool ValidateSentence(ref string mPropositionalSentence)
+        {
+            mPropositionalSentence = mPropositionalSentence.Replace(" ", string.Empty).ToLowerInvariant();
+            Converter.ConvertLogicalOperators(ref mPropositionalSentence);
+            Converter.ConvertParenthessis(ref mPropositionalSentence);
+            //check if sentence is valid
+            if (!Validator.ValidateParenthesses(mPropositionalSentence)) return false;
+            if (!Validator.RightCharacters(mPropositionalSentence)) return false;
+            return true;
         }
 
         public static bool isVariableWithNegation(string vl)

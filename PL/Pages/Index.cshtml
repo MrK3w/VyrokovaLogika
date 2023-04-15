@@ -1,5 +1,4 @@
 ﻿@page
-@using Microsoft.JSInterop;
 @model IndexModel
 @{
     ViewData["Title"] = "PL";
@@ -17,7 +16,7 @@
 </head>
 
 <body>
-   
+
     <div class="container mx-auto">
         <div class="row">
             <div class="col-md-2">
@@ -39,73 +38,73 @@
                 </div>
             </div>
             <div class="col-md-10">
-    <div class="text-center">
-        <h1 class="display-4">Vyrokova logika</h1>
+                <div class="text-center">
+                    <h1 class="display-4">Vyrokova logika</h1>
 
                     <form method="post" asp-action="Index" asp-controller="Home" id="TheForm" class="d-flex flex-column">
                         <div class="d-flex">
                             @Html.DropDownList("formula", Model.listItems, "select formula", new { @class = "form-control custom-font" })
                             @Html.TextBox("UserInput", "", new { @maxlength = "64", @class = "form-control ml-2 custom-font", @style = "font-size: 16px;" })
 
-                            <div class="btn-toolbar ml-2" role="toolbar" aria-label="Toolbar with button groups">
+                            <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
                                 <div class="btn-group flex-fill" role="group" aria-label="First group">
-                                    <input type='submit' class="btn btn-primary" value='Create tree' name='submit' />
-                                    <input type='submit' class="btn btn-primary" value='Create DAG' name='submit' />
+                                    <input type='submit' class="btn btn-primary flex-fill" value='Create tree' name='submit' asp-page-handler="CreateTree" />
+                                    <input type='submit' class="btn btn-primary flex-fill" value='Create DAG' name='submit' asp-page-handler="CreateDAG" />
                                     <input type="hidden" id="hiddenNumber" name="hiddenNumber" value="" />
                                 </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Second group">
-                                    <input type='submit' class="btn btn-primary" value='Check Tautology' name='submit' />
-                                    <input type='submit' class="btn btn-primary" value='Check Contradiction' name='submit' />
+                                    <input type='submit' class="btn btn-primary flex-fill" value='Check Tautology' name='submit' asp-page-handler="CheckTautology" />
+                                    <input type='submit' class="btn btn-primary flex-fill" value='Check Contradiction' name='submit' asp-page-handler="CheckContradiction" />
                                 </div>
                             </div>
                         </div>
                     </form>
-       
-            @if (Model.button == IndexModel.ButtonType.DAG)
-            {
 
-                <script>
-                    var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
-                    var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
-                    makeDAG(myList, treeConnections);
-                </script>
-            }
-            @if (Model.button == IndexModel.ButtonType.SyntaxTree)
-            {
-                        
+                    @if (Model.button == IndexModel.ButtonType.DAG)
+                    {
 
-                @if (Model.ConvertedTree != null)
-                {
+                        <script>
+                            var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
+                                                var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
+                                makeDAG(myList, treeConnections);
+                        </script>
+                    }
+                    @if (Model.button == IndexModel.ButtonType.SyntaxTree)
+                    {
 
-                    <p>@Html.Raw(Model.ConvertedTree)</p>
-                }
-                        
 
-            }
-            @if (Model.button == IndexModel.ButtonType.CheckTautology)
-            {
-                @if (!Model.IsTautologyOrContradiction)
-                {
-                    <p> This is not tautology!</p>
-                    <p>Counterarguments</p>
-                    <!-- Define the table structure -->
-                    <div class="table-container">
+                        @if (Model.ConvertedTree != null)
+                        {
 
-                        <table>
-                            <tr>
-                                <th>Item</th>
-                                <th>Literal</th>
-                            </tr>
-                            @foreach (var node in Model.distinctNodes)
-                            {
-                                <tr>
-                                    <td>@node.Item1</td>
-                                    <td>@node.Item2</td>
-                                </tr>
-                            }
-                        </table>
-                    </div>
-                <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
+                            <p>@Html.Raw(Model.ConvertedTree)</p>
+                        }
+
+
+                    }
+                    @if (Model.button == IndexModel.ButtonType.CheckTautology)
+                    {
+                        @if (!Model.IsTautologyOrContradiction)
+                        {
+                            <p> This is not tautology!</p>
+                            <p>Counterarguments</p>
+                            <!-- Define the table structure -->
+                            <div class="table-container">
+
+                                <table>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Literal</th>
+                                    </tr>
+                                    @foreach (var node in Model.distinctNodes)
+                                    {
+                                        <tr>
+                                            <td>@node.Item1</td>
+                                            <td>@node.Item2</td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                            <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
                             <button id="myButton">Click me!</button>
                             <script>
                                 $(document).ready(function () {
@@ -147,52 +146,52 @@
                                     document.getElementById('hiddenNumber').value = number;
                                 }
                             </script>
-                }
-                else
-                {
-                    <p> This is tautology!</p>
-                }
-            }
-        @if (Model.button == IndexModel.ButtonType.CheckContradiction)
-        {
-            @if (!Model.IsTautologyOrContradiction)
-            {
-                <p> This is not contradiction!</p>
-                <p>Counterarguments</p>
-                <!-- Define the table structure -->
-                <div class="table-container">
-
-                    <table>
-                        <tr>
-                            <th>Item</th>
-                            <th>Literal</th>
-                        </tr>
-                        @foreach (var node in Model.distinctNodes)
-                        {
-                            <tr>
-                                <td>@node.Item1</td>
-                                <td>@node.Item2</td>
-                            </tr>
                         }
-                    </table>
+                        else
+                        {
+                            <p> This is tautology!</p>
+                        }
+                    }
+                    @if (Model.button == IndexModel.ButtonType.CheckContradiction)
+                    {
+                        @if (!Model.IsTautologyOrContradiction)
+                        {
+                            <p> This is not contradiction!</p>
+                            <p>Counterarguments</p>
+                            <!-- Define the table structure -->
+                            <div class="table-container">
+
+                                <table>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Literal</th>
+                                    </tr>
+                                    @foreach (var node in Model.distinctNodes)
+                                    {
+                                        <tr>
+                                            <td>@node.Item1</td>
+                                            <td>@node.Item2</td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                            <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
+                        }
+                        else
+                        {
+                            <p> This is contradiction!</p>
+                        }
+                    }
+
+
+
+                    @if (!Model.Valid)
+                    {
+                        <div class="alert alert-danger" role="alert" id="errorAlert">
+                            Formula is invalid or not selected
+                        </div>
+                    }
                 </div>
-                <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
-            }
-            else
-            {
-                <p> This is contradiction!</p>
-            }
-        }
-
-        
-
-        @if(!Model.Valid)
-        {
-            <div class="alert alert-danger" role="alert" id="errorAlert">
-                Formula is invalid or not selected
-            </div>
-        }
-        </div>
             </div>
         </div>
     </div>
