@@ -40,7 +40,7 @@ namespace PL.Pages
         private List<string> formulaList = new List<string>()
         {
             "(p∧(q>r))>((p∧q)∨(p∧r))",
-            "(p>q)≡(-q>-p)",
+            "(-p>-q)≡(-q>-p)",
             "a>b"
         };
 
@@ -87,7 +87,7 @@ namespace PL.Pages
         public IActionResult OnPostExercise()
         {
             button = ButtonType.Exercise;
-            string f = formulaList[0];
+            string f = formulaList[1];
             Converter.ConvertLogicalOperators(ref f);
             formula = f;
 

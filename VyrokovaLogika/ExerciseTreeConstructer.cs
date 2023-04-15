@@ -32,11 +32,10 @@ namespace VyrokovaLogika
         private void CreateTree(List<string> strippedTags)
         {
             bool itIsItem = false;
-            bool firstLi = true;
-            bool isUl = false;
+            bool ThereWasLi = false;
             foreach (string tag in strippedTags)
             {
-                if (tag == "</li>") continue;
+                if(tag == "</li>") { ThereWasLi = true; }
                 if (itIsItem)
                 {
                     if (Validator.ContainsOperator(tag[0].ToString()))
@@ -53,42 +52,24 @@ namespace VyrokovaLogika
                 }
                 else if (tag == "<start>")
                 {
-                    continue;
+                    tree = new TruthTree();
                 }
                 else if (tag == "</item>") continue;
-                else if (tag == "<li>")
+                else if (tag == "<li>" && ThereWasLi)
                 {
-                    
-                    isUl = false;
-                   
-                    if(firstLi == true)
-                    {
-                        if (tree == null)
-                        {
-                            tree = new TruthTree();
-                        }
-                        else
-                        {
-                            tree = tree.AddChild("left");
-                            firstLi = false;
-                        } 
-                    }
-                    else
-                    {
-                        tree = tree.AddChild("right");
-                        firstLi = true;
-                    }
-
+                    tree = tree.Parent;
+                    tree.AddChild("right");
+                    tree = tree.ChildNodeRight;
+                    ThereWasLi = false;
                 }
                 else if (tag == "</ul>")
                 {
                     tree = tree.Parent;
-                    firstLi = false;
                 }
                 else if (tag == "<ul>")
                 {
-                    firstLi = true;
-                    isUl = true;
+                    tree.AddChild("left");
+                    tree =tree.ChildNodeLeft;
                 }
                 else if (tag == "<item>")
                         {
