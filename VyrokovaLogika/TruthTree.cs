@@ -19,6 +19,12 @@ namespace VyrokovaLogika
             Item = item;
         }
 
+        public TruthTree()
+        {
+
+        }
+
+
         public bool IsRoot
         {
             get { return Parent == null; }
@@ -107,6 +113,22 @@ namespace VyrokovaLogika
             }
         }
 
+        internal TruthTree AddChild(string side)
+        {
+            var tree = new TruthTree();
+            if(side == "left")
+            {
+                tree.Parent = this;
+                this.ChildNodeLeft = tree;
+            }
+            else
+            {
+                tree.Parent = this;
+                this.ChildNodeRight = tree;
+            }
+            return tree;
+           
+        }
     }
 }
 

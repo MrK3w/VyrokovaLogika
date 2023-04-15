@@ -18,7 +18,8 @@ namespace PL.Pages
             DAG,
             SyntaxTree,
             CheckTautology,
-            CheckContradiction
+            CheckContradiction,
+            Exercise
         }
         private string vl;
         private string vl1;
@@ -36,7 +37,14 @@ namespace PL.Pages
         public List<SelectListItem> listItems { get; set; } = new List<SelectListItem>();
         public bool Valid { get; private set; } = true;
 
+        private List<string> formulaList = new List<string>()
+        {
+            "(p∧(q>r))>((p∧q)∨(p∧r))",
+            "(p>q)≡(-q>-p)",
+            "a>b"
+        };
 
+        public string formula { get; set; }
         public IndexModel()
         {
             PrepareList();
@@ -69,8 +77,50 @@ namespace PL.Pages
             return Page();
         }
 
+        public IActionResult OnPostDrawTree()
+        {
+
+            return Page();
+        }
 
 
+        public IActionResult OnPostExercise()
+        {
+            button = ButtonType.Exercise;
+            string f = formulaList[0];
+            Converter.ConvertLogicalOperators(ref f);
+            formula = f;
+
+            Engine engine = PrepareEngine(formula);
+
+            IsTautologyOrContradiction = engine.ProofSolver("Tautology");
+            if (!IsTautologyOrContradiction)
+            {
+                PrintTree(engine.counterModel,true);
+                string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+                ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
+            }
+            return Page();
+        }
+
+        public IActionResult OnPostExerciseProcess(string tree)
+        {
+            ExerciseTreeConstructer constructer = new ExerciseTreeConstructer(tree);
+            TruthTree truthTree = constructer.ProcessTree();
+            if(constructer.IsTreeOkay())
+            {
+                Console.WriteLine("Fajny strom");
+            }
+            else
+            {
+                htmlTreeTruth.Clear();
+                PrintTree(truthTree, true);
+                string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+                ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
+            }
+            return Page();
+        }
+    
         public IActionResult OnPostCreateDAG()
         {
             button = ButtonType.DAG;
@@ -94,9 +144,6 @@ namespace PL.Pages
             IsTautologyOrContradiction = engine.ProofSolver("Tautology");
             if (!IsTautologyOrContradiction)
             {
-                PrintTree(engine.tree);
-                string di = "<div class='tf-tree tf-gap-lg'>".Replace("'", "\"");
-                ConvertedTree = di + string.Join("", htmlTree.ToArray()) + "</div>";
                 distinctNodes = engine.distinctNodes;
                 PrintTree(engine.counterModel);
                 string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
@@ -191,22 +238,34 @@ namespace PL.Pages
             htmlTree.Add("</li>");
         }
 
-        private void PrintTree(TruthTree tree)
+        private void PrintTree(TruthTree tree, bool exercise = false)
         {
             htmlTreeTruth.Add("<li>");
-            if (tree.literal == null)
-                htmlTreeTruth.Add("<span class=tf-nc>" + GetEnumDescription(tree.mOperator) + "=" + tree.Item + "</span>");
-            else
+            if(exercise)
             {
-                htmlTreeTruth.Add("<span class=tf-nc>" + tree.literal + "=" + tree.Item + "</span>");
+                if (tree.literal == null)
+                    htmlTreeTruth.Add("<span class=tf-nc>" + GetEnumDescription(tree.mOperator) + "=" + "0" + "</span>");
+                else
+                {
+                    htmlTreeTruth.Add("<span class=tf-nc>" + tree.literal + "=" + "0" + "</span>");
+                }
+            }
+            else 
+            { 
+                if (tree.literal == null)
+                    htmlTreeTruth.Add("<span class=tf-nc>" + GetEnumDescription(tree.mOperator) + "=" + tree.Item + "</span>");
+                else
+                {
+                    htmlTreeTruth.Add("<span class=tf-nc>" + tree.literal + "=" + tree.Item + "</span>");
+                }
             }
             if (tree.ChildNodeLeft != null)
             {
                 htmlTreeTruth.Add("<ul>");
-                PrintTree(tree.ChildNodeLeft);
+                PrintTree(tree.ChildNodeLeft, exercise);
                 if (tree.ChildNodeRight != null)
                 {
-                    PrintTree(tree.ChildNodeRight);
+                    PrintTree(tree.ChildNodeRight, exercise);
                 }
                 htmlTreeTruth.Add("</ul>");
             }
