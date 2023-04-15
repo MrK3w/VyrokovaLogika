@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Text.RegularExpressions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,28 +22,71 @@ namespace VyrokovaLogika
             Converter.ConvertLogicalOperators(ref mPropositionalSentence);
             Converter.ConvertParenthessis(ref mPropositionalSentence);
             //check if sentence is valid
+            if (mPropositionalSentence.Length == 1 && Validator.ContainsOperator(mPropositionalSentence)) return false;
+            if (!Validator.ValidateSides(mPropositionalSentence)) return false;
             if (!Validator.ValidateParenthesses(mPropositionalSentence)) return false;
             if (!Validator.RightCharacters(mPropositionalSentence)) return false;
-            if (Validator.ValidateOperators(mPropositionalSentence)) return false;
-            if (!Validator.CheckLiterals(mPropositionalSentence)) return false;
+            if (!Validator.ValidateOperators(mPropositionalSentence)) return false;
+
+            if (!Validator.CheckIfLiteralIsSingle(mPropositionalSentence)) return false;
             return true;
         }
 
-        private static bool CheckLiterals(string mPropositionalSentence)
+        private static bool ValidateSides(string mPropositionalSentence)
         {
-
-           for(int i = 0;i< mPropositionalSentence.Length -2; i++)
-           {
-                if (isVariable(mPropositionalSentence[i].ToString()) && isVariable(mPropositionalSentence[i + 1].ToString())) 
-                    return false;             
-           }
+            for (int i = 0; i < mPropositionalSentence.Length - 2; i++)
+            {
+                if (Validator.ContainsOperator(mPropositionalSentence[i].ToString()) && !(isVariable(mPropositionalSentence[i + 1].ToString()) || mPropositionalSentence[i + 1] == '(' || mPropositionalSentence[i+1] == '¬'))
+                    return false;
+            }
+            if (Validator.ContainsOperator(mPropositionalSentence[mPropositionalSentence.Length - 1].ToString())) return false;
             return true;
         }
 
+        private static bool CheckIfLiteralIsSingle(string mPropositionalSentence)
+        {
+            if (isVariable(mPropositionalSentence[0].ToString()) && isVariable(mPropositionalSentence[1].ToString()) && mPropositionalSentence.Length == 2)
+                return false;
+            for (int i = 0; i < mPropositionalSentence.Length - 2; i++)
+            {
+                if (isVariable(mPropositionalSentence[i].ToString()) && isVariable(mPropositionalSentence[i + 1].ToString()))
+                    return false;
+            }
+
+            return true;
+        }
+
+        //validate that operators have rightly brackets
         private static bool ValidateOperators(string mPropositionalSentence)
         {
-            string pattern = @"\b[a-zA-Z]+\b\s*(=|≡|>|⇒|-|¬|∨|&|∧)\s*\b[a-zA-Z]+\b\s*(=|≡|>|⇒|∨|&|∧)\s*\b[a-zA-Z]+\b";
-            return Regex.IsMatch(mPropositionalSentence, pattern);
+            for (int i = 1; i < mPropositionalSentence.Length - 2; i++)
+            {
+                if (Validator.ContainsOperator(mPropositionalSentence[i - 1].ToString()) && Validator.isVariable(mPropositionalSentence[i].ToString())
+                    && Validator.ContainsOperator(mPropositionalSentence[i + 1].ToString()))
+                    return false;
+            }
+            return true;
+        }
+
+        public static bool IsValidExpression(string vl)
+        {
+            string pattern = @"\(((?>[^()]+)|(?<open>\()|(?<-open>\)))*(?(open)(?!))\)";
+            MatchCollection matches = Regex.Matches(vl, pattern);
+
+            foreach (Match match in matches)
+            {
+                if (match.Value.Contains("(") && match.Value.Contains(")"))
+                {
+                    if (!IsValidExpression(match.Value.Trim('(', ')')))
+                        return false;
+                }
+                else if (match.Value.Contains("(") || match.Value.Contains(")"))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
 
@@ -101,3 +145,5 @@ namespace VyrokovaLogika
         }
     }
 }
+
+
