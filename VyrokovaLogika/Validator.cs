@@ -23,8 +23,29 @@ namespace VyrokovaLogika
             //check if sentence is valid
             if (!Validator.ValidateParenthesses(mPropositionalSentence)) return false;
             if (!Validator.RightCharacters(mPropositionalSentence)) return false;
+            if (Validator.ValidateOperators(mPropositionalSentence)) return false;
+            if (!Validator.CheckLiterals(mPropositionalSentence)) return false;
             return true;
         }
+
+        private static bool CheckLiterals(string mPropositionalSentence)
+        {
+
+           for(int i = 0;i< mPropositionalSentence.Length -2; i++)
+           {
+                if (isVariable(mPropositionalSentence[i].ToString()) && isVariable(mPropositionalSentence[i + 1].ToString())) 
+                    return false;             
+           }
+            return true;
+        }
+
+        private static bool ValidateOperators(string mPropositionalSentence)
+        {
+            string pattern = @"\b[a-zA-Z]+\b\s*(=|≡|>|⇒|-|¬|∨|&|∧)\s*\b[a-zA-Z]+\b\s*(=|≡|>|⇒|∨|&|∧)\s*\b[a-zA-Z]+\b";
+            return Regex.IsMatch(mPropositionalSentence, pattern);
+        }
+
+
 
         public static bool isVariableWithNegation(string vl)
         {

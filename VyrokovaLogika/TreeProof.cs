@@ -186,6 +186,7 @@ namespace VyrokovaLogika
         {
             TruthTree leafTree = new TruthTree(truthValue);
             leafTree.literal = tree.Item.mSentence;
+            if(tree.Parent != null)
             leafTree.mOperator = tree.Parent.Item.mOperator;
             List<TruthTree> treeees = new List<TruthTree>();
             return new List<TruthTree> { leafTree};
