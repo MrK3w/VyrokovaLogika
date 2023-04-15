@@ -19,7 +19,7 @@ namespace VyrokovaLogika
 
         public bool IsTreeOkay()
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public TruthTree ProcessTree()

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PL.Helpers;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
@@ -43,6 +44,8 @@ namespace PL.Pages
             "(-p>-q)≡(-q>-p)",
             "a>b"
         };
+
+        public string ExerciseQuote { get; set; }
 
         public string formula { get; set; }
         public IndexModel()
@@ -90,7 +93,7 @@ namespace PL.Pages
             string f = formulaList[1];
             Converter.ConvertLogicalOperators(ref f);
             formula = f;
-
+            ExerciseHelper.formula = f;
             Engine engine = PrepareEngine(formula);
 
             IsTautologyOrContradiction = engine.ProofSolver("Tautology");
@@ -105,18 +108,21 @@ namespace PL.Pages
 
         public IActionResult OnPostExerciseProcess(string tree)
         {
+            button = ButtonType.Exercise;
             ExerciseTreeConstructer constructer = new ExerciseTreeConstructer(tree);
             TruthTree truthTree = constructer.ProcessTree();
             if(constructer.IsTreeOkay())
             {
-                Console.WriteLine("Fajny strom");
+                formula = ExerciseHelper.formula;
+                ExerciseQuote = "You built this tree correctly. Congratulation!";
+                htmlTreeTruth.Clear();
+                PrintTree(truthTree);
+                string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+                ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
             }
             else
             {
-                htmlTreeTruth.Clear();
-                PrintTree(truthTree, true);
-                string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
-                ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
+                
             }
             return Page();
         }
@@ -247,7 +253,7 @@ namespace PL.Pages
                     htmlTreeTruth.Add("<span class=tf-nc>" + GetEnumDescription(tree.mOperator) + "=" + "0" + "</span>");
                 else
                 {
-                    htmlTreeTruth.Add("<span class=tf-nc>" + tree.literal + "=" + "0" + "</span>");
+                    htmlTreeTruth.Add("<span class=tf-nc style='color: red;>" + tree.literal + "=" + "0" + "</span>");
                 }
             }
             else 
