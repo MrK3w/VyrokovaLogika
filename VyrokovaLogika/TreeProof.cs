@@ -13,173 +13,182 @@ namespace VyrokovaLogika
 
         public List<TruthTree> ProcessTree(Tree tree, int truthValue = 0)
         {
-            List<TruthTree> treePairsFinal = new List<TruthTree>();
+            List<TruthTree> combinedTrees = new List<TruthTree>();
 
+            //if leaf return value of leaf
             if (tree.IsLeaf)
             {
                 return GetLeave(tree, truthValue);
             }
-            List<Tuple<int, int>> list = new List<Tuple<int, int>>();
             var sideValues = Rule.GetValuesOfBothSides(truthValue, tree.Item.mOperator);
+            List<Tuple<int, int>> list = GetValuesFromBothSides(tree,sideValues);
+
+            //we must iterate for each available option which can tree childs evaluate to get parent value
+            foreach (var newTree in list)
+            {
+                List<TruthTree> currentTreeListFromLeftSide = new List<TruthTree>();
+                List<TruthTree> currentTreeListFromRightSide = new List<TruthTree>();
+                TruthTree currentTree;
+                if (tree.childNodeLeft != null)
+                {
+                    var childrenTrees = ProcessTree(tree.childNodeLeft, newTree.Item1);
+                    foreach (var childrenTree in childrenTrees)
+                    {
+                        currentTree = new TruthTree(childrenTree.Item);
+                        currentTree.mOperator = childrenTree.mOperator;
+                        if (childrenTree.ChildNodeLeft != null)
+                        {
+                            currentTree.AddChild(childrenTree.ChildNodeLeft, "left");
+                        }
+                        if (childrenTree.ChildNodeRight != null)
+                        {
+                            currentTree.AddChild(childrenTree.ChildNodeRight, "right");
+                        }
+                        if (childrenTree.ChildNodeLeft == null && childrenTree.ChildNodeRight == null)
+                        {
+                            currentTree.AddChild(childrenTree.Item, "left");
+                            currentTree.ChildNodeLeft.literal = childrenTree.literal;
+                            currentTree.ChildNodeLeft.mOperator = childrenTree.mOperator;
+                        }
+                        currentTreeListFromLeftSide.Add(currentTree);
+                    }
+
+
+                }
+                if (tree.childNodeRight != null)
+                {
+                    var childrenTrees = ProcessTree(tree.childNodeRight, newTree.Item2);
+                    foreach (var childrenTree in childrenTrees)
+                    {
+                        currentTree = new TruthTree(childrenTree.Item);
+                        currentTree.mOperator = childrenTree.mOperator;
+                        if (childrenTree.ChildNodeLeft != null)
+                        {
+                            currentTree.AddChild(childrenTree.ChildNodeLeft, "left");
+                        }
+                        if (childrenTree.ChildNodeRight != null)
+                        {
+                            currentTree.AddChild(childrenTree.ChildNodeRight, "right");
+                        }
+                        if (childrenTree.ChildNodeLeft == null && childrenTree.ChildNodeRight == null)
+                        {
+                            currentTree.AddChild(childrenTree.Item, "right");
+                            currentTree.ChildNodeRight.literal = childrenTree.literal;
+                            currentTree.ChildNodeRight.mOperator = childrenTree.mOperator;
+                        }
+                        currentTreeListFromRightSide.Add(currentTree);
+                    }
+                }
+
+
+
+                // Iterate through the list of trees right and left side we need to combine them into new trees
+                for (int i = 0; i < currentTreeListFromLeftSide.Count; i++)
+                {
+                    for (int j = 0; j < currentTreeListFromRightSide.Count; j++)
+                    {
+                        var newTemporaryTreeForCombining = new TruthTree(truthValue);
+                        newTemporaryTreeForCombining.mOperator = tree.Item.mOperator;
+                        if (currentTreeListFromRightSide[j].ChildNodeLeft != null && currentTreeListFromRightSide[j].ChildNodeRight == null && currentTreeListFromLeftSide[i].ChildNodeLeft
+                            != null && currentTreeListFromLeftSide[i].ChildNodeRight == null)
+                        {
+                            newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i], currentTreeListFromRightSide[j]);
+                        }
+                        if (currentTreeListFromRightSide[j].ChildNodeLeft != null && currentTreeListFromRightSide[j].ChildNodeRight != null && currentTreeListFromLeftSide[i].ChildNodeLeft
+                            != null && currentTreeListFromLeftSide[i].ChildNodeRight != null)
+                        {
+                            newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i], currentTreeListFromRightSide[j]);
+                        }
+                        if (currentTreeListFromRightSide[j].ChildNodeLeft == null && currentTreeListFromRightSide[j].ChildNodeRight != null && currentTreeListFromLeftSide[i].ChildNodeLeft
+                            != null && currentTreeListFromLeftSide[i].ChildNodeRight != null)
+                        {
+                            newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i], currentTreeListFromRightSide[j].ChildNodeRight);
+                        }
+                        if (currentTreeListFromRightSide[j].ChildNodeLeft != null && currentTreeListFromRightSide[j].ChildNodeRight == null && currentTreeListFromLeftSide[i].ChildNodeLeft
+                           != null && currentTreeListFromLeftSide[i].ChildNodeRight != null)
+                        {
+                            newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i], currentTreeListFromRightSide[j].ChildNodeLeft);
+                        }
+                        if (currentTreeListFromRightSide[j].ChildNodeLeft != null && currentTreeListFromRightSide[j].ChildNodeRight != null && currentTreeListFromLeftSide[i].ChildNodeLeft
+                         == null && currentTreeListFromLeftSide[i].ChildNodeRight != null)
+                        {
+                            newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i].ChildNodeRight, currentTreeListFromRightSide[j]);
+                        }
+                        if (currentTreeListFromRightSide[j].ChildNodeLeft != null && currentTreeListFromRightSide[j].ChildNodeRight != null && currentTreeListFromLeftSide[i].ChildNodeLeft
+                        != null && currentTreeListFromLeftSide[i].ChildNodeRight == null)
+                        {
+                            newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i].ChildNodeLeft, currentTreeListFromRightSide[j]);
+                        }
+
+                        if (currentTreeListFromRightSide[j].ChildNodeLeft == null && currentTreeListFromLeftSide[i].ChildNodeRight == null)
+                        {
+                            if (currentTreeListFromLeftSide[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.NEGATION || currentTreeListFromLeftSide[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.DOUBLENEGATION)
+                            {
+                                newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i], currentTreeListFromRightSide[j].ChildNodeRight);
+                            }
+                            else if (currentTreeListFromRightSide[j].ChildNodeRight.mOperator == Operator.OperatorEnum.NEGATION || currentTreeListFromRightSide[j].ChildNodeRight.mOperator == Operator.OperatorEnum.DOUBLENEGATION)
+                            {
+                                newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i].ChildNodeLeft, currentTreeListFromRightSide[j]);
+                            }
+                            else if ((currentTreeListFromRightSide[j].ChildNodeRight.mOperator == Operator.OperatorEnum.NEGATION || currentTreeListFromRightSide[j].ChildNodeRight.mOperator == Operator.OperatorEnum.DOUBLENEGATION)
+                                && (currentTreeListFromLeftSide[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.NEGATION || currentTreeListFromLeftSide[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.DOUBLENEGATION))
+                            {
+                                newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i], currentTreeListFromRightSide[j]);
+                            }
+                            else
+                            {
+                                newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i].ChildNodeLeft, currentTreeListFromRightSide[j].ChildNodeRight);
+                            }
+                        }
+                        combinedTrees.Add(newTemporaryTreeForCombining);
+                    }
+                    //if three don't have right side
+                    if (currentTreeListFromRightSide.Count == 0)
+                    {
+                        var newTemporaryTree = new TruthTree(truthValue);
+                        newTemporaryTree.mOperator = tree.Item.mOperator;
+                        if (newTemporaryTree.mOperator != Operator.OperatorEnum.NEGATION)
+                        {
+                            if (currentTreeListFromLeftSide[i].ChildNodeLeft != null)
+                            {
+                                newTemporaryTree.AddChild(currentTreeListFromLeftSide[i].ChildNodeLeft, "left");
+                            }
+                            if (currentTreeListFromLeftSide[i].ChildNodeRight != null)
+                            {
+                                newTemporaryTree.AddChild(currentTreeListFromLeftSide[i].ChildNodeRight, "right");
+                            }
+                        }
+                        else
+                        {
+                            newTemporaryTree.AddChild(currentTreeListFromLeftSide[i].ChildNodeLeft, "left");
+
+                        }
+                        combinedTrees.Add(newTemporaryTree);
+                    }
+                }
+                //treePairsFinal.AddRange(combinedTrees);
+            }
+            return combinedTrees;
+        }
+
+        private List<Tuple<int, int>> GetValuesFromBothSides(Tree tree,List<(int, int)> sideValues)
+        {
+            List<Tuple<int, int>> list = new List<Tuple<int, int>>();
             foreach (var sideValue in sideValues)
             {
                 int leftSide = 0;
                 int rightSide = 0;
                 if (tree.childNodeLeft != null)
                 {
-                    leftSide = sideValue.Item1;  
+                    leftSide = sideValue.Item1;
                 }
                 if (tree.childNodeRight != null)
                 {
                     rightSide = sideValue.Item2;
                 }
-                list.Add(new Tuple<int,int>(leftSide, rightSide));
+                list.Add(new Tuple<int, int>(leftSide, rightSide));
             }
-
-            foreach (var newTree in list)
-            {
-                List<TruthTree> tempTreeListLeft = new List<TruthTree> ();
-                List<TruthTree> tempTreeListRight = new List<TruthTree>();
-                TruthTree tTree;
-                if (tree.childNodeLeft != null)
-                {
-                    var xd = ProcessTree(tree.childNodeLeft, newTree.Item1);
-                    foreach (var tyhlestromy in xd)
-                    {
-                       tTree = new TruthTree(tyhlestromy.Item);
-                       tTree.mOperator = tyhlestromy.mOperator;
-                       if (tyhlestromy.ChildNodeLeft != null)
-                       {
-                          tTree.AddChild(tyhlestromy.ChildNodeLeft, "left");
-                            }
-                            if(tyhlestromy.ChildNodeRight != null)
-                            {
-                                tTree.AddChild(tyhlestromy.ChildNodeRight, "right");
-                            }
-                            if(tyhlestromy.ChildNodeLeft == null && tyhlestromy.ChildNodeRight == null)
-                            {
-                                tTree.AddChild(tyhlestromy.Item, "left");
-                                tTree.ChildNodeLeft.literal = tyhlestromy.literal;
-                                tTree.ChildNodeLeft.mOperator = tyhlestromy.mOperator;
-                        }
-                            tempTreeListLeft.Add(tTree);
-                    }
-
-
-                }
-                if(tree.childNodeRight != null)
-                {
-                    var xd = ProcessTree(tree.childNodeRight, newTree.Item2);
-                    foreach (var tyhlestromy in xd)
-                    {
-                        tTree = new TruthTree(tyhlestromy.Item);
-                        tTree.mOperator = tyhlestromy.mOperator;
-                        if (tyhlestromy.ChildNodeLeft != null)
-                        {
-                            tTree.AddChild(tyhlestromy.ChildNodeLeft, "left");
-                        }
-                        if(tyhlestromy.ChildNodeRight != null)
-                        {
-                            tTree.AddChild(tyhlestromy.ChildNodeRight, "right");
-                        }
-                        if (tyhlestromy.ChildNodeLeft == null && tyhlestromy.ChildNodeRight == null)
-                        {
-                            tTree.AddChild(tyhlestromy.Item, "right");
-                            tTree.ChildNodeRight.literal = tyhlestromy.literal;
-                            tTree.ChildNodeRight.mOperator = tyhlestromy.mOperator;
-                        }
-                        tempTreeListRight.Add(tTree);
-                    }
-                }
-
-                List<TruthTree> treePairs = new List<TruthTree>();
-
-                // Iterate through the list of trees
-                for (int i = 0; i < tempTreeListLeft.Count; i++)
-                {
-                    for (int j = 0; j < tempTreeListRight.Count; j++)
-                    {
-                        var newtru = new TruthTree(truthValue);
-                        newtru.mOperator = tree.Item.mOperator;
-                        if (tempTreeListRight[j].ChildNodeLeft != null && tempTreeListRight[j].ChildNodeRight == null && tempTreeListLeft[i].ChildNodeLeft
-                            != null && tempTreeListLeft[i].ChildNodeRight == null)
-                        {
-                            newtru.AddChild(tempTreeListLeft[i], tempTreeListRight[j]);
-                        }
-                        if (tempTreeListRight[j].ChildNodeLeft != null && tempTreeListRight[j].ChildNodeRight != null && tempTreeListLeft[i].ChildNodeLeft
-                            != null && tempTreeListLeft[i].ChildNodeRight != null)
-                        {
-                            newtru.AddChild(tempTreeListLeft[i], tempTreeListRight[j]);
-                        }
-                        if (tempTreeListRight[j].ChildNodeLeft == null && tempTreeListRight[j].ChildNodeRight != null && tempTreeListLeft[i].ChildNodeLeft
-                            != null && tempTreeListLeft[i].ChildNodeRight != null)
-                        {
-                            newtru.AddChild(tempTreeListLeft[i], tempTreeListRight[j].ChildNodeRight);
-                        }
-                        if (tempTreeListRight[j].ChildNodeLeft != null && tempTreeListRight[j].ChildNodeRight == null && tempTreeListLeft[i].ChildNodeLeft
-                           != null && tempTreeListLeft[i].ChildNodeRight != null)
-                        {
-                            newtru.AddChild(tempTreeListLeft[i], tempTreeListRight[j].ChildNodeLeft);
-                        }
-                        if (tempTreeListRight[j].ChildNodeLeft != null && tempTreeListRight[j].ChildNodeRight != null && tempTreeListLeft[i].ChildNodeLeft
-                         == null && tempTreeListLeft[i].ChildNodeRight != null)
-                        {
-                            newtru.AddChild(tempTreeListLeft[i].ChildNodeRight, tempTreeListRight[j]);
-                        }
-                        if (tempTreeListRight[j].ChildNodeLeft != null && tempTreeListRight[j].ChildNodeRight != null && tempTreeListLeft[i].ChildNodeLeft
-                        != null && tempTreeListLeft[i].ChildNodeRight == null)
-                        {
-                            newtru.AddChild(tempTreeListLeft[i].ChildNodeLeft, tempTreeListRight[j]);
-                        }
-
-                        if (tempTreeListRight[j].ChildNodeLeft == null && tempTreeListLeft[i].ChildNodeRight == null)
-                        {
-                            if (tempTreeListLeft[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.NEGATION || tempTreeListLeft[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.DOUBLENEGATION)
-                            {
-                                newtru.AddChild(tempTreeListLeft[i], tempTreeListRight[j].ChildNodeRight);
-                            }
-                            else if (tempTreeListRight[j].ChildNodeRight.mOperator == Operator.OperatorEnum.NEGATION || tempTreeListRight[j].ChildNodeRight.mOperator == Operator.OperatorEnum.DOUBLENEGATION)
-                            {
-                                newtru.AddChild(tempTreeListLeft[i].ChildNodeLeft, tempTreeListRight[j]);
-                            }
-                            else if ((tempTreeListRight[j].ChildNodeRight.mOperator == Operator.OperatorEnum.NEGATION || tempTreeListRight[j].ChildNodeRight.mOperator == Operator.OperatorEnum.DOUBLENEGATION)
-                                && (tempTreeListLeft[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.NEGATION || tempTreeListLeft[i].ChildNodeLeft.mOperator == Operator.OperatorEnum.DOUBLENEGATION))
-                            {
-                                newtru.AddChild(tempTreeListLeft[i], tempTreeListRight[j]);
-                            }
-                            else
-                            {
-                                newtru.AddChild(tempTreeListLeft[i].ChildNodeLeft, tempTreeListRight[j].ChildNodeRight);
-                            }
-                        }
-                        treePairs.Add(newtru);
-                    }
-                    if (tempTreeListRight.Count == 0)
-                    {
-                        var newtru = new TruthTree(truthValue);
-                        newtru.mOperator = tree.Item.mOperator;
-                        if (newtru.mOperator != Operator.OperatorEnum.NEGATION)
-                        {
-                            if (tempTreeListLeft[i].ChildNodeLeft != null)
-                            {
-                                newtru.AddChild(tempTreeListLeft[i].ChildNodeLeft, "left");
-                            }
-                            if (tempTreeListLeft[i].ChildNodeRight != null)
-                            {
-                                newtru.AddChild(tempTreeListLeft[i].ChildNodeRight, "right");
-                            }
-                        }
-                        else
-                        {
-                            newtru.AddChild(tempTreeListLeft[i].ChildNodeLeft, "left");
-      
-                        }
-                        treePairs.Add(newtru);
-                    }
-                }
-                treePairsFinal.AddRange(treePairs);
-            }
-            return treePairsFinal;
+            return list;
         }
 
         private static List<TruthTree> GetLeave(Tree tree, int truthValue)
