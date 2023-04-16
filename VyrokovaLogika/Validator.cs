@@ -21,6 +21,7 @@ namespace VyrokovaLogika
             mPropositionalSentence = mPropositionalSentence.Replace(" ", string.Empty).ToLowerInvariant();
             Converter.ConvertLogicalOperators(ref mPropositionalSentence);
             Converter.ConvertParenthessis(ref mPropositionalSentence);
+            Converter.RemoveExcessParentheses(ref mPropositionalSentence);
             //check if sentence is valid
             if (mPropositionalSentence.Length == 1 && Validator.ContainsOperator(mPropositionalSentence)) return false;
             if (!Validator.ValidateSides(mPropositionalSentence)) return false;

@@ -7,6 +7,7 @@ namespace VyrokovaLogika
         public List<Tuple<string, int>> distinctNodes { get; set; } = new List<Tuple<string, int>>();
         public TruthTree counterModel { get; set; } = new TruthTree(0);
 
+        public bool green { get; set; }
         public TreeProof()
         {
         }
@@ -92,7 +93,12 @@ namespace VyrokovaLogika
                         if (currentTreeListFromRightSide[j].ChildNodeLeft != null && currentTreeListFromRightSide[j].ChildNodeRight == null && currentTreeListFromLeftSide[i].ChildNodeLeft
                             != null && currentTreeListFromLeftSide[i].ChildNodeRight == null)
                         {
+                            if(currentTreeListFromRightSide[j].mOperator == Operator.OperatorEnum.NEGATION && currentTreeListFromLeftSide[i].mOperator == Operator.OperatorEnum.NEGATION)
                             newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i], currentTreeListFromRightSide[j]);
+                            else
+                            {
+                                newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i].ChildNodeLeft, currentTreeListFromRightSide[j]);
+                            }
                         }
                         if (currentTreeListFromRightSide[j].ChildNodeLeft != null && currentTreeListFromRightSide[j].ChildNodeRight != null && currentTreeListFromLeftSide[i].ChildNodeLeft
                             != null && currentTreeListFromLeftSide[i].ChildNodeRight != null)
@@ -166,7 +172,6 @@ namespace VyrokovaLogika
                         combinedTrees.Add(newTemporaryTree);
                     }
                 }
-                //treePairsFinal.AddRange(combinedTrees);
             }
             return combinedTrees;
         }

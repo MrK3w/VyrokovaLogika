@@ -87,7 +87,6 @@
                     {
                         @if (Model.button == IndexModel.ButtonType.DAG)
                         {
-
                             <script>
                                 var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
@@ -186,7 +185,41 @@
                                 <input type="hidden" id="hiddenNumber" name="tree" value="" />
                             </form>
                         }
+                        @if (Model.button == IndexModel.ButtonType.Draw)
+                        {
+                            @if (Model.ConvertedTree != null)
+                            {
+                                <p>@Html.Raw(Model.ConvertedTree)</p>
+                                @Html.Raw(@Model.xd)
+                            }
+
+                            <script>
+                                var numLeaves = 8;
+                                var delay = 1000; // 1 second
+
+                                // Function to delay the appearance of leaves
+                                function showLeaves() {
+                                    var i = 1;
+                                    var intervalId = setInterval(function () {
+                                        var leaf = document.getElementById('leaf' + i);
+                                        if (leaf) {
+                                            leaf.style.opacity = '1';
+                                            i++;
+                                        } else {
+                                            clearInterval(intervalId);
+                                        }
+                                    }, delay);
+                                }
+
+                                // Call the function after the page loads
+                                window.onload = function () {
+                                    showLeaves();
+                                };
+                            </script>
+                          
+                        }
                     }
+
                     @if (!Model.Valid)
                     {
                         <div class="alert alert-danger" role="alert" id="errorAlert">

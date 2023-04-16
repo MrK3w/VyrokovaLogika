@@ -14,7 +14,7 @@ namespace VyrokovaLogika
         TruthTree tree;
         private bool mSemanticContradiction;
         private bool mTautology;
-
+        public bool Green { get; set; }
         public string ExerciseQuote { get; set; }
 
         public ExerciseTreeConstructer(string hmtlTree) 
@@ -28,6 +28,7 @@ namespace VyrokovaLogika
             if (verifier.Verify())
             {
                 ExerciseQuote = verifier.ExerciseQuote;
+                Green = verifier.green;
                 return;
             }
             ExerciseQuote = verifier.ExerciseQuote;

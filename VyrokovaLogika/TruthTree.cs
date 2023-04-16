@@ -12,6 +12,7 @@ namespace VyrokovaLogika
         public TruthTree ChildNodeLeft;
         public TruthTree ChildNodeRight;
         public TruthTree Parent { get; set; }
+
         public Operator.OperatorEnum mOperator { get; set; }
         public string literal;
         public int Item { get; set; }

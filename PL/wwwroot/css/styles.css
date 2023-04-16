@@ -6,7 +6,7 @@
 svg {
     width: 800px;
     height: 600px;
-    transform: translate(250px, -800px);
+    transform: translate(700px, -1000px);
     pointer-events: none;
 }
 

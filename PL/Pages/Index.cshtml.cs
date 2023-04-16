@@ -21,7 +21,8 @@ namespace PL.Pages
             SyntaxTree,
             CheckTautology,
             CheckContradiction,
-            Exercise
+            Exercise,
+            Draw
         }
         private string vl;
         private string vl1;
@@ -32,7 +33,7 @@ namespace PL.Pages
         public string ConvertedTreeTruth { get; set; }
         public List<string> DAGNodes { get; set; } = new List<string>();
         public List<Tuple<string, string>> TreeConnections { get; set; } = new List<Tuple<string, string>>();
-
+        private bool Green;
         public List<Tuple<string, int>> distinctNodes { get; set; } = new List<Tuple<string, int>>();
         public bool IsTautologyOrContradiction { get; set; }
 
@@ -41,9 +42,9 @@ namespace PL.Pages
 
         public string ExerciseType { get; set; }
 
-       
-
         public string ExerciseQuote { get; set; }
+
+        public string xd { get; set; }
 
         public string formula { get; set; }
         public IndexModel()
@@ -72,7 +73,7 @@ namespace PL.Pages
             if (!Valid) return Page();
             Engine engine = PrepareEngine(mSentence);
 
-            PrintTree(engine.tree, 1);
+            PrintTree(engine.tree);
             string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
             ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
             return Page();
@@ -80,22 +81,45 @@ namespace PL.Pages
 
         public IActionResult OnPostDrawTree()
         {
+            button = ButtonType.Draw;
+            string mSentence = getFormula();
+            if (!Valid) return Page();
+            Engine engine = PrepareEngine(mSentence);
 
+            PrintTree(engine.tree);
+            PrepareTree(engine.tree);
+            string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+            ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
             return Page();
         }
 
+        private void PrepareTree(Tree tree)
+        {
+            xd += tree.Item.mSentence + "<br>";
+            if(tree.childNodeLeft != null)
+            {
+                PrepareTree(tree.childNodeLeft);
+            }
+            if(tree.childNodeRight != null)
+            {
+                PrepareTree(tree.childNodeRight);
+            }
+        }
 
         public IActionResult OnPostExercise()
         {
             button = ButtonType.Exercise;
-            string f = ExerciseHelper.formulaList[4].Item1;
-            ExerciseType = ExerciseHelper.formulaList[4].Item2;
+            ExerciseHelper.GeneratateNumber();
+            int number = ExerciseHelper.number;
+            string f = ExerciseHelper.formulaList[number].Item1;
+            ExerciseType = ExerciseHelper.formulaList[number].Item2;
             Converter.ConvertLogicalOperators(ref f);
+            Validator.ValidateSentence(ref f);
             formula = f;
             ExerciseHelper.formula = f;
             Engine engine = PrepareEngine(formula);
-
-            if(ExerciseType == "Not Tautology" || ExerciseType == "Tautology")
+            Console.WriteLine(f);
+            if (ExerciseType == "Not Tautology" || ExerciseType == "Tautology")
             {
                 IsTautologyOrContradiction = engine.ProofSolver("Tautology");
             }
@@ -112,7 +136,8 @@ namespace PL.Pages
 
         public IActionResult OnPostExerciseProcess(string tree)
         {
-            ExerciseType = ExerciseHelper.formulaList[4].Item2;
+            int number = ExerciseHelper.number;
+            ExerciseType = ExerciseHelper.formulaList[number].Item2;
             button = ButtonType.Exercise;
             ExerciseTreeConstructer constructer = new ExerciseTreeConstructer(tree);
             TruthTree truthTree = new TruthTree();
@@ -132,7 +157,9 @@ namespace PL.Pages
             {
                 truthTree = constructer.ProcessTree(false, true);
             }
+            
             constructer.IsTreeOkay();
+            Green = constructer.Green;
             formula = ExerciseHelper.formula;
             ExerciseQuote = constructer.ExerciseQuote;
             htmlTreeTruth.Clear();
@@ -241,7 +268,6 @@ namespace PL.Pages
             {
                 htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
             }
-            //htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
             if (tree.childNodeLeft != null && i < 1000)
             {
                 htmlTree.Add("<ul>");
@@ -271,7 +297,14 @@ namespace PL.Pages
             else 
             {
                 string spanValue;
-                if (tree.invalid) spanValue = "<span class=tf-nc style='color: red;'>";
+                if (tree.invalid)
+                {
+                   if(!Green) spanValue = "<span class=tf-nc style='color: red;'>";
+                   else
+                    {
+                        spanValue = "<span class=tf-nc style='color: green;'>";
+                    }
+                }
                 else
                 {
                     spanValue = "<span class=tf-nc>";

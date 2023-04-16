@@ -180,6 +180,7 @@ namespace VyrokovaLogika
                 if (metParenthesses && parenthessesStack.Count == 0)
                 {
                     string part = sb.ToString();
+
                     string op = null;
                     string secondPart = null;
                     if (position + 1 < vl.Length)

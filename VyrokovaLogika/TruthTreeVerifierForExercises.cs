@@ -12,6 +12,7 @@ namespace VyrokovaLogika
         bool mTautology = false;
         bool mFindingContradiction = false;
         TruthTree mTree { get; set; }
+        public bool green { get; set; }
         public string ExerciseQuote { get; set; }
         bool mistake = false;
         public TruthTreeVerifierForExercises(bool tautology, TruthTree tree, bool findingContradiction)
@@ -53,6 +54,10 @@ namespace VyrokovaLogika
                 {
                     ExerciseQuote = "You have in your equation semantic contradiction! So this cannot be tautology or contradiction";
                     return false;
+                }
+                else
+                {
+                    green = true;
                 }
             }            
             ExerciseQuote = "You have equation correctly!";
