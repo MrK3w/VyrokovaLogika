@@ -12,6 +12,10 @@ namespace VyrokovaLogika
     {
         string mHtmlTree;
         TruthTree tree;
+        private bool mNotTautology;
+
+        public string ExerciseQuote { get; set; }
+
         public ExerciseTreeConstructer(string hmtlTree) 
         { 
             mHtmlTree = hmtlTree;
@@ -19,11 +23,19 @@ namespace VyrokovaLogika
 
         public bool IsTreeOkay()
         {
-            return true;
+            TruthTreeVerifier verifier = new TruthTreeVerifier(mNotTautology, tree);
+            if (verifier.Verify())
+            {
+                ExerciseQuote = verifier.ExerciseQuote;
+                return true;
+            }
+            ExerciseQuote = verifier.ExerciseQuote;
+            return false;
         }
 
-        public TruthTree ProcessTree()
+        public TruthTree ProcessTree(bool notTautology)
         {
+            mNotTautology = notTautology;
             var strippedTags = StripTree();
             CreateTree(strippedTags);
             return tree;

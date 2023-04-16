@@ -110,11 +110,11 @@ namespace PL.Pages
         {
             button = ButtonType.Exercise;
             ExerciseTreeConstructer constructer = new ExerciseTreeConstructer(tree);
-            TruthTree truthTree = constructer.ProcessTree();
+            TruthTree truthTree = constructer.ProcessTree(true);
             if(constructer.IsTreeOkay())
             {
                 formula = ExerciseHelper.formula;
-                ExerciseQuote = "You built this tree correctly. Congratulation!";
+                ExerciseQuote = constructer.ExerciseQuote;
                 htmlTreeTruth.Clear();
                 PrintTree(truthTree);
                 string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
@@ -122,7 +122,12 @@ namespace PL.Pages
             }
             else
             {
-                
+                formula = ExerciseHelper.formula;
+                ExerciseQuote = constructer.ExerciseQuote;
+                htmlTreeTruth.Clear();
+                PrintTree(truthTree);
+                string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+                ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
             }
             return Page();
         }

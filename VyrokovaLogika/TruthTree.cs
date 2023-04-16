@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace VyrokovaLogika
         public Operator.OperatorEnum mOperator { get; set; }
         public string literal;
         public int Item { get; set; }
+        public bool invalid = false;
         public TruthTree(int item)
         {
             Item = item;
@@ -129,6 +131,7 @@ namespace VyrokovaLogika
             return tree;
            
         }
+
     }
 }
 
