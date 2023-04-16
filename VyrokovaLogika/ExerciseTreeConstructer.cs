@@ -12,7 +12,8 @@ namespace VyrokovaLogika
     {
         string mHtmlTree;
         TruthTree tree;
-        private bool mNotTautology;
+        private bool mSemanticContradiction;
+        private bool mTautology;
 
         public string ExerciseQuote { get; set; }
 
@@ -21,21 +22,21 @@ namespace VyrokovaLogika
             mHtmlTree = hmtlTree;
         }
 
-        public bool IsTreeOkay()
+        public void IsTreeOkay()
         {
-            TruthTreeVerifier verifier = new TruthTreeVerifier(mNotTautology, tree);
+            TruthTreeVerifierForExercises verifier = new TruthTreeVerifierForExercises(mTautology, tree, mSemanticContradiction);
             if (verifier.Verify())
             {
                 ExerciseQuote = verifier.ExerciseQuote;
-                return true;
+                return;
             }
             ExerciseQuote = verifier.ExerciseQuote;
-            return false;
         }
 
-        public TruthTree ProcessTree(bool notTautology)
+        public TruthTree ProcessTree(bool tautology, bool contradiction)
         {
-            mNotTautology = notTautology;
+            mSemanticContradiction = contradiction;
+            mTautology = tautology;
             var strippedTags = StripTree();
             CreateTree(strippedTags);
             return tree;
@@ -50,7 +51,7 @@ namespace VyrokovaLogika
                 if(tag == "</li>") { ThereWasLi = true; }
                 if (itIsItem)
                 {
-                    if (Validator.ContainsOperator(tag[0].ToString()))
+                    if (Validator.ContainsOperator(tag[0].ToString()) || Validator.ContainsNegationOnFirstPlace(tag[0].ToString()))
                     {
                         tree.mOperator = Operator.GetOperator(tag[0].ToString());
                     }
@@ -94,7 +95,7 @@ namespace VyrokovaLogika
         private List<string> StripTree()
         {
 
-            mHtmlTree = mHtmlTree.Replace("<span class=\"tf-nc\">", "<item>").Replace("</span>","</item>");
+            mHtmlTree = mHtmlTree.Replace("<span class=\"tf-nc\">", "<item>").Replace("</span>","</item>").Replace("<span class=\"tf-nc\" style=\"color: red;\">","<item>");
             string[] delimiters = { "<li>", "</li>", "<item>", "</item>", "<ul>", "</ul>" };
 
             // Split the input string by the delimiters

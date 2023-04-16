@@ -13,7 +13,6 @@ public static class ListItemsHelper
         {
             if (_listItems == null)
             {
-                // Initialize _listItems here, e.g. from a database or other data source
                 _listItems = new List<SelectListItem>();
                 SetListItems();
             }
@@ -28,18 +27,28 @@ public static class ListItemsHelper
             Converter.ConvertLogicalOperators(ref mPropositionalSentence);
 
 
-            string mPropositionalSentence1 = "(((-x|b)&(x|a)) | (x&B)) >((a|b)&(b&c))";
+            string mPropositionalSentence1 = "((-x|b)&(x|a))";
             Converter.ConvertLogicalOperators(ref mPropositionalSentence1);
 
             string mPropositionalSentence2 = "(-x|b)&(x|a)";
             Converter.ConvertLogicalOperators(ref mPropositionalSentence2);
 
+            string mPropositionalSentence3 = "(P ∧ -P)";
+            Converter.ConvertLogicalOperators(ref mPropositionalSentence3);
+
+            string mPropositionalSentence4 = " (A | B) & ((-A) & (-B))";
+            Converter.ConvertLogicalOperators(ref mPropositionalSentence4);
             SelectListItem item1 = new SelectListItem(mPropositionalSentence, mPropositionalSentence);
             SelectListItem item2 = new SelectListItem(mPropositionalSentence1, mPropositionalSentence1);
             SelectListItem item3 = new SelectListItem(mPropositionalSentence2, mPropositionalSentence2);
+            SelectListItem item4 = new SelectListItem(mPropositionalSentence3, mPropositionalSentence3);
+            SelectListItem item5 = new SelectListItem(mPropositionalSentence4, mPropositionalSentence4);
+
             _listItems.Add(item1);
             _listItems.Add(item2);
             _listItems.Add(item3);
+            _listItems.Add(item4);
+            _listItems.Add(item5);
         }
         else
         {

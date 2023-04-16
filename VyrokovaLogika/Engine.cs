@@ -59,11 +59,8 @@ namespace VyrokovaLogika
                 var pathTrees = proofSolver.ProcessTree(tree, 1);
                 isTautologyOrContradiction = proofSolver.FindContradiction(pathTrees);
             }
-            if (!isTautologyOrContradiction)
-            {
-                distinctNodes = proofSolver.distinctNodes;
-                counterModel = proofSolver.counterModel;
-            }
+            distinctNodes = proofSolver.distinctNodes;
+            counterModel = proofSolver.counterModel;
             return isTautologyOrContradiction;
         }
 

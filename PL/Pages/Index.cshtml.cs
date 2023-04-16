@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PL.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
@@ -38,12 +39,9 @@ namespace PL.Pages
         public List<SelectListItem> listItems { get; set; } = new List<SelectListItem>();
         public bool Valid { get; private set; } = true;
 
-        private List<string> formulaList = new List<string>()
-        {
-            "(p∧(q>r))>((p∧q)∨(p∧r))",
-            "(-p>-q)≡(-q>-p)",
-            "a>b"
-        };
+        public string ExerciseType { get; set; }
+
+       
 
         public string ExerciseQuote { get; set; }
 
@@ -90,45 +88,57 @@ namespace PL.Pages
         public IActionResult OnPostExercise()
         {
             button = ButtonType.Exercise;
-            string f = formulaList[1];
+            string f = ExerciseHelper.formulaList[4].Item1;
+            ExerciseType = ExerciseHelper.formulaList[4].Item2;
             Converter.ConvertLogicalOperators(ref f);
             formula = f;
             ExerciseHelper.formula = f;
             Engine engine = PrepareEngine(formula);
 
-            IsTautologyOrContradiction = engine.ProofSolver("Tautology");
-            if (!IsTautologyOrContradiction)
+            if(ExerciseType == "Not Tautology" || ExerciseType == "Tautology")
             {
-                PrintTree(engine.counterModel,true);
-                string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
-                ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
+                IsTautologyOrContradiction = engine.ProofSolver("Tautology");
             }
+            if (ExerciseType == "Not Contradiction" || ExerciseType == "Contradiction")
+            {
+                IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
+            }
+            PrintTree(engine.counterModel,true);
+            string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+            ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
+           
             return Page();
         }
 
         public IActionResult OnPostExerciseProcess(string tree)
         {
+            ExerciseType = ExerciseHelper.formulaList[4].Item2;
             button = ButtonType.Exercise;
             ExerciseTreeConstructer constructer = new ExerciseTreeConstructer(tree);
-            TruthTree truthTree = constructer.ProcessTree(true);
-            if(constructer.IsTreeOkay())
+            TruthTree truthTree = new TruthTree();
+            if (ExerciseType == "Tautology")
             {
-                formula = ExerciseHelper.formula;
-                ExerciseQuote = constructer.ExerciseQuote;
-                htmlTreeTruth.Clear();
-                PrintTree(truthTree);
-                string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
-                ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
+                truthTree = constructer.ProcessTree(true,false);
             }
-            else
+            else if(ExerciseType == "Not Tautology")
             {
-                formula = ExerciseHelper.formula;
-                ExerciseQuote = constructer.ExerciseQuote;
-                htmlTreeTruth.Clear();
-                PrintTree(truthTree);
-                string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
-                ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
+                truthTree = constructer.ProcessTree(true, true);
             }
+            else if (ExerciseType == "Contradiction")
+            {
+                truthTree = constructer.ProcessTree(false, false);
+            }
+            else if (ExerciseType == "Not Contradiction")
+            {
+                truthTree = constructer.ProcessTree(false, true);
+            }
+            constructer.IsTreeOkay();
+            formula = ExerciseHelper.formula;
+            ExerciseQuote = constructer.ExerciseQuote;
+            htmlTreeTruth.Clear();
+            PrintTree(truthTree);
+            string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+            ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
             return Page();
         }
     
@@ -153,13 +163,12 @@ namespace PL.Pages
             Engine engine = PrepareEngine(mSentence);
 
             IsTautologyOrContradiction = engine.ProofSolver("Tautology");
-            if (!IsTautologyOrContradiction)
-            {
-                distinctNodes = engine.distinctNodes;
-                PrintTree(engine.counterModel);
-                string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
-                ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
-            }
+
+            distinctNodes = engine.distinctNodes;
+            PrintTree(engine.counterModel);
+            string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+            ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
+
             return Page();
         }
 
@@ -171,13 +180,10 @@ namespace PL.Pages
             Engine engine = PrepareEngine(mSentence);
 
             IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
-            if (!IsTautologyOrContradiction)
-            {
-                distinctNodes = engine.distinctNodes;
-                PrintTree(engine.counterModel);
-                string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
-                ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
-            }
+            distinctNodes = engine.distinctNodes;
+            PrintTree(engine.counterModel);
+            string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+            ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
             return Page();
         }
 
@@ -254,20 +260,27 @@ namespace PL.Pages
             htmlTreeTruth.Add("<li>");
             if(exercise)
             {
+               
                 if (tree.literal == null)
                     htmlTreeTruth.Add("<span class=tf-nc>" + GetEnumDescription(tree.mOperator) + "=" + "0" + "</span>");
                 else
                 {
-                    htmlTreeTruth.Add("<span class=tf-nc style='color: red;>" + tree.literal + "=" + "0" + "</span>");
+                    htmlTreeTruth.Add("<span class=tf-nc>" + tree.literal + "=" + "0" + "</span>");
                 }
             }
             else 
-            { 
-                if (tree.literal == null)
-                    htmlTreeTruth.Add("<span class=tf-nc>" + GetEnumDescription(tree.mOperator) + "=" + tree.Item + "</span>");
+            {
+                string spanValue;
+                if (tree.invalid) spanValue = "<span class=tf-nc style='color: red;'>";
                 else
                 {
-                    htmlTreeTruth.Add("<span class=tf-nc>" + tree.literal + "=" + tree.Item + "</span>");
+                    spanValue = "<span class=tf-nc>";
+                }
+                if (tree.literal == null)
+                    htmlTreeTruth.Add(spanValue + GetEnumDescription(tree.mOperator) + "=" + tree.Item + "</span>");
+                else
+                {
+                    htmlTreeTruth.Add(spanValue + tree.literal + "=" + tree.Item + "</span>");
                 }
             }
             if (tree.ChildNodeLeft != null)

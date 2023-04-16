@@ -97,21 +97,32 @@ namespace VyrokovaLogika
             return leafNodes;
         }
 
+        public void MarkContradiction(string searchedLiteral)
+        {
+            Traverse(this,null, searchedLiteral);
+        }
+
         // Private helper method to recursively traverse the tree
-        private void Traverse(TruthTree node, List<TruthTree> leafNodes)
+        private void Traverse(TruthTree node, List<TruthTree> leafNodes = null, string searchedLiteral = null)
         {
             if (node == null) return;
 
             if (node.ChildNodeLeft == null && node.ChildNodeRight == null)
             {
+                if(leafNodes != null)
                 // Node has no children, so it's a leaf node
                 leafNodes.Add(node);
+                if(searchedLiteral != null)
+                {
+                    if(searchedLiteral == node.literal) node.invalid = true;
+                }
+
             }
             else
             {
                 // Node has children, so recursively traverse its children
-                Traverse(node.ChildNodeLeft, leafNodes);
-                Traverse(node.ChildNodeRight, leafNodes);
+                Traverse(node.ChildNodeLeft, leafNodes,searchedLiteral);
+                Traverse(node.ChildNodeRight, leafNodes, searchedLiteral);
             }
         }
 

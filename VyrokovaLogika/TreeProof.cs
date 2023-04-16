@@ -203,11 +203,12 @@ namespace VyrokovaLogika
 
         public bool FindContradiction(List<TruthTree> Trees)
         {
+            List<TruthTree> elementalNodes = new List<TruthTree>();
             foreach (var tree in Trees)
             {
                 int number = 0;
                 bool contradiction = false;
-                var elementalNodes = tree.GetLeafNodes();
+                elementalNodes = tree.GetLeafNodes();
                 foreach (var node in elementalNodes)
                 {
                     number++;
@@ -229,6 +230,11 @@ namespace VyrokovaLogika
 
                 }
             }
+            counterModel = Trees.LastOrDefault();
+            distinctNodes = elementalNodes.
+                DistinctBy(node => new { node.literal, node.Item })
+          .Select(node => new Tuple<string, int>(node.literal, node.Item))
+          .ToList();
             return true;
         }
     }
