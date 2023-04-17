@@ -175,7 +175,8 @@ namespace PL.Pages
             string mSentence = getFormula();
             if (!Valid) return Page();
             Engine engine = PrepareEngine(mSentence);
-
+            engine.ConvertTreeToDag();
+            IsTautologyOrContradiction = engine.ProofSolver("Tautology");
             engine.PrepareDAG();
             TreeConnections = engine.TreeConnections;
             DAGNodes = engine.DAGNodes;

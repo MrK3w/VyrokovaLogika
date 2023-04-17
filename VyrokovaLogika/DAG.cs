@@ -15,6 +15,7 @@ namespace VyrokovaLogika
         public List<Tuple<string, string>> TreeConnections { get; } = new List<Tuple<string, string>>();
 
         private List<Tuple<string, int>> DAGNodesNumbered = new List<Tuple<string, int>>();
+        private List<Tuple<string, int>> DAGNodesNumberedTruthTree = new List<Tuple<string, int>>();
         private DAGNode dag;
 
         public DAG(DAGNode dag)
@@ -22,9 +23,9 @@ namespace VyrokovaLogika
             this.dag = dag;
         }
 
-        internal void PrepareDAG()
+        internal void PrepareDAG(TruthTree counterModel = null)
         {
-            PrepareDAGNodesList(this.dag);
+            PrepareDAGNodesList(this.dag, counterModel);
             DAGNodes = DAGNodes.Distinct().ToList();
 
             PrepareDAGNodesListConnection(this.dag);
@@ -32,16 +33,17 @@ namespace VyrokovaLogika
             ReplaceConnectionNumbersForString();
         }
 
-        private void PrepareDAGNodesList(DAGNode tree)
+        private void PrepareDAGNodesList(DAGNode tree, TruthTree truthTree)
         {
             DAGNodesNumbered.Add((new Tuple<string, int>(tree.Item.mSentence, tree.Item.number)));
+            DAGNodesNumberedTruthTree.Add((new Tuple<string, int>(truthTree.Item.ToString(), truthTree.number)));
             DAGNodes.Add(tree.Item.mSentence);
             if (tree.LeftChild != null)
             {
-                PrepareDAGNodesList(tree.LeftChild);
+                PrepareDAGNodesList(tree.LeftChild,truthTree.ChildNodeLeft);
                 if (tree.RightChild != null)
                 {
-                    PrepareDAGNodesList(tree.RightChild);
+                    PrepareDAGNodesList(tree.RightChild, truthTree.ChildNodeRight);
                 }
             }
         }
@@ -75,11 +77,36 @@ namespace VyrokovaLogika
         {
             foreach (var connection in TreeConnectionsNumbered)
             {
-                TreeConnections.Add(new Tuple<string, string>(SearchByNumber(connection.Item1), SearchByNumber(connection.Item2)));
+                var ConnectionsTuple = new Tuple<string, string>(SearchByNumber(connection.Item1), SearchByNumber(connection.Item2));
+                var firstItem = AddEvaluationValuesToTuple(ConnectionsTuple.Item1);
+                var secondItem = AddEvaluationValuesToTuple(ConnectionsTuple.Item2);
+                ConnectionsTuple = new Tuple<string, string>(firstItem,secondItem);
+                TreeConnections.Add(ConnectionsTuple);
             }
         }
 
-        // Method to search for a corresponding tuple by number
+        private string AddEvaluationValuesToTuple(string item)
+        {
+            List<int> result = DAGNodesNumbered.Where(t => t.Item1 == item).Select(t => t.Item2).ToList();
+            result = result.Distinct().ToList();
+            List<string> newValuesList = new List<string>();
+            foreach (var r in result)
+            {
+                var valueToAdd = DAGNodesNumberedTruthTree
+                                .SingleOrDefault(tuple => tuple.Item2 == r)?.Item1; 
+
+                if (valueToAdd != null && !newValuesList.Contains(valueToAdd))
+                {
+                    newValuesList.Add(valueToAdd);
+                }
+
+            }
+            foreach (var newValue in newValuesList)
+            item += $" {newValue} ";
+            return item;
+           
+        }
+
         public string SearchByNumber(int number)
         {
             return DAGNodesNumbered.FirstOrDefault(t => t.Item2 == number).Item1;

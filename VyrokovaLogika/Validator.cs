@@ -24,6 +24,7 @@ namespace VyrokovaLogika
             Converter.RemoveExcessParentheses(ref mPropositionalSentence);
             //check if sentence is valid
             if (mPropositionalSentence.Length == 1 && Validator.ContainsOperator(mPropositionalSentence)) return false;
+            if (!Validator.ContainsLetter(mPropositionalSentence)) return false;
             if (!Validator.ValidateSides(mPropositionalSentence)) return false;
             if (!Validator.ValidateParenthesses(mPropositionalSentence)) return false;
             if (!Validator.RightCharacters(mPropositionalSentence)) return false;
@@ -35,9 +36,12 @@ namespace VyrokovaLogika
 
         private static bool ValidateSides(string mPropositionalSentence)
         {
+            if (Validator.ContainsOperator(mPropositionalSentence[0].ToString())) return false;
             for (int i = 0; i < mPropositionalSentence.Length - 2; i++)
             {
                 if (Validator.ContainsOperator(mPropositionalSentence[i].ToString()) && !(isVariable(mPropositionalSentence[i + 1].ToString()) || mPropositionalSentence[i + 1] == '(' || mPropositionalSentence[i+1] == '¬'))
+                    return false;
+                if (Validator.ContainsOperator(mPropositionalSentence[i].ToString()) && !(isVariable(mPropositionalSentence[i - 1].ToString()) || mPropositionalSentence[i - 1] == ')' || mPropositionalSentence[i -1] == '¬'))
                     return false;
             }
             if (Validator.ContainsOperator(mPropositionalSentence[mPropositionalSentence.Length - 1].ToString())) return false;
@@ -103,6 +107,18 @@ namespace VyrokovaLogika
         {
             string pattern = @"^[a-zA-Z]*$";
             return Regex.IsMatch(vl, pattern);
+        }
+
+        public static bool ContainsLetter(string vl)
+        {
+            foreach (char c in vl)
+            {
+                if (char.IsLetter(c))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static bool ContainsOperator(string vl)

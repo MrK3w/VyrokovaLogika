@@ -39,10 +39,15 @@ namespace VyrokovaLogika
             //BUILD TREE
             tree = new Tree(mainNode);
             BuildTree(mainNode, tree);
+        }
+
+        public void ConvertTreeToDag()
+        {
             //CONVERT TREE TO DAG
             var dagConverter = new ASTtoDAGConverter();
             Dag = dagConverter.Convert(tree);
         }
+
 
         public bool ProofSolver(string proofSearch)
         {
@@ -92,9 +97,21 @@ namespace VyrokovaLogika
         public void PrepareDAG()
         {
             DAG dagConvert = new DAG(Dag);
-            dagConvert.PrepareDAG();
-            DAGNodes = dagConvert.DAGNodes;
+            AddNumbersToTruhTree();
+            dagConvert.PrepareDAG(counterModel);
+          
             TreeConnections = dagConvert.TreeConnections;
+
+            foreach (var treeConnect in TreeConnections)
+            {
+                if (!DAGNodes.Contains(treeConnect.Item1)) DAGNodes.Add(treeConnect.Item1);
+                if (!DAGNodes.Contains(treeConnect.Item2)) DAGNodes.Add(treeConnect.Item2);
+            }
+        }
+
+        private void AddNumbersToTruhTree()
+        {
+            counterModel.AddNumbers(tree);
         }
     }
 

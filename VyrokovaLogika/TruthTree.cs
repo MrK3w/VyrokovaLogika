@@ -17,6 +17,7 @@ namespace VyrokovaLogika
         public string literal;
         public int Item { get; set; }
         public bool invalid = false;
+        public int number = 0;
         public TruthTree(int item)
         {
             Item = item;
@@ -144,6 +145,23 @@ namespace VyrokovaLogika
            
         }
 
+        public void AddNumbers(Tree tree)
+        {
+            AddNumbers(tree, this);
+        }
+
+        private TruthTree AddNumbers(Tree tree, TruthTree truthTree)
+        {
+            if(tree.IsLeaf)
+            {
+               truthTree.number = tree.Item.number;
+               return truthTree;
+            }
+            if (tree.childNodeLeft != null) AddNumbers(tree.childNodeLeft, truthTree.ChildNodeLeft);
+            if(tree.childNodeRight != null) AddNumbers(tree.childNodeRight, truthTree.ChildNodeRight);
+            truthTree.number = tree.Item.number;
+            return truthTree;
+        }
     }
 }
 
