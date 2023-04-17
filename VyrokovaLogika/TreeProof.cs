@@ -73,6 +73,7 @@ namespace VyrokovaLogika
                         }
                         if (childrenTree.ChildNodeLeft == null && childrenTree.ChildNodeRight == null)
                         {
+                           
                             currentTree.AddChild(childrenTree.Item, "right");
                             currentTree.ChildNodeRight.literal = childrenTree.literal;
                             currentTree.ChildNodeRight.mOperator = childrenTree.mOperator;
@@ -105,11 +106,13 @@ namespace VyrokovaLogika
                         {
                             newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i], currentTreeListFromRightSide[j]);
                         }
+                        //(A > B) | C
                         if (currentTreeListFromRightSide[j].ChildNodeLeft == null && currentTreeListFromRightSide[j].ChildNodeRight != null && currentTreeListFromLeftSide[i].ChildNodeLeft
                             != null && currentTreeListFromLeftSide[i].ChildNodeRight != null)
                         {
                             newTemporaryTreeForCombining.AddChild(currentTreeListFromLeftSide[i], currentTreeListFromRightSide[j].ChildNodeRight);
                         }
+
                         if (currentTreeListFromRightSide[j].ChildNodeLeft != null && currentTreeListFromRightSide[j].ChildNodeRight == null && currentTreeListFromLeftSide[i].ChildNodeLeft
                            != null && currentTreeListFromLeftSide[i].ChildNodeRight != null)
                         {
@@ -166,7 +169,9 @@ namespace VyrokovaLogika
                         }
                         else
                         {
-                            newTemporaryTree.AddChild(currentTreeListFromLeftSide[i].ChildNodeLeft, "left");
+                            if (currentTreeListFromLeftSide[i].ChildNodeLeft != null && currentTreeListFromLeftSide[i].ChildNodeRight != null)
+                                newTemporaryTree.AddChild(currentTreeListFromLeftSide[i], "left");
+                            else newTemporaryTree.AddChild(currentTreeListFromLeftSide[i].ChildNodeLeft, "left");
 
                         }
                         combinedTrees.Add(newTemporaryTree);
