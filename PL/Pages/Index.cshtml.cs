@@ -97,7 +97,6 @@ namespace PL.Pages
 
         private void PrepareTree(Tree tree)
         {
-            xd += tree.Item.mSentence + "<br>";
             if(tree.childNodeLeft != null)
             {
                 PrepareTree(tree.childNodeLeft);
@@ -293,14 +292,23 @@ namespace PL.Pages
         private void PrintTree(Tree tree, int i = 0)
         {
             htmlTree.Add("<li>");
-            if (tree.Item.mOperator != Operator.OperatorEnum.EMPTY)
-            {
-                htmlTree.Add("<span class=tf-nc>" + GetEnumDescription(tree.Item.mOperator) + "</span>");
-            }
-            else
+            if (button == ButtonType.Draw)
             {
                 htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
             }
+            else
+            {
+                if (tree.Item.mOperator != Operator.OperatorEnum.EMPTY)
+                {
+                    htmlTree.Add("<span class=tf-nc>" + GetEnumDescription(tree.Item.mOperator) + "</span>");
+                }
+                else
+                {
+                    htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
+                }
+            }
+
+          
             if (tree.childNodeLeft != null && i < 1000)
             {
                 htmlTree.Add("<ul>");

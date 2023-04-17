@@ -4,9 +4,9 @@
 }
 
 svg {
-    width: 2000px;
-    height: 2000px;
-    transform: translate(50px, -700px);
+    width: 1500px;
+    height: 800px;
+    transform: translate(150px, -700px);
     z-index: 9999;
 
 }
