@@ -22,7 +22,9 @@ namespace PL.Pages
             CheckTautology,
             CheckContradiction,
             Exercise,
-            Draw
+            Draw,
+            CheckTautologyDAG,
+            CheckContradictionDAG
         }
         private string vl;
         private string vl1;
@@ -176,12 +178,42 @@ namespace PL.Pages
             if (!Valid) return Page();
             Engine engine = PrepareEngine(mSentence);
             engine.ConvertTreeToDag();
-            IsTautologyOrContradiction = engine.ProofSolver("Tautology");
             engine.PrepareDAG();
             TreeConnections = engine.TreeConnections;
             DAGNodes = engine.DAGNodes;
             return Page();
         }
+
+        public IActionResult OnPostCheckTautologyDAG()
+        {
+            button = ButtonType.CheckTautologyDAG;
+            string mSentence = getFormula();
+            if (!Valid) return Page();
+            Engine engine = PrepareEngine(mSentence);
+            engine.ConvertTreeToDag();
+            IsTautologyOrContradiction = engine.ProofSolver("Tautology");
+            engine.PrepareDAG();
+            TreeConnections = engine.TreeConnections;
+            DAGNodes = engine.DAGNodes;
+            distinctNodes = engine.distinctNodes;
+            return Page();
+        }
+
+        public IActionResult OnPostCheckContradictionDAG()
+        {
+            button = ButtonType.CheckContradictionDAG;
+            string mSentence = getFormula();
+            if (!Valid) return Page();
+            Engine engine = PrepareEngine(mSentence);
+            engine.ConvertTreeToDag();
+            IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
+            engine.PrepareDAG();
+            TreeConnections = engine.TreeConnections;
+            DAGNodes = engine.DAGNodes;
+            distinctNodes = engine.distinctNodes;
+            return Page();
+        }
+
 
         public IActionResult OnPostCheckTautology()
         {

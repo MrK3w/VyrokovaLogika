@@ -12,11 +12,12 @@ function makeDAG(myList, treeConnections) {
         // This time it's a group of elements: http://www.w3.org/TR/SVG/struct.html#Groups
         var ui = Viva.Graph.svg('g'),
             // Create SVG text element with user id as content
-            svgText = Viva.Graph.svg('text').attr('y', '-2px').attr('x','-4').text(node.id),
+            svgText = Viva.Graph.svg('text').attr('y', '16px').attr('x','-15px').text(node.id),
             img = Viva.Graph.svg('rect')
-                .attr('width', nodeSize)
-                .attr('height', nodeSize)
-                .attr('fill', "yellow");
+                .attr('width', 4)
+                .attr('height', 4)
+                .attr('fill', "blue")
+                .attr('font-size', '12px');
 
         ui.append(svgText);
         ui.append(img);
@@ -26,7 +27,7 @@ function makeDAG(myList, treeConnections) {
         // we have to deal with transforms: http://www.w3.org/TR/SVG/coords.html#SVGGlobalTransformAttribute
         nodeUI.attr('transform',
             'translate(' +
-            (pos.x - nodeSize / 2) + ',' + (pos.y - nodeSize / 2) +
+            (pos.x - 4 / 2) + ',' + (pos.y - 4 / 2) +
             ')');
     });
 
@@ -109,7 +110,11 @@ function makeDAG(myList, treeConnections) {
     document.body.appendChild(container); // Append the container to the DOM
 
     container.style.left = '100px';
-    container.style.bottom = '-200px';
+
+    container.addEventListener('wheel', function (event) {
+        event.preventDefault(); // Prevent scrolling on the container div
+    });
+
     // Render the graph
     var renderer = Viva.Graph.View.renderer(graph, {
         graphics: graphics,

@@ -80,6 +80,10 @@
                                     <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Draw tree' name='submit' asp-page-handler="DrawTree" />
                                     <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Exercise' name='submit' asp-page-handler="Exercise" />
                                 </div>
+                                <div class="btn-group flex-fill" role="group" aria-label="Third group">
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Draw DAG Tautology' name='submit' asp-page-handler="CheckTautologyDAG" />
+                                <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Draw DAG Contradiction' name='submit' asp-page-handler="CheckContradictionDAG" />
+                            </div>
                             </div>
                         </div>
                     </form>
@@ -137,6 +141,79 @@
                             </div>
                             <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
                         }
+
+                        @if(Model.button == IndexModel.ButtonType.CheckTautologyDAG)
+                            {
+                            @if (!Model.IsTautologyOrContradiction)
+                            {
+                                <p> This is not tautology!</p>
+                                <p>Counterarguments</p>
+                                <!-- Define the table structure -->
+                            }
+                            else
+                            {
+                                <p> This is tautology!</p>
+                                <p> Example of semantic contradiction</p>
+                            }
+                            <div class="table-container">
+
+                                <table>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Literal</th>
+                                    </tr>
+                                    @foreach (var node in Model.distinctNodes)
+                                    {
+                                        <tr>
+                                            <td>@node.Item1</td>
+                                            <td>@node.Item2</td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                            <script>
+                                var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
+                                                                var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
+                                    makeDAG(myList, treeConnections);
+                            </script>
+                        }
+
+                        @if (Model.button == IndexModel.ButtonType.CheckContradictionDAG)
+                        {
+                            
+                            @if (!Model.IsTautologyOrContradiction)
+                            {
+                                <p> This is not contradiction!</p>
+                                <p>Counterarguments</p>
+                            }
+                            else
+                            {
+                                <p> This is Contaradicton!</p>
+                                <p> Example of semantic contradiction</p>
+                            }
+                            <div class="table-container">
+
+                                <table>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Literal</th>
+                                    </tr>
+                                    @foreach (var node in Model.distinctNodes)
+                                    {
+                                        <tr>
+                                            <td>@node.Item1</td>
+                                            <td>@node.Item2</td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                            <script>
+                                var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
+                                                                                                var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
+                                    makeDAG(myList, treeConnections);
+                            </script>
+                        }
+
                         @if (Model.button == IndexModel.ButtonType.CheckContradiction)
                         {
                             @if (!Model.IsTautologyOrContradiction)

@@ -4,10 +4,11 @@
 }
 
 svg {
-    width: 800px;
-    height: 600px;
-    transform: translate(300px, -1100px);
-    pointer-events: none;
+    width: 2000px;
+    height: 2000px;
+    transform: translate(50px, -700px);
+    z-index: 9999;
+
 }
 
 .table-container {

@@ -97,8 +97,12 @@ namespace VyrokovaLogika
         public void PrepareDAG()
         {
             DAG dagConvert = new DAG(Dag);
-            AddNumbersToTruhTree();
-            dagConvert.PrepareDAG(counterModel);
+            if (counterModel.mOperator != Operator.OperatorEnum.EMPTY)
+            {
+                AddNumbersToTruhTree();
+                dagConvert.PrepareDAG(counterModel);
+            }
+            else dagConvert.PrepareDAG();
           
             TreeConnections = dagConvert.TreeConnections;
 

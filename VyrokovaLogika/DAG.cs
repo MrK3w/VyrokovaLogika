@@ -25,12 +25,31 @@ namespace VyrokovaLogika
 
         internal void PrepareDAG(TruthTree counterModel = null)
         {
+            if(counterModel != null)
             PrepareDAGNodesList(this.dag, counterModel);
+            else
+            {
+                PrepareDAGNodesList(this.dag);
+            }
             DAGNodes = DAGNodes.Distinct().ToList();
 
             PrepareDAGNodesListConnection(this.dag);
             RemoveDuplicates();
             ReplaceConnectionNumbersForString();
+        }
+
+        private void PrepareDAGNodesList(DAGNode dag)
+        {
+            DAGNodesNumbered.Add((new Tuple<string, int>(dag.Item.mSentence, dag.Item.number)));
+            DAGNodes.Add(dag.Item.mSentence);
+            if (dag.LeftChild != null)
+            {
+                PrepareDAGNodesList(dag.LeftChild);
+                if (dag.RightChild != null)
+                {
+                    PrepareDAGNodesList(dag.RightChild);
+                }
+            }
         }
 
         private void PrepareDAGNodesList(DAGNode tree, TruthTree truthTree)
@@ -102,7 +121,7 @@ namespace VyrokovaLogika
 
             }
             foreach (var newValue in newValuesList)
-            item += $" {newValue} ";
+            item += $"= {newValue} ";
             return item;
            
         }
