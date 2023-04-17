@@ -88,23 +88,28 @@ namespace PL.Pages
             if (!Valid) return Page();
             Engine engine = PrepareEngine(mSentence);
 
-            PrintTree(engine.tree);
-            PrepareTree(engine.tree);
+            DrawTree(engine.tree);
             string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
             ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
             return Page();
         }
 
-        private void PrepareTree(Tree tree)
+        private void DrawTree(Tree tree)
         {
-            if(tree.childNodeLeft != null)
+            htmlTree.Add("<li>");
+            htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
+
+            if (tree.childNodeLeft != null)
             {
-                PrepareTree(tree.childNodeLeft);
+                htmlTree.Add("<ul>");
+                DrawTree(tree.childNodeLeft);
+                if (tree.childNodeRight != null)
+                {
+                    DrawTree(tree.childNodeRight);
+                }
+                htmlTree.Add("</ul>");
             }
-            if(tree.childNodeRight != null)
-            {
-                PrepareTree(tree.childNodeRight);
-            }
+            htmlTree.Add("</li>");
         }
 
         public IActionResult OnPostExercise()
@@ -289,33 +294,25 @@ namespace PL.Pages
             return null;
         }
 
-        private void PrintTree(Tree tree, int i = 0)
+        private void PrintTree(Tree tree)
         {
             htmlTree.Add("<li>");
-            if (button == ButtonType.Draw)
+            if (tree.Item.mOperator != Operator.OperatorEnum.EMPTY)
             {
-                htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
+                htmlTree.Add("<span class=tf-nc>" + GetEnumDescription(tree.Item.mOperator) + "</span>");
             }
             else
             {
-                if (tree.Item.mOperator != Operator.OperatorEnum.EMPTY)
-                {
-                    htmlTree.Add("<span class=tf-nc>" + GetEnumDescription(tree.Item.mOperator) + "</span>");
-                }
-                else
-                {
-                    htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
-                }
+                htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
             }
 
-          
-            if (tree.childNodeLeft != null && i < 1000)
+            if (tree.childNodeLeft != null)
             {
                 htmlTree.Add("<ul>");
-                PrintTree(tree.childNodeLeft, i + 1);
+                PrintTree(tree.childNodeLeft);
                 if (tree.childNodeRight != null)
                 {
-                    PrintTree(tree.childNodeRight, i + 1);
+                    PrintTree(tree.childNodeRight);
                 }
                 htmlTree.Add("</ul>");
             }
