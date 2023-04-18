@@ -21,6 +21,15 @@ $(document).ready(function () {
     });
 });
 
+$(document).ready(function () {
+    // Attach a click event handler to the #myButton element
+    $("#myButton2").on("click", function () {
+        // Call your custom JavaScript function here
+        myFunctionDAG();
+    });
+});
+
+
 // Define your custom JavaScript function
 function myFunction() {
 

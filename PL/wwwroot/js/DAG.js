@@ -1,9 +1,10 @@
+var network;
+
 function makeDAG(myList, treeConnections, exercise = false) {
     var nodes = new vis.DataSet([]);
     var edges = new vis.DataSet([]);
 
     for (let i = 0; i < myList.length; i++) {
-        console.log("node " + myList[i]);
         var node = { id: myList[i], label: myList[i], size: 100, font: { color: 'white', size: 16 } };
         if (i == 0) {
             node.color = 'red';
@@ -12,7 +13,6 @@ function makeDAG(myList, treeConnections, exercise = false) {
     }
 
     for (let i = 0; i < treeConnections.length; i++) {
-        console.log("edges " + treeConnections[i].item1 + "|" + treeConnections[i].item2);
         edges.add({ from: treeConnections[i].item1, to: treeConnections[i].item2, arrows: 'to' });
     }
 
@@ -22,7 +22,7 @@ function makeDAG(myList, treeConnections, exercise = false) {
         edges: edges
     };
     var options = {};
-    var network = new vis.Network(container, data, options);
+    network = new vis.Network(container, data, options);
 
     if (exercise) {
 
@@ -31,15 +31,20 @@ function makeDAG(myList, treeConnections, exercise = false) {
                 var nodeId = params.nodes[0];
                 var node = nodes.get(nodeId);
 
-                // Extract the current label and value from the node label
                 var currentLabel = node.label;
-                var currentValue = parseInt(currentLabel.split('=')[1]) || 0; // Extract the value after '=' and parse as integer, default to 0 if not present
+                var currentParts = currentLabel.split('=');
+                var currentValue = currentParts[1].trim();
 
-                // Toggle the value between 0 and 1
-                var newValue = currentValue === 0 ? 1 : 0;
-
-                // Update the node label with the new value
-                var newLabel = currentLabel.split('=')[0] + '=' + newValue; // Concatenate the label before '=' with the new value
+                // Toggle the value between 1, 0, and 0 = 1
+                var newValue;
+                if (currentParts.length === 3) {
+                    newValue = "0";
+                } else if (currentValue === "0") {
+                    newValue = "1";
+                } else if (currentValue === "1") {
+                    newValue = "0 = 1";
+                }
+                var newLabel = currentLabel.split('=')[0] + '=' + newValue;
                 node.label = newLabel;
                 nodes.update(node); // Call update() to apply the changes to the node
             }

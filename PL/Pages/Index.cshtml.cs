@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using PL.Helpers;
 using System;
 using System.Collections.Generic;
@@ -128,7 +129,6 @@ namespace PL.Pages
             formula = f;
             ExerciseHelper.formula = f;
             Engine engine = PrepareEngine(formula);
-            Console.WriteLine(f);
             if (ExerciseType == "Not Tautology" || ExerciseType == "Tautology")
             {
                 IsTautologyOrContradiction = engine.ProofSolver("Tautology");
@@ -183,25 +183,41 @@ namespace PL.Pages
 
         public IActionResult OnPostExerciseDAG()
         {
+            _ = getFormula();
             button = ButtonType.ExerciseDAG;
-            string mSentence = getFormula();
-            if (!Valid) return Page();
-            Engine engine = PrepareEngine(mSentence);
+            ExerciseHelper.GeneratateNumber();
+            int number = ExerciseHelper.number;
+            string f = ExerciseHelper.formulaList[number].Item1;
+            ExerciseType = ExerciseHelper.formulaList[number].Item2;
+            Converter.ConvertLogicalOperators(ref f);
+            Validator.ValidateSentence(ref f);
+            formula = f;
+            ExerciseHelper.formula = f;
+            Valid = true;
+            Engine engine = PrepareEngine(formula);
+            if (ExerciseType == "Not Tautology" || ExerciseType == "Tautology")
+            {
+                IsTautologyOrContradiction = engine.ProofSolver("Tautology");
+            }
+            if (ExerciseType == "Not Contradiction" || ExerciseType == "Contradiction")
+            {
+                IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
+            }
             engine.ConvertTreeToDag();
             engine.PrepareDAG();
             TreeConnections = engine.TreeConnections;
             DAGNodes = engine.DAGNodes;
-
             return Page();
         }
 
-        public IActionResult OnPostExerciseProcessDAG(string dag)
+        public IActionResult OnPostExerciseProcessDAG(string DAGNodes, string DAGPath)
         {
 
             int number = ExerciseHelper.number;
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
             button = ButtonType.Exercise;
-            
+            List<JsonNode> nodeList = JsonConvert.DeserializeObject<List<JsonNode>>(DAGNodes);
+            List<Edge> edgeList = JsonConvert.DeserializeObject<List<Edge>>(DAGPath);
             return Page();
         }
 
