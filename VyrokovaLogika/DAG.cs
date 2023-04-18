@@ -55,7 +55,7 @@ namespace VyrokovaLogika
         private void PrepareDAGNodesList(DAGNode tree, TruthTree truthTree)
         {
             DAGNodesNumbered.Add((new Tuple<string, int>(tree.Item.mSentence, tree.Item.number)));
-            DAGNodesNumberedTruthTree.Add((new Tuple<string, int>(truthTree.Item.ToString(), truthTree.number)));
+            DAGNodesNumberedTruthTree.Add((new Tuple<string, int>(truthTree.Item.ToString(), tree.Item.number)));
             DAGNodes.Add(tree.Item.mSentence);
             if (tree.LeftChild != null)
             {
@@ -108,19 +108,17 @@ namespace VyrokovaLogika
         {
             List<int> result = DAGNodesNumbered.Where(t => t.Item1 == item).Select(t => t.Item2).ToList();
             result = result.Distinct().ToList();
-            List<string> newValuesList = new List<string>();
+            List<string> valueToAdd = new List<string>();
             foreach (var r in result)
             {
-                var valueToAdd = DAGNodesNumberedTruthTree
-                                .SingleOrDefault(tuple => tuple.Item2 == r)?.Item1; 
-
-                if (valueToAdd != null && !newValuesList.Contains(valueToAdd))
-                {
-                    newValuesList.Add(valueToAdd);
-                }
+                valueToAdd = DAGNodesNumberedTruthTree
+                    .Where(tuple => tuple.Item2 == r)
+                    .Select(tuple => tuple.Item1)
+                    .ToList();
 
             }
-            foreach (var newValue in newValuesList)
+            valueToAdd = valueToAdd.Distinct().ToList();
+            foreach (var newValue in valueToAdd)
             item += $"= {newValue} ";
             return item;
            

@@ -45,10 +45,7 @@ namespace VyrokovaLogika
                     SeparateByBrackets(vl);
                     return;
                 }
-                else
-                {
-                    Console.WriteLine("error");
-                }
+            
             }
             //if we need to separate by operator firstly
             if(Validator.ContainsOperator(vl))
