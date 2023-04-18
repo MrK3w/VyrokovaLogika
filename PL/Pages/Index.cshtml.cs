@@ -25,7 +25,8 @@ namespace PL.Pages
             Exercise,
             Draw,
             CheckTautologyDAG,
-            CheckContradictionDAG
+            CheckContradictionDAG,
+            ExerciseDAG
         }
         private string vl;
         private string vl1;
@@ -143,6 +144,7 @@ namespace PL.Pages
             return Page();
         }
 
+    
         public IActionResult OnPostExerciseProcess(string tree)
         {
 
@@ -178,7 +180,31 @@ namespace PL.Pages
             ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
             return Page();
         }
-    
+
+        public IActionResult OnPostExerciseDAG()
+        {
+            button = ButtonType.ExerciseDAG;
+            string mSentence = getFormula();
+            if (!Valid) return Page();
+            Engine engine = PrepareEngine(mSentence);
+            engine.ConvertTreeToDag();
+            engine.PrepareDAG();
+            TreeConnections = engine.TreeConnections;
+            DAGNodes = engine.DAGNodes;
+
+            return Page();
+        }
+
+        public IActionResult OnPostExerciseProcessDAG(string dag)
+        {
+
+            int number = ExerciseHelper.number;
+            ExerciseType = ExerciseHelper.formulaList[number].Item2;
+            button = ButtonType.Exercise;
+            
+            return Page();
+        }
+
         public IActionResult OnPostCreateDAG()
         {
             button = ButtonType.DAG;
