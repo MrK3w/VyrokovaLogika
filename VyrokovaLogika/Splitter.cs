@@ -208,35 +208,5 @@ namespace VyrokovaLogika
             }
             return null;
         }
-
-        //DE MORGANS LAWS
-        private static void Laws(ref string part, ref string op, ref string secondPart)
-        {
-            switch (op[0])
-            {
-                case '⇒':
-                    part = part;
-                    op = "∧";
-                    secondPart = '¬' + secondPart;
-                    break;
-                case '≡':
-                    part = '¬' + part;
-                    op = "≡";
-                    secondPart = '¬' + secondPart;
-                    break;
-                case '∨':
-                    part = '¬' + part;
-                    op = "∧";
-                    secondPart = '¬' + secondPart;
-                    break;
-                case '∧':
-                    part = '¬' + part;
-                    op = "∨";
-                    secondPart = '¬' + secondPart;
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 }

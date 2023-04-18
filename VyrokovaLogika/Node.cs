@@ -12,12 +12,10 @@ namespace VyrokovaLogika
         public string mSentence { get; set; }
         public int number;
         public Operator.OperatorEnum mOperator { get; set; }
-        public int valueMustBe { get; set; }
         public int level;
 
         public Node(string sentence, int level = 1)
         {
-            if (level == 1) valueMustBe = 0;
             mSentence = sentence;
             this.level = level;
         }

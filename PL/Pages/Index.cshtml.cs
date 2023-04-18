@@ -17,6 +17,7 @@ namespace PL.Pages
     {
         public enum ButtonType
         {
+            None,
             DAG,
             SyntaxTree,
             CheckTautology,
@@ -114,6 +115,8 @@ namespace PL.Pages
 
         public IActionResult OnPostExercise()
         {
+
+            _ = getFormula();
             button = ButtonType.Exercise;
             ExerciseHelper.GeneratateNumber();
             int number = ExerciseHelper.number;
@@ -142,6 +145,7 @@ namespace PL.Pages
 
         public IActionResult OnPostExerciseProcess(string tree)
         {
+
             int number = ExerciseHelper.number;
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
             button = ButtonType.Exercise;

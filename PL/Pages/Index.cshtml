@@ -13,6 +13,7 @@
     <script src="~/js/DAG.js"></script>
     <script src="~/js/jquery-1.10.2.min.js"></script>
     <script src="~/js/Exercise.js"></script>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <link rel="stylesheet" href="~/css/styles.css" />
 </head>
 
@@ -91,16 +92,17 @@
                     {
                         @if (Model.button == IndexModel.ButtonType.DAG)
                         {
+                            <div id="mynetwork">
+                            </div>
                             <script>
-                                var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
-                                var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
+                                var myList = @Html.Raw(Json.Serialize(Model.DAGNodes));
+                                var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
                                 makeDAG(myList, treeConnections);
+                            
                             </script>
                         }
                         @if (Model.button == IndexModel.ButtonType.SyntaxTree)
                         {
-
-
                             @if (Model.ConvertedTree != null)
                             {
 
@@ -115,7 +117,6 @@
                             {
                                 <p> This is not tautology!</p>
                                 <p>Counterarguments</p>
-                                <!-- Define the table structure -->
                                 
                             }
                             else
@@ -171,24 +172,28 @@
                                     }
                                 </table>
                             </div>
+
+                            <div id="mynetwork">
+                            </div>
                             <script>
-                                var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
-                                                                var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
-                                    makeDAG(myList, treeConnections);
+                                var myList = @Html.Raw(Json.Serialize(Model.DAGNodes));
+                                var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
+                                makeDAG(myList, treeConnections);
+
                             </script>
                         }
 
                         @if (Model.button == IndexModel.ButtonType.CheckContradictionDAG)
                         {
-                            
                             @if (!Model.IsTautologyOrContradiction)
                             {
                                 <p> This is not contradiction!</p>
                                 <p>Counterarguments</p>
+                                <!-- Define the table structure -->
                             }
                             else
                             {
-                                <p> This is Contaradicton!</p>
+                                <p> This is contradiction!</p>
                                 <p> Example of semantic contradiction</p>
                             }
                             <div class="table-container">
@@ -207,10 +212,14 @@
                                     }
                                 </table>
                             </div>
+
+                            <div id="mynetwork">
+                            </div>
                             <script>
-                                var myList = @Html.Raw(Json.Serialize(Model.DAGNodes))
-                                                                                                var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections))
-                                    makeDAG(myList, treeConnections);
+                                var myList = @Html.Raw(Json.Serialize(Model.DAGNodes));
+                                var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
+                                makeDAG(myList, treeConnections);
+
                             </script>
                         }
 
