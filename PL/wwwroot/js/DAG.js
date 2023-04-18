@@ -7,13 +7,13 @@ function makeDAG(myList, treeConnections, exercise = false) {
     for (let i = 0; i < myList.length; i++) {
         var node = { id: myList[i], label: myList[i], size: 100, font: { color: 'white', size: 16 } };
         if (i == 0) {
-            node.color = 'red';
+            node.color = 'purple';
         }
         nodes.add(node);
     }
 
     for (let i = 0; i < treeConnections.length; i++) {
-        edges.add({ from: treeConnections[i].item1, to: treeConnections[i].item2, arrows: 'to' });
+        edges.add({ from: treeConnections[i].item1, to: treeConnections[i].item2, arrows: 'to', color: { color: 'blue' } });
     }
 
     var container = document.getElementById("mynetwork");

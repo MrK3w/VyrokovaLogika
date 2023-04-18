@@ -80,7 +80,7 @@
                                 </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Third group">
                                     <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Draw tree' name='submit' asp-page-handler="DrawTree" />
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Exercise' name='submit' asp-page-handler="Exercise" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Exercise' name='submit' asp-page-handler="Exercise"/>
                                 </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Third group">
                                     <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Draw DAG Tautology' name='submit' asp-page-handler="CheckTautologyDAG" />
@@ -265,6 +265,7 @@
 
                         @if (Model.button == IndexModel.ButtonType.Exercise)
                         {
+                           
                             <p>Formula is @Model.formula. Show that this is @Model.ExerciseType</p>
                             <p> To show that formula is Tautology you must find solution which equation is 0 and you find semantic contradiction. Otherwise find solution with
                                 no contradiction. In case of Contradiction you must find solution which equation is 1 and you must find semantic contradiction. 
@@ -293,7 +294,7 @@
                                 no contradiction. In case of Contradiction you must find solution which equation is 1 and you must find semantic contradiction.
                                 If it is not contradiction please find solution without semantic contradiction where equation is 1.
                             </p>
-                            <p>@Model.ExerciseQuote</p>
+                           
                             <div id="mynetwork">
                             </div>
                             <script>
@@ -301,11 +302,15 @@
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
                                 makeDAG(myList, treeConnections, true);
                             </script>
+                          
                             <form method="post" asp-action="Index" asp-controller="Home" id="TheForm3">
                                 <input type='submit' class="btn btn-primary" value='Check formula' id="myButton2" name='submit3' asp-page-handler="ExerciseProcessDAG" />
-                                <input type="hidden" id="hiddenNumber2" name="DAGNodes" value="" />
+                                <input type="hidden" id="hiddenNumber2" name="pDAGNodes" value="" />
                                 <input type="hidden" id="hiddenNumber3" name="DAGPath" value="" />
                             </form>
+                            <div id="exercise-quote">
+                                <p>@Model.ExerciseQuote</p>
+                            </div>
                         }
                     }
 

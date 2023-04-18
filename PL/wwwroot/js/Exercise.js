@@ -1,16 +1,21 @@
 $(document).ready(function () {
-    // Attach a click event handler to the .tf-nc span element
-    $(".tf-nc").on("click", function () {
-        // Get the current span element
-        var spanElement = $(this);
+    var currentUrl = window.location.href;
+    console.log(currentUrl);
+    // Check if the URL contains the query parameter "?handler=Exercise"
+    if (currentUrl.indexOf("?handler=Exercise") !== -1) {
+        // Attach a click event handler to the .tf-nc span element
+        $(".tf-nc").on("click", function () {
+            // Get the current span element
+            var spanElement = $(this);
 
-        // Get the current content of the span element
-        var currentContent = spanElement.text();
-        var newContent = currentContent.replace("0", "#").replace("1", "0").replace("#", "1");
+            // Get the current content of the span element
+            var currentContent = spanElement.text();
+            var newContent = currentContent.replace("0", "#").replace("1", "0").replace("#", "1");
 
-        // Modify the content of the span element
-        spanElement.text(newContent);
-    });
+            // Modify the content of the span element
+            spanElement.text(newContent);
+        }); // <--- Add closing parenthesis here
+    }
 });
 
 $(document).ready(function () {

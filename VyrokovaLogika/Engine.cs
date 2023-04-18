@@ -52,7 +52,6 @@ namespace VyrokovaLogika
         public bool ProofSolver(string proofSearch)
         {
             bool isTautologyOrContradiction = false;
-            //TODO TreeProof
             TreeProof proofSolver = new TreeProof();
             if (proofSearch == "Tautology")
             {

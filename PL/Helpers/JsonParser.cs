@@ -1,11 +1,11 @@
 ﻿namespace PL.Helpers
 {
-    public class JsonNode
+    public class JsonTreeNodes
     {
         public string Label { get; set; }
     }
 
-    public class Edge
+    public class JsonEdges
     {
         public string From { get; set; }
         public string To { get; set; }

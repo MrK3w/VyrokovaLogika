@@ -2,11 +2,14 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PL.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
+using System.IO;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using VyrokovaLogika;
@@ -32,7 +35,9 @@ namespace PL.Pages
         private string vl;
         private string vl1;
         public ButtonType button { get; set; }
+        
         private List<string> htmlTree = new List<string>();
+        
         private List<string> htmlTreeTruth = new List<string>();
         public string ConvertedTree { get; set; }
         public string ConvertedTreeTruth { get; set; }
@@ -117,10 +122,10 @@ namespace PL.Pages
 
         public IActionResult OnPostExercise()
         {
-
             _ = getFormula();
             button = ButtonType.Exercise;
             ExerciseHelper.GeneratateNumber();
+            Valid = true;
             int number = ExerciseHelper.number;
             string f = ExerciseHelper.formulaList[number].Item1;
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
@@ -210,15 +215,67 @@ namespace PL.Pages
             return Page();
         }
 
-        public IActionResult OnPostExerciseProcessDAG(string DAGNodes, string DAGPath)
+        public IActionResult OnPostExerciseProcessDAG(string pDAGNodes, string DAGPath)
         {
 
             int number = ExerciseHelper.number;
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
-            button = ButtonType.Exercise;
-            List<JsonNode> nodeList = JsonConvert.DeserializeObject<List<JsonNode>>(DAGNodes);
-            List<Edge> edgeList = JsonConvert.DeserializeObject<List<Edge>>(DAGPath);
+            button = ButtonType.ExerciseDAG;
+            List<JsonTreeNodes> nodeList = JsonConvert.DeserializeObject<List<JsonTreeNodes>>(pDAGNodes);
+            List<JsonEdges> edgeList = JsonConvert.DeserializeObject<List<JsonEdges>>(DAGPath);
+            formula = ExerciseHelper.formula;
+           
+            TreeConnections = edgeList.Select(edge => Tuple.Create(edge.From, edge.To)).ToList();
+            DAGNodes = nodeList.Select(edge => edge.Label).ToList();
+            TreeConnections = PrepareTreeConnections();
+
+            TruthDagVerifier verifier;
+            switch (ExerciseType)
+            {
+                case "Tautology":
+                    verifier = new TruthDagVerifier(TreeConnections, true, false);
+                    break;
+                case "Not Tautology":
+                    verifier = new TruthDagVerifier(TreeConnections, true, true);
+                    break;
+                case "Contradiction":
+                    verifier = new TruthDagVerifier(TreeConnections, false, false);
+                    break;
+                case "Not Contradiction":
+                    verifier = new TruthDagVerifier(TreeConnections, false, true);
+                    break;
+                default:
+                    return Page();
+            }
+            ExerciseQuote = verifier.ExerciseQuote;
             return Page();
+        }
+
+        private List<Tuple<string, string>> PrepareTreeConnections()
+        {
+            List<Tuple<string, string>> modifiedTries = new List<Tuple<string, string>>();
+            for (int i = 0; i < TreeConnections.Count; i++)
+            {
+                var item1PartsFull = TreeConnections[i].Item1.Split(new[] { "=" }, 2, StringSplitOptions.None);
+                var item2PartsFull = TreeConnections[i].Item2.Split(new[] { "=" }, 2, StringSplitOptions.None);
+                string item1Parts = item1PartsFull[0];
+                string item2Parts = item2PartsFull[0];
+                for (int j = 0; j < DAGNodes.Count; j++)
+                {
+                    var dagNode = DAGNodes[j].Split(new[] { "=" }, 2, StringSplitOptions.None);
+                    if (dagNode[0] == item1Parts)
+                    {
+                        item1Parts += "=" + dagNode[1];
+                    }
+                    else if (dagNode[0] == item2Parts)
+                    {
+                        item2Parts += "=" + dagNode[1];
+                    }
+
+                }
+                modifiedTries.Add(new Tuple<string, string>(item1Parts, item2Parts));
+            }
+            return modifiedTries;
         }
 
         public IActionResult OnPostCreateDAG()
