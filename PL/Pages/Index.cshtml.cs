@@ -45,11 +45,11 @@ namespace PL.Pages
 
         public string ExerciseQuote { get; set; }
 
-        public string xd { get; set; }
+        public string Arguments { get; set; }
 
         public int mIssueIndex { get; set; } = -1;
 
-        public string formula { get; set; }
+        public string ExerciseFormula { get; set; }
         public IndexModel()
         {
             PrepareList();
@@ -115,7 +115,11 @@ namespace PL.Pages
 
         public IActionResult OnPostExercise()
         {
-            _ = getFormula();
+            foreach (var item in listItems)
+            {
+                item.Selected = false;
+            }
+
             button = ButtonType.Exercise;
             ExerciseHelper.GeneratateNumber();
             Valid = true;
@@ -124,9 +128,9 @@ namespace PL.Pages
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
             Converter.ConvertLogicalOperators(ref f);
             Validator.ValidateSentence(ref f);
-            formula = f;
+            ExerciseFormula = f;
             ExerciseHelper.formula = f;
-            Engine engine = PrepareEngine(formula);
+            Engine engine = PrepareEngine(ExerciseFormula);
             if (ExerciseType == "Not Tautology" || ExerciseType == "Tautology")
             {
                 IsTautologyOrContradiction = engine.ProofSolver("Tautology");
@@ -145,7 +149,10 @@ namespace PL.Pages
     
         public IActionResult OnPostExerciseProcess(string tree)
         {
-
+            foreach (var item in listItems)
+            {
+                item.Selected = false;
+            }
             int number = ExerciseHelper.number;
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
             button = ButtonType.Exercise;
@@ -170,7 +177,7 @@ namespace PL.Pages
             
             constructer.IsTreeOkay();
             Green = constructer.Green;
-            formula = ExerciseHelper.formula;
+            ExerciseFormula = ExerciseHelper.formula;
             ExerciseQuote = constructer.ExerciseQuote;
             htmlTreeTruth.Clear();
             PrintTree(truthTree);
@@ -181,7 +188,10 @@ namespace PL.Pages
 
         public IActionResult OnPostExerciseDAG()
         {
-            _ = getFormula();
+            foreach (var item in listItems)
+            {
+                item.Selected = false;
+            }
             button = ButtonType.ExerciseDAG;
             ExerciseHelper.GeneratateNumber();
             int number = ExerciseHelper.number;
@@ -189,10 +199,10 @@ namespace PL.Pages
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
             Converter.ConvertLogicalOperators(ref f);
             Validator.ValidateSentence(ref f);
-            formula = f;
+            ExerciseFormula = f;
             ExerciseHelper.formula = f;
             Valid = true;
-            Engine engine = PrepareEngine(formula);
+            Engine engine = PrepareEngine(ExerciseFormula);
             if (ExerciseType == "Not Tautology" || ExerciseType == "Tautology")
             {
                 IsTautologyOrContradiction = engine.ProofSolver("Tautology");
@@ -210,13 +220,16 @@ namespace PL.Pages
 
         public IActionResult OnPostExerciseProcessDAG(string pDAGNodes, string DAGPath)
         {
-
+            foreach (var item in listItems)
+            {
+                item.Selected = false;
+            }
             int number = ExerciseHelper.number;
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
             button = ButtonType.ExerciseDAG;
             List<JsonTreeNodes> nodeList = JsonConvert.DeserializeObject<List<JsonTreeNodes>>(pDAGNodes);
             List<JsonEdges> edgeList = JsonConvert.DeserializeObject<List<JsonEdges>>(DAGPath);
-            formula = ExerciseHelper.formula;
+            ExerciseFormula = ExerciseHelper.formula;
            
             TreeConnections = edgeList.Select(edge => Tuple.Create(edge.From, edge.To)).ToList();
             DAGNodes = nodeList.Select(edge => edge.Label).ToList();
@@ -384,6 +397,7 @@ namespace PL.Pages
                     if (vl == item.Value)
                     {
                         item.Selected = true;
+                        return vl;
                     }
                 }
                 return vl;

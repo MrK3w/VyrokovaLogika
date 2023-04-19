@@ -65,7 +65,7 @@
                     </style>
                     <form method="post" asp-action="Index" asp-controller="Home" id="TheForm" class="d-flex flex-column">
                         <div class="d-flex">
-                            @Html.DropDownList("formula", Model.listItems, "select formula", new { @class = "form-control custom-font", @style = "height: 66.67%;" })
+                            @Html.DropDownList("formula", Model.listItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })
                             @Html.TextBox("UserInput", "", new { @maxlength = "64", @class = "form-control ml-2 custom-font", @style = "height: 66.67%;" })
 
 
@@ -264,7 +264,7 @@
                         @if (Model.button == IndexModel.ButtonType.Exercise)
                         {
                            
-                            <p>Formula is @Model.formula. Show that this is @Model.ExerciseType</p>
+                            <p>Formula is @Model.ExerciseFormula. Show that this is @Model.ExerciseType</p>
                             <p> To show that formula is Tautology you must find solution which equation is 0 and you find semantic contradiction. Otherwise find solution with
                                 no contradiction. In case of Contradiction you must find solution which equation is 1 and you must find semantic contradiction. 
                                 If it is not contradiction please find solution without semantic contradiction where equation is 1.
@@ -281,12 +281,12 @@
                             @if (Model.ConvertedTree != null)
                             {
                                 <p>@Html.Raw(Model.ConvertedTree)</p>
-                                @Html.Raw(@Model.xd)
+                                @Html.Raw(@Model.Arguments)
                             }
                         }
                         @if (Model.button == IndexModel.ButtonType.ExerciseDAG)
                         {
-                            <p>Formula is @Model.formula. Show that this is @Model.ExerciseType</p>
+                            <p>Formula is @Model.ExerciseFormula. Show that this is @Model.ExerciseType</p>
                             <p>
                                 To show that formula is Tautology you must find solution which equation is 0 and you find semantic contradiction. Otherwise find solution with
                                 no contradiction. In case of Contradiction you must find solution which equation is 1 and you must find semantic contradiction.
