@@ -2,16 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using PL.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Drawing;
-using System.IO;
-using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using VyrokovaLogika;
 using static VyrokovaLogika.Operator;
 
@@ -55,6 +46,8 @@ namespace PL.Pages
         public string ExerciseQuote { get; set; }
 
         public string xd { get; set; }
+
+        public int mIssueIndex { get; set; } = -1;
 
         public string formula { get; set; }
         public IndexModel()
@@ -209,7 +202,7 @@ namespace PL.Pages
                 IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
             }
             engine.ConvertTreeToDag();
-            engine.PrepareDAG();
+            engine.PrepareDAG(true);
             TreeConnections = engine.TreeConnections;
             DAGNodes = engine.DAGNodes;
             return Page();
@@ -228,25 +221,26 @@ namespace PL.Pages
             TreeConnections = edgeList.Select(edge => Tuple.Create(edge.From, edge.To)).ToList();
             DAGNodes = nodeList.Select(edge => edge.Label).ToList();
             TreeConnections = PrepareTreeConnections();
-
+            
             TruthDagVerifier verifier;
             switch (ExerciseType)
             {
                 case "Tautology":
-                    verifier = new TruthDagVerifier(TreeConnections, true, false);
+                    verifier = new TruthDagVerifier(TreeConnections, DAGNodes, true, false);
                     break;
                 case "Not Tautology":
-                    verifier = new TruthDagVerifier(TreeConnections, true, true);
+                    verifier = new TruthDagVerifier(TreeConnections, DAGNodes,  true, true);
                     break;
                 case "Contradiction":
-                    verifier = new TruthDagVerifier(TreeConnections, false, false);
+                    verifier = new TruthDagVerifier(TreeConnections, DAGNodes, false, false);
                     break;
                 case "Not Contradiction":
-                    verifier = new TruthDagVerifier(TreeConnections, false, true);
+                    verifier = new TruthDagVerifier(TreeConnections, DAGNodes, false, true);
                     break;
                 default:
                     return Page();
             }
+            mIssueIndex = verifier.mIssueIndex;
             ExerciseQuote = verifier.ExerciseQuote;
             return Page();
         }

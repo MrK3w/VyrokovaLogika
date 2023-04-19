@@ -23,7 +23,7 @@ namespace VyrokovaLogika
             this.dag = dag;
         }
 
-        internal void PrepareDAG(TruthTree counterModel = null)
+        internal void PrepareDAG(TruthTree counterModel = null, bool exercise = false)
         {
             if(counterModel != null)
             PrepareDAGNodesList(this.dag, counterModel);
@@ -35,7 +35,7 @@ namespace VyrokovaLogika
 
             PrepareDAGNodesListConnection(this.dag);
             RemoveDuplicates();
-            ReplaceConnectionNumbersForString();
+            ReplaceConnectionNumbersForString(exercise);
         }
 
         private void PrepareDAGNodesList(DAGNode dag)
@@ -92,20 +92,21 @@ namespace VyrokovaLogika
             TreeConnectionsNumbered = TreeConnectionsNumbered.Distinct(new TupleEqualityComparer<int, int>()).ToList();
         }
 
-        private void ReplaceConnectionNumbersForString()
+        private void ReplaceConnectionNumbersForString(bool exercise = false)
         {
             foreach (var connection in TreeConnectionsNumbered)
             {
                 var ConnectionsTuple = new Tuple<string, string>(SearchByNumber(connection.Item1), SearchByNumber(connection.Item2));
-                var firstItem = AddEvaluationValuesToTuple(ConnectionsTuple.Item1);
-                var secondItem = AddEvaluationValuesToTuple(ConnectionsTuple.Item2);
+                var firstItem = AddEvaluationValuesToTuple(ConnectionsTuple.Item1,exercise);
+                var secondItem = AddEvaluationValuesToTuple(ConnectionsTuple.Item2, exercise);
                 ConnectionsTuple = new Tuple<string, string>(firstItem,secondItem);
                 TreeConnections.Add(ConnectionsTuple);
             }
         }
 
-        private string AddEvaluationValuesToTuple(string item)
+        private string AddEvaluationValuesToTuple(string item, bool exercise = false)
         {
+            if(exercise) return item += $"= 0 ";
             List<int> result = DAGNodesNumbered.Where(t => t.Item1 == item).Select(t => t.Item2).ToList();
             result = result.Distinct().ToList();
             List<string> valueToAdd = new List<string>();

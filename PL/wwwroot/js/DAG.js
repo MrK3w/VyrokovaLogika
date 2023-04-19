@@ -1,13 +1,16 @@
 var network;
 
-function makeDAG(myList, treeConnections, exercise = false) {
+function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1) {
     var nodes = new vis.DataSet([]);
     var edges = new vis.DataSet([]);
-
+    console.log(issueIndex);
     for (let i = 0; i < myList.length; i++) {
         var node = { id: myList[i], label: myList[i], size: 100, font: { color: 'white', size: 16 } };
         if (i == 0) {
             node.color = 'purple';
+        }
+        if (i == issueIndex) {
+            node.color = 'red';
         }
         nodes.add(node);
     }

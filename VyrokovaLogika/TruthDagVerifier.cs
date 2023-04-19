@@ -13,14 +13,17 @@ namespace VyrokovaLogika
         List<Tuple<string, string>> mConnections;
         bool mTautology;
         bool mContradiction;
+        List<string> mDAGNodes;
+        public int mIssueIndex { get; set; } = -1;
         public string ExerciseQuote { get; set; }
 
         //IF we find contraction where we are trying to find Tautology is it okay
-        public TruthDagVerifier(List<Tuple<string,string>> connections, bool tautology, bool contradiction) 
+        public TruthDagVerifier(List<Tuple<string,string>> connections, List<string> DAGNodes , bool tautology, bool contradiction) 
         {
             mConnections = connections;
             mTautology = tautology;
             mContradiction = contradiction;
+            mDAGNodes = DAGNodes;
             Verify();
         }
 
@@ -30,16 +33,17 @@ namespace VyrokovaLogika
             {
                 return false;
             }
+            
+            if (!CheckEvaluations())
+            {
+                return false;
+            }
             if (CheckContradiction())
             {
-                //if (mContradiction)
-                //{
-                //    ExerciseQuote = "There is contradiction";
-                //}
-
-            }
-            if (CheckEvaluations())
-            {
+                if (mContradiction)
+                {
+                    ExerciseQuote = "You have it right";
+                }
 
             }
             return true;
@@ -86,7 +90,8 @@ namespace VyrokovaLogika
         {
             //we need to split first item by = to get formula and truth value
             var item = mConnections[i].Item1.Split("=").Select(s => s.Trim()).ToList();
-            
+            //in case we have issue to know which line it is
+            string issue = mConnections[i].Item1;
             //we need to get operator from first item
             Node node = new Node(item[0]);
             Splitter splitter = new Splitter(node);
@@ -100,21 +105,65 @@ namespace VyrokovaLogika
             var secondValue = mConnections[i + 1].Item2.Split("=").Select(s => s.Trim()).ToList();
             int firstValueV = 0;
             int secondValueV = 0;
-            int firstValueVV = 0;
-            int secondValueVV = 0;
+            int firstValueVV = -1;
+            int secondValueVV = -1;
+            List<(int, int)> values = Rule.GetValuesOfBothSides(MainValue, node.mOperator);
             if (firstValue.Count == 2 && secondValue.Count == 2)
+            {
+                //we are controlling main truth value with items to check if evaluation is alright
+                firstValueV = int.Parse(firstValue[1]);
+                secondValueV = int.Parse(secondValue[1]);
+                foreach (var value in values)
+                {
+                    if (value.Item1 == firstValueV && value.Item2 == secondValueV) return true;
+                }
+                ExerciseQuote = $"if {node.mOperator} has value {MainValue} his childrens can't have values {firstValueV} and {secondValueV}";
+                mIssueIndex = mDAGNodes.FindIndex(str => str == issue);
+                return false;
+            }
+            else if (firstValue.Count == 3 && secondValue.Count == 2)
             {
                 firstValueV = int.Parse(firstValue[1]);
                 secondValueV = int.Parse(secondValue[1]);
+                firstValueVV = int.Parse(firstValue[2]);
+                foreach (var value in values)
+                {
+                    if (value.Item1 == firstValueV && value.Item2 == secondValueV || value.Item1 == firstValueVV && value.Item2 == secondValueV) return true;
+                }
+                ExerciseQuote = $"if {node.mOperator} has value {MainValue} his childrens can't have values {firstValueV} {firstValueVV} and {secondValueV}";
+                mIssueIndex = mDAGNodes.FindIndex(str => str == issue);
+                return false;
             }
-            //we are controlling main truth value with items to check if evaluation is alright
-            List<(int, int)> values = Rule.GetValuesOfBothSides(MainValue, node.mOperator);
-            foreach (var value in values)
+            else if (firstValue.Count == 2 && secondValue.Count == 3)
             {
-                if (value.Item1 == firstValueV && value.Item2 == secondValueV || value.Item1 == secondValueV && value.Item2 == firstValueV) return true;
+                firstValueV = int.Parse(firstValue[1]);
+                secondValueV = int.Parse(secondValue[1]);
+                secondValueVV = int.Parse(secondValue[2]);
+                foreach (var value in values)
+                {
+                    if (value.Item1 == firstValueV && value.Item2 == secondValueV || value.Item1 == firstValueV && value.Item2 == secondValueVV) return true;
+                }
+                ExerciseQuote = $"if {node.mOperator} has value {MainValue} his childrens can't have values {firstValueV} and {secondValueV} {secondValueVV}";
+                mIssueIndex = mDAGNodes.FindIndex(str => str == issue);
+                return false;
             }
-            ExerciseQuote = $"if {node.mOperator} has value {MainValue} his childrens can't have values {firstValueV} and {secondValueV}";
-            return false;
+            else if(firstValue.Count == 3 && secondValue.Count == 3)
+            {
+                firstValueV = int.Parse(firstValue[1]);
+                secondValueV = int.Parse(secondValue[1]);
+                firstValueVV = int.Parse(firstValue[2]);
+                secondValueVV = int.Parse(secondValue[2]);
+                foreach (var value in values)
+                {
+                    if (value.Item1 == firstValueV && value.Item2 == secondValueV || value.Item1 == firstValueV && value.Item2 == secondValueVV
+                        || value.Item1 == firstValueVV && value.Item2 == secondValueV || value.Item1 == firstValueVV && value.Item2 == secondValueVV) return true;
+                }
+                ExerciseQuote = $"if {node.mOperator} has value {MainValue} his childrens can't have values {firstValueV} {firstValueVV} and {secondValueV} {secondValueVV}";
+                mIssueIndex = mDAGNodes.FindIndex(str => str == issue);
+                return false;
+            }
+            return true;
+
         }
 
         private bool CheckContradiction()
@@ -135,8 +184,10 @@ namespace VyrokovaLogika
 
         private bool CheckFirstValue()
         {
+            mIssueIndex = 0;
             if(mTautology)
             ExerciseQuote = "Main node value must be 0 if you want to find contradiction in Tautology formula";
+
             else
             {
                 ExerciseQuote = "Main node value must be 1 if you want to find contradiction in Contradiction formula";
@@ -158,6 +209,7 @@ namespace VyrokovaLogika
                 return false;
             }
             ExerciseQuote = "It is alright!";
+            mIssueIndex = -1;
             return true;
         }
     }

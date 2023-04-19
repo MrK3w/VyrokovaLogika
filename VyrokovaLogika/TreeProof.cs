@@ -22,41 +22,41 @@ namespace VyrokovaLogika
                 return GetLeave(tree, truthValue);
             }
             var sideValues = Rule.GetValuesOfBothSides(truthValue, tree.Item.mOperator);
-            List<Tuple<int, int>> list = GetValuesFromBothSides(tree,sideValues);
+            List<Tuple<int, int>> listOfTruthValues = GetValuesFromBothSides(tree,sideValues);
 
             //we must iterate for each available option which can tree childs evaluate to get parent value
-            foreach (var newTree in list)
+            foreach (var truthValues in listOfTruthValues)
             {
                 List<TruthTree> currentTreeListFromLeftSide = new List<TruthTree>();
                 List<TruthTree> currentTreeListFromRightSide = new List<TruthTree>();
                 TruthTree currentTree;
                 if (tree.childNodeLeft != null)
                 {
-                    currentTreeListFromLeftSide = ProcessTree(tree.childNodeLeft, newTree.Item1);
+                    currentTreeListFromLeftSide = ProcessTree(tree.childNodeLeft, truthValues.Item1);
                 }
                 if (tree.childNodeRight != null) {
-                    currentTreeListFromRightSide = ProcessTree(tree.childNodeRight, newTree.Item2);
+                    currentTreeListFromRightSide = ProcessTree(tree.childNodeRight, truthValues.Item2);
                 }
                 for (int i = 0; i < currentTreeListFromLeftSide.Count(); i++) {
                     for (int j = 0; j < currentTreeListFromRightSide.Count(); j++)
                     {
-                        TruthTree strom = new TruthTree();
-                        strom.mOperator = tree.Item.mOperator;
-                        currentTreeListFromLeftSide[i].Item = newTree.Item1;
-                        currentTreeListFromRightSide[j].Item = newTree.Item2;
-                        strom.AddChild(currentTreeListFromLeftSide[i], currentTreeListFromRightSide[j]);
-                        combinedTrees.Add(strom);
+                        TruthTree tempTree = new TruthTree();
+                        tempTree.mOperator = tree.Item.mOperator;
+                        currentTreeListFromLeftSide[i].Item = truthValues.Item1;
+                        currentTreeListFromRightSide[j].Item = truthValues.Item2;
+                        tempTree.AddChild(currentTreeListFromLeftSide[i], currentTreeListFromRightSide[j]);
+                        combinedTrees.Add(tempTree);
                     }
                 }
                 if(currentTreeListFromRightSide.Count() == 0)
                 {
                     for (int i = 0; i < currentTreeListFromLeftSide.Count(); i++)
                     {
-                        TruthTree strom = new TruthTree();
-                        strom.mOperator = tree.Item.mOperator;
-                        currentTreeListFromLeftSide[i].Item = newTree.Item1;
-                        strom.AddChild(currentTreeListFromLeftSide[i], "left");
-                        combinedTrees.Add(strom);
+                        TruthTree tempTree = new TruthTree();
+                        tempTree.mOperator = tree.Item.mOperator;
+                        currentTreeListFromLeftSide[i].Item = truthValues.Item1;
+                        tempTree.AddChild(currentTreeListFromLeftSide[i], "left");
+                        combinedTrees.Add(tempTree);
                     }
                 }
 
@@ -64,11 +64,11 @@ namespace VyrokovaLogika
                 {
                     for (int i = 0; i < currentTreeListFromRightSide.Count(); i++)
                     {
-                        TruthTree strom = new TruthTree();
-                        currentTreeListFromRightSide[i].Item = newTree.Item2;
-                        strom.mOperator = tree.Item.mOperator;
-                        strom.AddChild(currentTreeListFromRightSide[i], "right");
-                        combinedTrees.Add(strom);
+                        TruthTree tempTree = new TruthTree();
+                        currentTreeListFromRightSide[i].Item = truthValues.Item2;
+                        tempTree.mOperator = tree.Item.mOperator;
+                        tempTree.AddChild(currentTreeListFromRightSide[i], "right");
+                        combinedTrees.Add(tempTree);
                     }
                 }
             }
@@ -99,8 +99,6 @@ namespace VyrokovaLogika
         {
             TruthTree leafTree = new TruthTree(truthValue);
             leafTree.literal = tree.Item.mSentence;
-            if(tree.Parent != null)
-            leafTree.mOperator = tree.Parent.Item.mOperator;
             List<TruthTree> treeees = new List<TruthTree>();
             return new List<TruthTree> { leafTree};
         }

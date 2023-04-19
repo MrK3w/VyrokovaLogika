@@ -93,15 +93,15 @@ namespace VyrokovaLogika
             }
         }
 
-        public void PrepareDAG()
+        public void PrepareDAG(bool exercise = false)
         {
             DAG dagConvert = new DAG(Dag);
             if (counterModel.mOperator != Operator.OperatorEnum.EMPTY)
             {
                 AddNumbersToTruhTree();
-                dagConvert.PrepareDAG(counterModel);
+                dagConvert.PrepareDAG(counterModel, exercise);
             }
-            else dagConvert.PrepareDAG();
+            else dagConvert.PrepareDAG(null);
           
             TreeConnections = dagConvert.TreeConnections;
 

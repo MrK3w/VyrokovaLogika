@@ -36,7 +36,7 @@ public static class ListItemsHelper
             string mPropositionalSentence3 = "(P ∧ -P)";
             Converter.ConvertLogicalOperators(ref mPropositionalSentence3);
 
-            string mPropositionalSentence4 = " (A | B) & ((-A) & (-B))";
+            string mPropositionalSentence4 = " (A | B) & (-A & -B)";
             Converter.ConvertLogicalOperators(ref mPropositionalSentence4);
             SelectListItem item1 = new SelectListItem(mPropositionalSentence, mPropositionalSentence);
             SelectListItem item2 = new SelectListItem(mPropositionalSentence1, mPropositionalSentence1);
