@@ -21,30 +21,29 @@ namespace VyrokovaLogika
         }
 
         public static string ReduceParenthessis(string sentence)
-        { 
-            if (sentence == null || sentence[0] != '(' || sentence[sentence.Length - 1] != ')') return sentence;
-
-            var cantrim = false;
-            var openparenthesesIndex = new Stack<int>();
-            var count = 0;
-            foreach (char c in sentence)
+        {
+            if (sentence == null || sentence.Length < 2 || sentence[0] != '(' || sentence[sentence.Length - 1] != ')')
             {
-                if (c == '(')
-                {
-                    openparenthesesIndex.Push(count);
-                }
-                if (c == ')')
-                {
-                    cantrim = (count == sentence.Length - 1 && openparenthesesIndex.Count == 1 && openparenthesesIndex.Peek() == 0);
-                    openparenthesesIndex.Pop();
-                }
-                count++;
+                return sentence;
             }
 
-            if (cantrim)
+            var openParenthesesIndex = new Stack<int>();
+            for (var i = 0; i < sentence.Length; i++)
             {
-                return sentence.Trim(new[] { '(', ')' });
+                if (sentence[i] == '(')
+                {
+                    openParenthesesIndex.Push(i);
+                }
+                else if (sentence[i] == ')')
+                {
+                    if (openParenthesesIndex.Count == 1 && openParenthesesIndex.Peek() == 0 && i == sentence.Length - 1)
+                    {
+                        return sentence.Substring(1, sentence.Length - 2);
+                    }
+                    openParenthesesIndex.Pop();
+                }
             }
+
             return sentence;
         }
 

@@ -9,7 +9,6 @@
 <head>
     <title>My Page</title>
     <link rel="stylesheet" href="https://unpkg.com/treeflex/dist/css/treeflex.css">
-    <script src="~/js/vivagraph.js"></script>
     <script src="~/js/DAG.js"></script>
     <script src="~/js/jquery-1.10.2.min.js"></script>
     <script src="~/js/Exercise.js"></script>
@@ -25,30 +24,29 @@
             <div class="col-md-2">
                 <div class="square-div">
                     <p>
-                        For writing logical operators you can use this signs <br />
+                       Pro zápis logických spojek použij <br />
                         <ul>
-                            <li>Conjunction: (&amp;, &and;)</li>
-                            <li>Disjunction: (|, &or;)</li>
-                            <li>Negation: (-, &not;)</li>
-                            <li>Implication: (&gt;, &rarr;)</li>
-                            <li>Equation: (= , &equiv;)</li>
+                            <li>Konjunkce: (&amp;, &and;)</li>
+                            <li>Disjunkce: (|, &or;)</li>
+                            <li>Negace: (-, &not;)</li>
+                            <li>Implikace: (&gt;, &rarr;)</li>
+                            <li>Ekvivalence: (= , &equiv;)</li>
                     </p>
                 </div>
                  <div class="square-div">
                     <p>
-                        Please use brackets between two logical operators! For example x ∨ y ∧ z is not valid. Use x ∨ (y ∧ z) or (x∧y) ∨ z 
+                       Mezi jednotlivymi logickymi spojkami použij závorku! Například x ∨ y ∧ z není validní formule. Použij x ∨ (y ∧ z) or (x∧y) ∨ z 
                     </p>
                 </div>
                 <div class="square-div">
                     <p>
-                        Please use one letter literal. For example abc is not valid literal!
+                        Prosím použij jen jednopísmenkové literály. Například abc není validní litáral.
                     </p>
                 </div>
                 <div class="square-div">
                     <p>
-                        When checking for tautology or contradiction, we search for formulas without logical contradictions. 
-                        They should have consistent evaluations for all elemental logical propositions. We can then show counterarguments. 
-                        For logical trees, we indicate the operators used for separation and truth value searched for in evaluations.
+                        Pokud chceme dokázat tautologii nebo kontradikci, tak hledáme formule které obsahují logickou kontradikci.
+                        Logická kontradikce je pokud ve stromu narazíme na literál, který by zároveň nabýval hodnoty 0 i 1.
                     </p>
                 </div>
             </div>
@@ -71,23 +69,23 @@
 
                             <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
                                 <div class="btn-group flex-fill" role="group" aria-label="First group">
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Create tree' name='submit' asp-page-handler="CreateTree" />
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Create DAG' name='submit' asp-page-handler="CreateDAG" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vytvoř syntaktický strom.' name='submit' asp-page-handler="CreateTree" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Vytvoř DAG.' name='submit' asp-page-handler="CreateDAG" />
                                 </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Second group">
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Check Tautology' name='submit' asp-page-handler="CheckTautology" />
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Check Contradiction' name='submit' asp-page-handler="CheckContradiction" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Zkontroluj tautologi.' name='submit' asp-page-handler="CheckTautology" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Zkontroluj kontradikci.' name='submit' asp-page-handler="CheckContradiction" />
                                 </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Third group">
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Draw tree' name='submit' asp-page-handler="DrawTree" />
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Exercise' name='submit' asp-page-handler="Exercise"/>
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli strom.' name='submit' asp-page-handler="DrawTree" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Procvičování.' name='submit' asp-page-handler="Exercise"/>
                                 </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Third group">
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Draw DAG Tautology' name='submit' asp-page-handler="CheckTautologyDAG" />
-                                <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Draw DAG Contradiction' name='submit' asp-page-handler="CheckContradictionDAG" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověr tautologii v DAGU' name='submit' asp-page-handler="CheckTautologyDAG" />
+                                <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Ověr kontradikci v DAGU' name='submit' asp-page-handler="CheckContradictionDAG" />
                             </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Fifth group">
-                                <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Exercise on DAG' name='submit' asp-page-handler="ExerciseDAG" />
+                                <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Procvičuj v DAGU' name='submit' asp-page-handler="ExerciseDAG" />
                             </div>
                             </div>
                         </div>
@@ -104,38 +102,41 @@
                                 makeDAG(myList, treeConnections);
 
                             </script>
+                            <div style="display: flex; justify-content: center;">
+                                <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
+                                <div>Levá strana</div>
+                            </div>
+                            <div style="display: flex; justify-content: center;">
+                                <div style="background-color: blue; width: 20px; height: 20px; margin-right: 5px;"></div>
+                                <div>Pravá strana</div>
+                            </div>
                         }
                         @if (Model.button == IndexModel.ButtonType.SyntaxTree)
                         {
-
-
                             @if (Model.ConvertedTree != null)
                             {
-
                                 <p>@Html.Raw(Model.ConvertedTree)</p>
                             }
-
-
                         }
                         @if (Model.button == IndexModel.ButtonType.CheckTautology)
                         {
                             @if (!Model.IsTautologyOrContradiction)
                             {
-                                <p> This is not tautology!</p>
-                                <p>Counterarguments</p>
+                                <p> Toto není tautologie!</p>
+                                <p>Protiargumenty</p>
                                 
                             }
                             else
                             {
-                                <p> This is tautology!</p>
-                                <p> Example of semantic contradiction</p>
+                                <p> Toto je tautologie!</p>
+                                <p> Příklad semantické kontradikce ve formuli</p>
                             }
                             <div class="table-container">
 
                                 <table>
                                     <tr>
-                                        <th>Item</th>
-                                        <th>Literal</th>
+                                        <th>Hodnota</th>
+                                        <th>Literál</th>
                                     </tr>
                                     @foreach (var node in Model.distinctNodes)
                                     {
@@ -148,18 +149,17 @@
                             </div>
                             <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
                         }
-
                         @if(Model.button == IndexModel.ButtonType.CheckTautologyDAG)
                             {
                             @if (!Model.IsTautologyOrContradiction)
                             {
-                                <p> This is not tautology!</p>
-                                <p>Counterarguments</p>
+                                <p> Toto není tautologie!</p>
+                                <p>Protiargumenty</p>
                             }
                             else
                             {
-                                <p> This is tautology!</p>
-                                <p> Example of semantic contradiction</p>
+                                <p> Toto je tautologie!</p>
+                                <p> Příklady sémantického sporu:</p>
                             }
                             <div class="table-container">
 
@@ -177,7 +177,6 @@
                                     }
                                 </table>
                             </div>
-
                             <div id="mynetwork">
                             </div>
                             <script>
@@ -186,19 +185,26 @@
                                 makeDAG(myList, treeConnections);
 
                             </script>
+                            <div style="display: flex; justify-content: center;">
+                                <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
+                                <div>>Levá strana</div>
+                            </div>
+                            <div style="display: flex; justify-content: center;">
+                                <div style="background-color: blue; width: 20px; height: 20px; margin-right: 5px;"></div>
+                                <div>Pravá strana</div>
+                            </div>
                         }
-
                         @if (Model.button == IndexModel.ButtonType.CheckContradictionDAG)
                         {
                             @if (!Model.IsTautologyOrContradiction)
                             {
-                                <p> This is not contradiction!</p>
-                                <p>Counterarguments</p>
+                                <p> Toto není kontradikce!</p>
+                                <p>Protiargumenty</p>
                             }
                             else
                             {
-                                <p> This is contradiction!</p>
-                                <p> Example of semantic contradiction</p>
+                                <p> Toto je kontradikce!</p>
+                                <p> Příklad sémantického sporu.</p>
                             }
                             <div class="table-container">
 
@@ -225,19 +231,27 @@
                                 makeDAG(myList, treeConnections);
 
                             </script>
+                            <div style="display: flex; justify-content: center;">
+                                <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
+                                <div>>Levá strana</div>
+                            </div>
+                            <div style="display: flex; justify-content: center;">
+                                <div style="background-color: blue; width: 20px; height: 20px; margin-right: 5px;"></div>
+                                <div>Pravá strana</div>
+                            </div>
                         }
 
                         @if (Model.button == IndexModel.ButtonType.CheckContradiction)
                         {
                             @if (!Model.IsTautologyOrContradiction)
                             {
-                                <p> This is not contradiction!</p>
-                                <p>Counterarguments</p>
+                                <p> Toto není kontradikce!</p>
+                                <p>Protiargumenty</p>
                             }
                             else
                             {
-                                <p> This is Contaradicton!</p>
-                                <p> Example of semantic contradiction</p>
+                                <p> Toto je kontradikce!</p>
+                                <p> Příklady sémantické kontradikce.</p>
                             }
                             <div class="table-container">
 
@@ -264,10 +278,10 @@
                         @if (Model.button == IndexModel.ButtonType.Exercise)
                         {
                            
-                            <p>Formula is @Model.ExerciseFormula. Show that this is @Model.ExerciseType</p>
-                            <p> To show that formula is Tautology you must find solution which equation is 0 and you find semantic contradiction. Otherwise find solution with
-                                no contradiction. In case of Contradiction you must find solution which equation is 1 and you must find semantic contradiction. 
-                                If it is not contradiction please find solution without semantic contradiction where equation is 1.
+                            <p>Řešená formule je @Model.ExerciseFormula. Dokaž že to je @Model.ExerciseType</p>
+                            <p> Abys mohl dokázat že formule je tautologií musíme najít takovou formuli, kde její pravdivostní hodnota je 0 a zároveň zde bude semántická kontradikce.
+                                V případě že to tautologie není hledej formuli, bez sémantického sporu.
+                                V případě toho že se jedná o kontradikci postupuj obdobně jen musíš nastavit pravdivostní hodnotu formule na 1.
                             </p>
                             <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
                             <p>@Model.ExerciseQuote</p>
@@ -286,11 +300,11 @@
                         }
                         @if (Model.button == IndexModel.ButtonType.ExerciseDAG)
                         {
-                            <p>Formula is @Model.ExerciseFormula. Show that this is @Model.ExerciseType</p>
+                            <p>Řešená formule je @Model.ExerciseFormula. Dokaž že to je @Model.ExerciseType</p>
                             <p>
-                                To show that formula is Tautology you must find solution which equation is 0 and you find semantic contradiction. Otherwise find solution with
-                                no contradiction. In case of Contradiction you must find solution which equation is 1 and you must find semantic contradiction.
-                                If it is not contradiction please find solution without semantic contradiction where equation is 1.
+                                Abys mohl dokázat že formule je tautologií musíme najít takovou formuli, kde její pravdivostní hodnota je 0 a zároveň zde bude semántická kontradikce.
+                                V případě že to tautologie není hledej formuli, bez sémantického sporu.
+                                V případě toho že se jedná o kontradikci postupuj obdobně jen musíš nastavit pravdivostní hodnotu formule na 1.
                             </p>
                            
                             <div id="mynetwork">
@@ -300,7 +314,14 @@
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
                                 makeDAG(myList, treeConnections, true, @Model.mIssueIndex);
                             </script>
-                          
+                            <div style="display: flex; justify-content: center;">
+                                <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
+                                <div>Levá strana</div>
+                            </div>
+                            <div style="display: flex; justify-content: center;">
+                                <div style="background-color: blue; width: 20px; height: 20px; margin-right: 5px;"></div>
+                                <div>Pravá strana</div>
+                            </div>
                             <form method="post" asp-action="Index" asp-controller="Home" id="TheForm3">
                                 <input type='submit' class="btn btn-primary" value='Check formula' id="myButton2" name='submit3' asp-page-handler="ExerciseProcessDAG" />
                                 <input type="hidden" id="hiddenNumber2" name="pDAGNodes" value="" />
@@ -309,13 +330,14 @@
                             <div id="exercise-quote">
                                 <p>@Model.ExerciseQuote</p>
                             </div>
+
                         }
                     }
 
                     @if (!Model.Valid)
                     {
                         <div class="alert alert-danger" role="alert" id="errorAlert">
-                            Formula is invalid or not selected
+                           Formule není v pořádku nebo nebyla vybrána.
                         </div>
                     }
                 </div>

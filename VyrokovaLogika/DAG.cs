@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using static VyrokovaLogika.IndexModel;
@@ -12,7 +13,7 @@ namespace VyrokovaLogika
         public List<string> DAGNodes { get; set; } = new List<string>();
         private List<Tuple<int, int>> TreeConnectionsNumbered = new List<Tuple<int, int>>();
 
-        public List<Tuple<string, string>> TreeConnections { get; } = new List<Tuple<string, string>>();
+        public List<Tuple<string, string>> TreeConnections { get; set; } = new List<Tuple<string, string>>();
 
         private List<Tuple<string, int>> DAGNodesNumbered = new List<Tuple<string, int>>();
         private List<Tuple<string, int>> DAGNodesNumberedTruthTree = new List<Tuple<string, int>>();
@@ -34,8 +35,44 @@ namespace VyrokovaLogika
             DAGNodes = DAGNodes.Distinct().ToList();
 
             PrepareDAGNodesListConnection(this.dag);
-            RemoveDuplicates();
             ReplaceConnectionNumbersForString(exercise);
+            DiscinctListOfPaths();
+           
+
+        }
+
+        private void DiscinctListOfPaths()
+        {
+            //to remove double arrow in case it leads to literal
+            var filteredTuples = TreeConnections.Where(t =>
+                (t.Item2.Length == 1 && char.IsLetter(t.Item2[0])) ||
+                (t.Item2.Length >= 2 && char.IsLetter(t.Item2[0]) && t.Item2[1] == '=') ||
+                (t.Item2.Length == 2 && t.Item2[0] == '¬' && char.IsLetter(t.Item2[1])) ||
+                (t.Item2.Length == 3 && t.Item2[0] == '¬' && t.Item2[1] == '¬' && char.IsLetter(t.Item2[2])) ||
+                (t.Item2.Length >= 2 && t.Item2[0] == '¬' && char.IsLetter(t.Item2[1]) && t.Item2[2] =='=') ||
+                (t.Item2.Length == 3 && t.Item2[0] == '¬' && t.Item2[1] == '¬' && char.IsLetter(t.Item2[2])) ||
+                (t.Item2.Length >= 3 && t.Item2[0] == '¬' && t.Item2[1] == '¬' && char.IsLetter(t.Item2[2]) && t.Item2[3] =='=')
+            ).ToList(); 
+            var distinctTuples = filteredTuples.GroupBy(t => t.Item2).Select(g => g.First()).ToList();
+            var seenList = new List<Tuple<string,string>>();
+            List<Tuple<string, string>> newConnections = new List<Tuple<string, string>>();
+            foreach (var tuple in TreeConnections)
+            {
+                    if (distinctTuples.Contains(tuple))
+                    {
+                        if(seenList.Contains(tuple))
+                        {
+                        continue;
+                        }
+                        else
+                        {
+                            seenList.Add(tuple);
+                        }
+                    }
+                    newConnections.Add(tuple);
+                
+            }
+            TreeConnections = newConnections;
         }
 
         private void PrepareDAGNodesList(DAGNode dag)
@@ -87,10 +124,7 @@ namespace VyrokovaLogika
             }
         }
 
-        private void RemoveDuplicates()
-        {
-            TreeConnectionsNumbered = TreeConnectionsNumbered.Distinct(new TupleEqualityComparer<int, int>()).ToList();
-        }
+        
 
         private void ReplaceConnectionNumbersForString(bool exercise = false)
         {

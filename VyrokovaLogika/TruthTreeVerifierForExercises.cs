@@ -28,7 +28,7 @@ namespace VyrokovaLogika
             {
                 if (mTree.Item != 0)
                 {
-                    ExerciseQuote = "You must be searching evaluation where formula is 0, if you want to find tautology or show that this is not tautulogy";
+                    ExerciseQuote = "Musíš hledat evaluaci, kde je formule 0, pokud chceš hledat tautologii.";
                     mTree.invalid = true;
                     return false;
                 }
@@ -37,7 +37,7 @@ namespace VyrokovaLogika
             {
                 if (mTree.Item != 1)
                 {
-                    ExerciseQuote = "You must be searching evaluation where formula is 1, if you want to find Contradiction or show that this is not contradiction";
+                    ExerciseQuote = "Musíš hledat evaluaci, kde je formule 1, pokud chceš hledat kontradikci.";
                     mTree.invalid = true;
                     return false;
                 }
@@ -45,14 +45,14 @@ namespace VyrokovaLogika
             CheckEvaluation(mTree);
             if (mistake)
             {
-                ExerciseQuote = "You have mistake in values of logical operators! Look on values of children!";
+                ExerciseQuote = "Máš chybu v potomcích! Podívej se na jejich hodnoty.";
                 return false;
             }
             if (CheckContradiction() )
             {
                 if (mFindingContradiction)
                 {
-                    ExerciseQuote = "You have in your equation semantic contradiction! So this cannot be tautology or contradiction";
+                    ExerciseQuote = "Máš ve formuli semantickou kontradikci! Takže to nemůže být tautologie.";
                     return false;
                 }
                 else
@@ -60,7 +60,7 @@ namespace VyrokovaLogika
                     green = true;
                 }
             }            
-            ExerciseQuote = "You have equation correctly!";
+            ExerciseQuote = "Máš to správně!";
             return true;
         }
 

@@ -49,7 +49,9 @@ namespace VyrokovaLogika
             bool ThereWasLi = false;
             foreach (string tag in strippedTags)
             {
-                if(tag == "</li>") { ThereWasLi = true; }
+                if(tag == "</li>") { ThereWasLi = true;
+                    continue;
+                }
                 if (itIsItem)
                 {
                     if (Validator.ContainsOperator(tag[0].ToString()) || Validator.ContainsNegationOnFirstPlace(tag[0].ToString()))
