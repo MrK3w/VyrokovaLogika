@@ -57,7 +57,7 @@
                         .btn-group > input {
                             margin-right: 10px; /* Adjust this value to control the spacing between buttons */
                             margin-left: 10px; /* Adjust this value to control the spacing between buttons */
-                            width: 175px; /* Set the width of the buttons */
+                            width: 200px; /* Set the width of the buttons */
                             height: 40px; /* Set the height of the buttons */
                         }
                     </style>
@@ -80,13 +80,15 @@
                                     <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli strom.' name='submit' asp-page-handler="DrawTree" />
                                     <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Procvičování.' name='submit' asp-page-handler="Exercise"/>
                                 </div>
-                                <div class="btn-group flex-fill" role="group" aria-label="Third group">
+                                <div class="btn-group flex-fill" role="group" aria-label="Fourth group">
                                     <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověr tautologii v DAGU' name='submit' asp-page-handler="CheckTautologyDAG" />
                                 <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Ověr kontradikci v DAGU' name='submit' asp-page-handler="CheckContradictionDAG" />
                             </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Fifth group">
                                 <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Procvičuj v DAGU' name='submit' asp-page-handler="ExerciseDAG" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Přidej formuli pro procvičování' name='submit' asp-page-handler="AddNewFormula" />
                             </div>
+
                             </div>
                         </div>
                     </form>
@@ -330,7 +332,29 @@
                             <div id="exercise-quote">
                                 <p>@Model.ExerciseQuote</p>
                             </div>
-
+                        }
+                        @if (Model.button == IndexModel.ButtonType.AddNewFormula)
+                        {
+                            <p> Zde přidej novou formuli pro procvičování. </p>
+                            <form method="post" asp-page-handler="AddNewFormulaPost">
+                            <div class="form-group mt-4">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="input-group">
+                                            @Html.TextBox("FormulaInput", "", new { @maxlength = "64", @class = "form-control custom-font"})
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="input-group">
+                                            @Html.DropDownList("typeOfExercise", Model.TypesOfExercises, new { @class = "form-control custom-font"})
+                                            <div class="input-group-append">
+                                                <input type="submit" class="btn btn-primary" value="Add New Formula" name="submit"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </form>
                         }
                     }
 

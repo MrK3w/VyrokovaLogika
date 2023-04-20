@@ -1,0 +1,30 @@
+[
+  {
+    "formula": "(p\u2227(q\u003Er))\u003E((p\u2227q)\u2228(p\u2227r))",
+    "status": "Not Tautology"
+  },
+  {
+    "formula": "(p\u003Eq)=(-q\u003E-p)",
+    "status": "Tautology"
+  },
+  {
+    "formula": "a\u003Eb",
+    "status": "Not Tautology"
+  },
+  {
+    "formula": "(A | B) \u0026 (-A \u0026 -B)",
+    "status": "Not Contradiction"
+  },
+  {
+    "formula": "P\u0026-P",
+    "status": "Contradiction"
+  },
+  {
+    "formula": "a\u2227b",
+    "status": "Not Tautology"
+  },
+  {
+    "formula": "a\u2227b",
+    "status": "Not Tautology"
+  }
+]

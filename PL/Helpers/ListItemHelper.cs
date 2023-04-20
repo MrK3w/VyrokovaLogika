@@ -19,6 +19,34 @@ public static class ListItemsHelper
             return _listItems;
         }
     }
+
+    private static List<SelectListItem> _exerciseTypes;
+
+    public static List<SelectListItem> ExerciseTypes
+    {
+        get
+        {
+            if (_exerciseTypes == null)
+            {
+                _exerciseTypes = new List<SelectListItem>();
+                SetListItemExercises();
+            }
+            return _exerciseTypes;
+        }
+    }
+
+    private static void SetListItemExercises()
+    {
+        SelectListItem item1 = new SelectListItem("Tautology", "Tautology");
+        SelectListItem item2 = new SelectListItem("Not Tautology", "Not Tautology");
+        SelectListItem item3 = new SelectListItem("Contradiction", "Contradiction");
+        SelectListItem item4 = new SelectListItem("Not Contradiction", "Not Contradiction");
+        _exerciseTypes.Add(item1);
+        _exerciseTypes.Add(item2);
+        _exerciseTypes.Add(item3);
+        _exerciseTypes.Add(item4);
+    }
+
     public static void SetListItems(string mSentence = null)
     {
         if (_listItems.Count == 0)

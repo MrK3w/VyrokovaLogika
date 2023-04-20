@@ -21,7 +21,8 @@ namespace PL.Pages
             Draw,
             CheckTautologyDAG,
             CheckContradictionDAG,
-            ExerciseDAG
+            ExerciseDAG,
+            AddNewFormula
         }
         private string vl;
         private string vl1;
@@ -39,6 +40,7 @@ namespace PL.Pages
         public bool IsTautologyOrContradiction { get; set; }
 
         public List<SelectListItem> listItems { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> TypesOfExercises { get; set; } = new List<SelectListItem>();
         public bool Valid { get; private set; } = true;
 
         public string ExerciseType { get; set; }
@@ -50,8 +52,11 @@ namespace PL.Pages
         public int mIssueIndex { get; set; } = -1;
 
         public string ExerciseFormula { get; set; }
-        public IndexModel()
+
+        IWebHostEnvironment mEnv;
+        public IndexModel(IWebHostEnvironment env)
         {
+            mEnv = env;
             PrepareList();
         }
 
@@ -79,6 +84,27 @@ namespace PL.Pages
             PrintTree(engine.tree);
             string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
             ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+            return Page();
+        }
+
+        public IActionResult OnPostAddNewFormula()
+        {
+           button = ButtonType.AddNewFormula;
+           TypesOfExercises = ListItemsHelper.ExerciseTypes;
+           return Page();
+        }
+
+        public IActionResult OnPostAddNewFormulaPost()
+        {
+            button = ButtonType.AddNewFormula;
+            string formula = Request.Form["FormulaInput"];
+            string selectedValue = Request.Form["typeOfExercise"];
+            if (!Validator.ValidateSentence(ref formula))
+            {
+                Valid = false;
+                return Page();
+            }
+            ExerciseHelper.SaveFormulaList(mEnv,formula, selectedValue);
             return Page();
         }
 
@@ -115,11 +141,12 @@ namespace PL.Pages
 
         public IActionResult OnPostExercise()
         {
+            
             foreach (var item in listItems)
             {
                 item.Selected = false;
             }
-
+            ExerciseHelper.GetFormulaList(mEnv);
             button = ButtonType.Exercise;
             ExerciseHelper.GeneratateNumber();
             Valid = true;
