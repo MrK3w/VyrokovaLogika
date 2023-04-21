@@ -27,17 +27,20 @@ namespace PL.Pages
         private string vl;
         private string vl1;
         public ButtonType button { get; set; }
-        
+
         private List<string> htmlTree = new List<string>();
-        
+
         private List<string> htmlTreeTruth = new List<string>();
         public string ConvertedTree { get; set; }
         public string ConvertedTreeTruth { get; set; }
+
+        public int level { get; set; } = 0;
         public List<string> DAGNodes { get; set; } = new List<string>();
         public List<Tuple<string, string>> TreeConnections { get; set; } = new List<Tuple<string, string>>();
         private bool Green;
         public List<Tuple<string, int>> distinctNodes { get; set; } = new List<Tuple<string, int>>();
         public bool IsTautologyOrContradiction { get; set; }
+        int i = 0;
 
         public List<SelectListItem> listItems { get; set; } = new List<SelectListItem>();
         public List<SelectListItem> TypesOfExercises { get; set; } = new List<SelectListItem>();
@@ -51,7 +54,10 @@ namespace PL.Pages
 
         public int mIssueIndex { get; set; } = -1;
 
+        public string Formula { get; set; }
         public string ExerciseFormula { get; set; }
+
+        public List<string> Steps { get; set; } = new List<string> { };
 
         IWebHostEnvironment mEnv;
         public IndexModel(IWebHostEnvironment env)
@@ -82,6 +88,7 @@ namespace PL.Pages
             Engine engine = PrepareEngine(mSentence);
 
             PrintTree(engine.tree);
+           
             string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
             ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
             return Page();
@@ -108,34 +115,71 @@ namespace PL.Pages
             return Page();
         }
 
-        public IActionResult OnPostDrawTree()
+        public IActionResult OnPostDrawTree(string buttonValue)
         {
             button = ButtonType.Draw;
-            string mSentence = getFormula();
+            string mSentence;
+            int outLevel;
+            if (!int.TryParse(Request.Form["level"], out outLevel))
+            {
+                level = 0;
+            }
+            else
+            {
+                level = outLevel;
+            }
+            if (Request.Form.ContainsKey("tree"))
+            {
+                mSentence = Request.Form["tree"];
+            }
+            else
+            {
+                mSentence = getFormula();
+            }
+            Formula = mSentence;
             if (!Valid) return Page();
+            // Get the value of "level" from the form submission
+            
             Engine engine = PrepareEngine(mSentence);
-
-            DrawTree(engine.tree);
+            var depth = engine.tree.MaxDepth();
+            if (buttonValue == "Přidej úroveň" && level < depth) level++;
+            else if (buttonValue == "Sniž úroveň" && level > 0) level--;
             string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+            DrawTree(engine.tree, level);
+            PrintLevelOrder(engine.tree, level);
             ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+          
             return Page();
         }
 
-        private void DrawTree(Tree tree)
+        private void DrawTree(Tree tree, int maxLevel = 0,int level = 0, char letter = 'a')
         {
             htmlTree.Add("<li>");
-            htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
-
-            if (tree.childNodeLeft != null)
+            if ((tree.childNodeLeft == null && tree.childNodeRight == null )&& maxLevel-1 == level)
             {
-                htmlTree.Add("<ul>");
-                DrawTree(tree.childNodeLeft);
-                if (tree.childNodeRight != null)
-                {
-                    DrawTree(tree.childNodeRight);
-                }
-                htmlTree.Add("</ul>");
+                htmlTree.Add("<span class=tf-nc>" + letter + ") " + tree.Item.mSentence + "</span>");
             }
+            else if ((tree.childNodeLeft != null && tree.childNodeRight != null) && maxLevel - 1 == level)
+                htmlTree.Add("<span class=tf-nc>" + letter + ") " + tree.childNodeLeft.Item.mSentence + "<font color='red'>" + GetEnumDescription(tree.Item.mOperator) + "</font>" + tree.childNodeRight.Item.mSentence + "</span>");
+            else if(maxLevel -1 == level &&  tree.childNodeRight == null)
+            {
+                htmlTree.Add("<span class=tf-nc>" + letter + ") " + "<font color='red'>" + GetEnumDescription(tree.Item.mOperator) + "</font>" + tree.childNodeLeft.Item.mSentence + "</span>");
+            }
+            else
+            {
+                htmlTree.Add("<span class=tf-nc>" + letter + ") " + tree.Item.mSentence + "</span>");
+            }
+                if (tree.childNodeLeft != null && level < maxLevel)
+                {
+                    htmlTree.Add("<ul>");
+                    DrawTree(tree.childNodeLeft, maxLevel, level + 1,'a');
+
+                    if (tree.childNodeRight != null)
+                    {
+                        DrawTree(tree.childNodeRight, maxLevel, level +1, 'b');
+                    }
+                    htmlTree.Add("</ul>");
+                }
             htmlTree.Add("</li>");
         }
 
@@ -149,20 +193,26 @@ namespace PL.Pages
             ExerciseHelper.GetFormulaList(mEnv);
             button = ButtonType.Exercise;
             ExerciseHelper.GeneratateNumber();
-            Valid = true;
+
             int number = ExerciseHelper.number;
+            if(ExerciseHelper.formulaList.Count == 0)
+            {
+                Valid = false;
+                return Page();
+            }
             string f = ExerciseHelper.formulaList[number].Item1;
+            Valid = true;
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
             Converter.ConvertLogicalOperators(ref f);
             Validator.ValidateSentence(ref f);
             ExerciseFormula = f;
             ExerciseHelper.formula = f;
             Engine engine = PrepareEngine(ExerciseFormula);
-            if (ExerciseType == "Not Tautology" || ExerciseType == "Tautology")
+            if (ExerciseType == "Neni tautologie" || ExerciseType == "Tautologie")
             {
                 IsTautologyOrContradiction = engine.ProofSolver("Tautology");
             }
-            if (ExerciseType == "Not Contradiction" || ExerciseType == "Contradiction")
+            if (ExerciseType == "Neni kontradikce" || ExerciseType == "Kontradikce")
             {
                 IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
             }
@@ -181,23 +231,28 @@ namespace PL.Pages
                 item.Selected = false;
             }
             int number = ExerciseHelper.number;
+            if (ExerciseHelper.formulaList.Count == 0)
+            {
+                Valid = false;
+                return Page();
+            }
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
             button = ButtonType.Exercise;
             ExerciseTreeConstructer constructer = new ExerciseTreeConstructer(tree);
             TruthTree truthTree = new TruthTree();
-            if (ExerciseType == "Tautology")
+            if (ExerciseType == "Tautologie")
             {
                 truthTree = constructer.ProcessTree(true,false);
             }
-            else if(ExerciseType == "Not Tautology")
+            else if(ExerciseType == "Neni tautologie")
             {
                 truthTree = constructer.ProcessTree(true, true);
             }
-            else if (ExerciseType == "Contradiction")
+            else if (ExerciseType == "Kontradikce")
             {
                 truthTree = constructer.ProcessTree(false, false);
             }
-            else if (ExerciseType == "Not Contradiction")
+            else if (ExerciseType == "Neni kontradikce")
             {
                 truthTree = constructer.ProcessTree(false, true);
             }
@@ -219,8 +274,14 @@ namespace PL.Pages
             {
                 item.Selected = false;
             }
+            ExerciseHelper.GetFormulaList(mEnv);
             button = ButtonType.ExerciseDAG;
             ExerciseHelper.GeneratateNumber();
+            if (ExerciseHelper.formulaList.Count == 0)
+            {
+                Valid = false;
+                return Page();
+            }
             int number = ExerciseHelper.number;
             string f = ExerciseHelper.formulaList[number].Item1;
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
@@ -230,11 +291,11 @@ namespace PL.Pages
             ExerciseHelper.formula = f;
             Valid = true;
             Engine engine = PrepareEngine(ExerciseFormula);
-            if (ExerciseType == "Not Tautology" || ExerciseType == "Tautology")
+            if (ExerciseType == "Neni tautologie" || ExerciseType == "Tautologie")
             {
                 IsTautologyOrContradiction = engine.ProofSolver("Tautology");
             }
-            if (ExerciseType == "Not Contradiction" || ExerciseType == "Contradiction")
+            if (ExerciseType == "Neni kontradikce" || ExerciseType == "Kontradikce")
             {
                 IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
             }
@@ -252,6 +313,11 @@ namespace PL.Pages
                 item.Selected = false;
             }
             int number = ExerciseHelper.number;
+            if (ExerciseHelper.formulaList.Count == 0)
+            {
+                Valid = false;
+                return Page();
+            }
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
             button = ButtonType.ExerciseDAG;
             List<JsonTreeNodes> nodeList = JsonConvert.DeserializeObject<List<JsonTreeNodes>>(pDAGNodes);
@@ -265,16 +331,16 @@ namespace PL.Pages
             TruthDagVerifier verifier;
             switch (ExerciseType)
             {
-                case "Tautology":
+                case "Tautologie":
                     verifier = new TruthDagVerifier(TreeConnections, DAGNodes, true, false);
                     break;
-                case "Not Tautology":
+                case "Neni tautologie":
                     verifier = new TruthDagVerifier(TreeConnections, DAGNodes,  true, true);
                     break;
-                case "Contradiction":
+                case "Kontradikce":
                     verifier = new TruthDagVerifier(TreeConnections, DAGNodes, false, false);
                     break;
-                case "Not Contradiction":
+                case "Neni kontradikce":
                     verifier = new TruthDagVerifier(TreeConnections, DAGNodes, false, true);
                     break;
                 default:
@@ -432,9 +498,54 @@ namespace PL.Pages
             return null;
         }
 
-        private void PrintTree(Tree tree)
+        public void PrintLevelOrder(Tree tree, int startLevel = 2)
         {
+            if (tree.IsRoot == null)
+            {
+                return;
+            }
+            string alphabet = "abcdefgh";
+            Queue<(Tree, int)> queue = new Queue<(Tree, int)>();
+            queue.Enqueue((tree, 1));
+
+            while (queue.Count > 0)
+            {
+                int j = 0;
+                int levelSize = queue.Count;
+                for (int i = 0; i < levelSize; i++)
+                {
+                    (tree, int level) = queue.Dequeue();
+                    if (level == startLevel)
+                    { 
+
+                        if (tree.Item.mOperator != OperatorEnum.EMPTY)
+                        {
+                            Steps.Add((alphabet[j] + ") - Rozdělujeme podle: " + GetEnumDescription(tree.Item.mOperator) + "<br>"));
+                            j++;
+                        }
+                        else
+                        {
+                            
+                            j++;
+                        }
+                    }
+                    if (tree.childNodeLeft != null)
+                    {
+                        queue.Enqueue((tree.childNodeLeft, level + 1));
+                    }
+                    if (tree.childNodeRight != null)
+                    {
+                        queue.Enqueue((tree.childNodeRight, level + 1));
+                    }
+                }
+            }
+        }
+
+        private void PrintTree(Tree tree)
+            {
             htmlTree.Add("<li>");
+           
+
             if (tree.Item.mOperator != Operator.OperatorEnum.EMPTY)
             {
                 htmlTree.Add("<span class=tf-nc>" + GetEnumDescription(tree.Item.mOperator) + "</span>");

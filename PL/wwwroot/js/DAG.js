@@ -13,20 +13,25 @@ function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1) {
     }
 
     for (let i = 0; i < treeConnections.length; i++) {
-        let edgeColor = { color: 'blue' };
-        if (treeConnections[i].item1.startsWith('¬') && treeConnections[i].item1.length === 2) {
-            edgeColor.color = 'orange';
-        } else if (i < treeConnections.length - 1 && treeConnections[i].item1 === treeConnections[i + 1].item1) {
-            edgeColor.color = 'orange';
+        let edgeColor = { color: 'orange' };
+        console.log(treeConnections[i]);
+        if (i < treeConnections.length - 1 && treeConnections[i].item1 === treeConnections[i + 1].item1) {
+            edgeColor.color = 'blue';
         }
         let firstChar = treeConnections[i].item1.charAt(0);
+        let thirdChar = treeConnections[i].item1.charAt(2);
+        console.log(thirdChar);
         if (firstChar.charCodeAt(0) === 172 && treeConnections[i].item1.length === 2) {
-            edgeColor.color = 'orange';
-        } else if (i < treeConnections.length - 1 && treeConnections[i].item2 === treeConnections[i + 1].item2) {
-            edgeColor.color = 'orange';
+            edgeColor.color = 'blue';
+        }
+        if (firstChar.charCodeAt(0) === 172 && thirdChar.charCodeAt(0) === 61) {
+        edgeColor.color = 'blue';
+        }
+        else if (i < treeConnections.length - 1 && treeConnections[i].item2 === treeConnections[i + 1].item2) {
+            edgeColor.color = 'blue';
         }
 
-        edges.add({ from: treeConnections[i].item1, to: treeConnections[i].item2, arrows: 'to', color: edgeColor });
+        edges.add({ from: treeConnections[i].item1, to: treeConnections[i].item2, arrows: 'from', color: edgeColor });
     }
 
     var container = document.getElementById("mynetwork");

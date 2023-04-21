@@ -7,12 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Pages\leftArrow.png" />
+    <Content Include="Pages\rightArrow.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="JSRuntimeWindow" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\VyrokovaLogika\VyrokovaLogika.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Images\" />
   </ItemGroup>
 
 </Project>

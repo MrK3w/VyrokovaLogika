@@ -37,10 +37,10 @@ public static class ListItemsHelper
 
     private static void SetListItemExercises()
     {
-        SelectListItem item1 = new SelectListItem("Tautology", "Tautology");
-        SelectListItem item2 = new SelectListItem("Not Tautology", "Not Tautology");
-        SelectListItem item3 = new SelectListItem("Contradiction", "Contradiction");
-        SelectListItem item4 = new SelectListItem("Not Contradiction", "Not Contradiction");
+        SelectListItem item1 = new SelectListItem("Tautologie", "Tautologie");
+        SelectListItem item2 = new SelectListItem("Neni tautologie", "Neni tautologie");
+        SelectListItem item3 = new SelectListItem("Kontradikce", "Kontradikce");
+        SelectListItem item4 = new SelectListItem("Neni kontradikce", "Neni kontradikce");
         _exerciseTypes.Add(item1);
         _exerciseTypes.Add(item2);
         _exerciseTypes.Add(item3);
@@ -51,7 +51,7 @@ public static class ListItemsHelper
     {
         if (_listItems.Count == 0)
         {
-            SelectListItem defaultItem = new SelectListItem { Text = "select formula", Value = "" };
+            SelectListItem defaultItem = new SelectListItem { Text = "Vyber formuli", Value = "" };
             string mPropositionalSentence = "(p>q)≡(-q>-p)";
             Validator.ValidateSentence(ref mPropositionalSentence);
 

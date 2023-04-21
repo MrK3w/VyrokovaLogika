@@ -106,11 +106,11 @@
                             </script>
                             <div style="display: flex; justify-content: center;">
                                 <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
-                                <div>Levá strana</div>
+                                <div>Pravá strana</div>
                             </div>
                             <div style="display: flex; justify-content: center;">
                                 <div style="background-color: blue; width: 20px; height: 20px; margin-right: 5px;"></div>
-                                <div>Pravá strana</div>
+                                <div>Levá strana</div>
                             </div>
                         }
                         @if (Model.button == IndexModel.ButtonType.SyntaxTree)
@@ -118,6 +118,10 @@
                             @if (Model.ConvertedTree != null)
                             {
                                 <p>@Html.Raw(Model.ConvertedTree)</p>
+                                @foreach (var step in Model.Steps)
+                                {
+                                    <p>@Html.Raw(step)</p>
+                                }
                             }
                         }
                         @if (Model.button == IndexModel.ButtonType.CheckTautology)
@@ -189,11 +193,11 @@
                             </script>
                             <div style="display: flex; justify-content: center;">
                                 <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
-                                <div>>Levá strana</div>
+                                <div>>Pravá strana</div>
                             </div>
                             <div style="display: flex; justify-content: center;">
                                 <div style="background-color: blue; width: 20px; height: 20px; margin-right: 5px;"></div>
-                                <div>Pravá strana</div>
+                                <div>Levá strana</div>
                             </div>
                         }
                         @if (Model.button == IndexModel.ButtonType.CheckContradictionDAG)
@@ -235,11 +239,11 @@
                             </script>
                             <div style="display: flex; justify-content: center;">
                                 <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
-                                <div>>Levá strana</div>
+                                <div>>Pravá strana</div>
                             </div>
                             <div style="display: flex; justify-content: center;">
                                 <div style="background-color: blue; width: 20px; height: 20px; margin-right: 5px;"></div>
-                                <div>Pravá strana</div>
+                                <div>Levá strana</div>
                             </div>
                         }
 
@@ -296,8 +300,20 @@
                         {
                             @if (Model.ConvertedTree != null)
                             {
+                                <p> Krok @Model.level</p>
+                                <form method="post" asp-action="Index" asp-controller="Home" id="TheForm5">
+                                    <input type="hidden" name="level" value="@Model.level"/>
+                                    <input type="hidden" id="MyFormula" name="tree" value="@Model.Formula" />
+                                    <input type='submit' class="btn btn-primary" value='Sniž úroveň' name="buttonValue" asp-page-handler="DrawTree" />
+                                    <input type='submit' class="btn btn-primary" value='Přidej úroveň' name="buttonValue" asp-page-handler="DrawTree" />
+                                </form>
+                               
                                 <p>@Html.Raw(Model.ConvertedTree)</p>
                                 @Html.Raw(@Model.Arguments)
+                                @foreach (var step in Model.Steps)
+                                {
+                                    <p>@Html.Raw(step)</p>
+                                }
                             }
                         }
                         @if (Model.button == IndexModel.ButtonType.ExerciseDAG)
@@ -316,13 +332,13 @@
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
                                 makeDAG(myList, treeConnections, true, @Model.mIssueIndex);
                             </script>
-                            <div style="display: flex; justify-content: center;">
+                            <div style="display: flex; justify-content: center; text-align: center;">
                                 <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
-                                <div>Levá strana</div>
-                            </div>
-                            <div style="display: flex; justify-content: center;">
-                                <div style="background-color: blue; width: 20px; height: 20px; margin-right: 5px;"></div>
                                 <div>Pravá strana</div>
+                            </div>
+                            <div style="display: flex; justify-content: center; text-align: center;">
+                                <div style="background-color: blue; width: 20px; height: 20px; margin-right: 5px;"></div>
+                                <div>Levá strana</div>
                             </div>
                             <form method="post" asp-action="Index" asp-controller="Home" id="TheForm3">
                                 <input type='submit' class="btn btn-primary" value='Check formula' id="myButton2" name='submit3' asp-page-handler="ExerciseProcessDAG" />

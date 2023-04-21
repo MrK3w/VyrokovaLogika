@@ -1,30 +1,34 @@
 [
   {
     "formula": "(p\u2227(q\u003Er))\u003E((p\u2227q)\u2228(p\u2227r))",
-    "status": "Not Tautology"
+    "status": "Neni tautologie"
   },
   {
     "formula": "(p\u003Eq)=(-q\u003E-p)",
-    "status": "Tautology"
+    "status": "Tautologie"
   },
   {
     "formula": "a\u003Eb",
-    "status": "Not Tautology"
+    "status": "Neni tautologie"
   },
   {
     "formula": "(A | B) \u0026 (-A \u0026 -B)",
-    "status": "Not Contradiction"
+    "status": "Neni kontradikce"
   },
   {
     "formula": "P\u0026-P",
-    "status": "Contradiction"
+    "status": "Kontradikce"
   },
   {
     "formula": "a\u2227b",
-    "status": "Not Tautology"
+    "status": "Neni tautologie"
   },
   {
     "formula": "a\u2227b",
-    "status": "Not Tautology"
+    "status": "Neni tautologie"
+  },
+  {
+    "formula": "a\u2227b",
+    "status": "Tautologie"
   }
 ]
