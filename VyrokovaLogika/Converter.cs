@@ -22,7 +22,7 @@ namespace VyrokovaLogika
 
         public static string ReduceParenthessis(string sentence)
         {
-            if (sentence == null || sentence.Length < 2 || sentence[0] != '(' || sentence[sentence.Length - 1] != ')')
+            if (sentence == null || sentence.Length < 2 || sentence[0] != '(' || sentence[^1] != ')')
             {
                 return sentence;
             }

@@ -10,6 +10,7 @@ namespace VyrokovaLogika
 {
     public static class Validator
     {
+        public static string? ErrorMessage;
         public static bool ContainsParenthesses(string vl)
         {
             if (vl.Contains('(') || vl.Contains(')')) return true;
@@ -22,15 +23,62 @@ namespace VyrokovaLogika
             Converter.ConvertLogicalOperators(ref mPropositionalSentence);
             Converter.ConvertParenthessis(ref mPropositionalSentence);
             Converter.RemoveExcessParentheses(ref mPropositionalSentence);
-            //check if sentence is valid
-            if (mPropositionalSentence.Length == 1 && Validator.ContainsOperator(mPropositionalSentence)) return false;
-            if (!Validator.ContainsLetter(mPropositionalSentence)) return false;
-            if (!Validator.ValidateSides(mPropositionalSentence)) return false;
-            if (!Validator.ValidateParenthesses(mPropositionalSentence)) return false;
-            if (!Validator.RightCharacters(mPropositionalSentence)) return false;
-            if (!Validator.ValidateOperators(mPropositionalSentence)) return false;
+            //check if sentence include only logical operator 
+            if (mPropositionalSentence.Length == 1 && Validator.ContainsOperator(mPropositionalSentence))
+            {
+                ErrorMessage = "Formule nesmí obsahovat pouze logické operátory!";
+                return false;
+            }
+            //check if sentecne contains literal
+            if (!Validator.ContainsLetter(mPropositionalSentence))
+            {
+                ErrorMessage = "Formule neobsahuje žádný literál!";
+                return false;
+            }
+            //check if literal is on both sides of sentence
+            if (!Validator.ValidateSides(mPropositionalSentence))
+            {
+                ErrorMessage = "Operátor nesmí mít literál pouze na jedné straně!";
+                return false;
+            }
+            //check if brackets are ok
+            if (!Validator.ValidateParenthesses(mPropositionalSentence))
+            {
+                ErrorMessage = "Zkontroluj závorky!";
+                return false;
+            }
+            //check if formula includes only right characters
+            if (!Validator.RightCharacters(mPropositionalSentence))
+            {
+                ErrorMessage = "Ve formuli nejsou validní symboly!";
+                return false;
+            }
+            //check if negation is done correctly e.g cannot be ->
+            if (!Validator.ValidateNegation(mPropositionalSentence))
+            {
+                ErrorMessage = "Nemáš správně danou negaci";
+                return false;
+            }
+            //check if literal is only one
+            //if (!Validator.CheckIfLiteralIsSingle(mPropositionalSentence)) return false;
+            return true;
+        }
 
-            if (!Validator.CheckIfLiteralIsSingle(mPropositionalSentence)) return false;
+        private static bool ValidateNegation(string mPropositionalSentence)
+        {
+            List<char> separators = new List<char> { '∧', '∨', '⇒', '≡' };
+
+            for (int i = 0; i < mPropositionalSentence.Length; i++)
+            {
+                if (mPropositionalSentence[i] == '¬')
+                {
+                    if (i + 1 < mPropositionalSentence.Length && separators.Contains(mPropositionalSentence[i + 1]))
+                    {
+                        return false;
+                    }
+                }
+            }
+
             return true;
         }
 
@@ -58,18 +106,6 @@ namespace VyrokovaLogika
                     return false;
             }
 
-            return true;
-        }
-
-        //validate that operators have rightly brackets
-        private static bool ValidateOperators(string mPropositionalSentence)
-        {
-            for (int i = 1; i < mPropositionalSentence.Length - 2; i++)
-            {
-                if (Validator.ContainsOperator(mPropositionalSentence[i - 1].ToString()) && Validator.isVariable(mPropositionalSentence[i].ToString())
-                    && Validator.ContainsOperator(mPropositionalSentence[i + 1].ToString()))
-                    return false;
-            }
             return true;
         }
 

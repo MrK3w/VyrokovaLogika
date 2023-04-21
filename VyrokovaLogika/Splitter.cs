@@ -128,26 +128,37 @@ namespace VyrokovaLogika
 
         private List<string> SplitStringByOperator(string vl)
         {
-            bool firstPart = true;
             List<string> parts = new List<string>();
-            char[] separators = { '∧', '∨', '⇒', '≡' };
-            StringBuilder sb = new StringBuilder();
+            int tempSplitPoint = 0;
 
+            List<char> separators = new List<char> { '∧', '∨', '⇒', '≡' };
+            int operatorIndex = -1; 
             foreach (char s in vl)
             {
-                //if we have just found operator
-                if (separators.Contains(s) && firstPart)
+                if (s == '(') break;
+
+                if (separators.Contains(s))
                 {
-                    //first part is part of formula, second part is operator
-                    parts.Add(sb.ToString());
-                    parts.Add(s.ToString());
-                    firstPart = false;
-                    sb.Clear();
-                    continue;
+                    int separatorIndex = separators.IndexOf(s);
+                    if (operatorIndex >= 0 && separatorIndex < operatorIndex)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                      
+                        operatorIndex = separatorIndex;
+                    }
                 }
-                sb.Append(s);
+                tempSplitPoint++;
+  
             }
-            parts.Add(sb.ToString());
+            int sepIndex = vl.IndexOf(separators[operatorIndex]);
+            string firstPart = vl.Substring(0, sepIndex); // from index 0 to separatorIndex-1
+            string thirdPart = vl.Substring(sepIndex + 1); // from separatorIndex+1 to the end of the string
+            parts.Add(firstPart);
+            parts.Add(separators[operatorIndex].ToString());
+            parts.Add(thirdPart);
             return parts;
         }
 

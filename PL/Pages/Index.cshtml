@@ -45,8 +45,8 @@
                 </div>
                 <div class="square-div">
                     <p>
-                        Pokud chceme dokázat tautologii nebo kontradikci, tak hledáme formule které obsahují logickou kontradikci.
-                        Logická kontradikce je pokud ve stromu narazíme na literál, který by zároveň nabýval hodnoty 0 i 1.
+                        Pokud chceme dokázat tautologii nebo kontradikci, tak hledáme formule které obsahují semántický spor.
+                        Semántický spor je pokud narazíme na část, který by pravdivá evaluace zároveň nabývala hodnoty 0 i 1.
                     </p>
                 </div>
             </div>
@@ -284,15 +284,15 @@
                         @if (Model.button == IndexModel.ButtonType.Exercise)
                         {
                            
-                            <p>Řešená formule je @Model.ExerciseFormula. Dokaž že to je @Model.ExerciseType</p>
-                            <p> Abys mohl dokázat že formule je tautologií musíme najít takovou formuli, kde její pravdivostní hodnota je 0 a zároveň zde bude semántická kontradikce.
+                            <p>Řešená formule je @Model.ExerciseFormula. Dokaž že to @Model.ExerciseType</p>
+                            <p> Abys mohl dokázat že formule je tautologií musíme najít takovou formuli, kde její pravdivostní hodnota je 0 a zároveň zde dojdeme k sémantickému sporu.
                                 V případě že to tautologie není hledej formuli, bez sémantického sporu.
                                 V případě toho že se jedná o kontradikci postupuj obdobně jen musíš nastavit pravdivostní hodnotu formule na 1.
                             </p>
                             <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
                             <p>@Model.ExerciseQuote</p>
                             <form method="post" asp-action="Index" asp-controller="Home" id="TheForm2">
-                                <input type='submit' class="btn btn-primary" value='Check formula' id="myButton" name='submit2' asp-page-handler="ExerciseProcess" />
+                                <input type='submit' class="btn btn-primary" value='Zkontroluj' id="myButton" name='submit2' asp-page-handler="ExerciseProcess" />
                                 <input type="hidden" id="hiddenNumber" name="tree" value="" />
                             </form>
                         }
@@ -300,27 +300,44 @@
                         {
                             @if (Model.ConvertedTree != null)
                             {
-                                <p> Krok @Model.level</p>
+                                @if (@Model.level != 0)
+                                {
+                                    <p> Krok @Model.level</p>
+                                   
+
+                                    <p>@Html.Raw(Model.ConvertedTree)</p>
+                                    @Html.Raw(@Model.Arguments)
+
+                                    @foreach (var step in Model.Steps)
+                                    {
+                                        <div class="alert alert-primary" role="alert">
+                                            <p>@Html.Raw(step)</p>
+                                        </div>
+                                    }
+                                    @if (Model.Steps.Count == 0 && Model.level != 0)
+                                    {
+                                        <div class="alert alert-primary" role="alert">
+                                            <p>Hotovo</p>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <p> Formule @Model.Formula</p>
+                                }
                                 <form method="post" asp-action="Index" asp-controller="Home" id="TheForm5">
-                                    <input type="hidden" name="level" value="@Model.level"/>
+                                    <input type="hidden" name="level" value="@Model.level" />
                                     <input type="hidden" id="MyFormula" name="tree" value="@Model.Formula" />
                                     <input type='submit' class="btn btn-primary" value='Sniž úroveň' name="buttonValue" asp-page-handler="DrawTree" />
                                     <input type='submit' class="btn btn-primary" value='Přidej úroveň' name="buttonValue" asp-page-handler="DrawTree" />
                                 </form>
-                               
-                                <p>@Html.Raw(Model.ConvertedTree)</p>
-                                @Html.Raw(@Model.Arguments)
-                                @foreach (var step in Model.Steps)
-                                {
-                                    <p>@Html.Raw(step)</p>
-                                }
-                            }
+                    }
                         }
                         @if (Model.button == IndexModel.ButtonType.ExerciseDAG)
                         {
-                            <p>Řešená formule je @Model.ExerciseFormula. Dokaž že to je @Model.ExerciseType</p>
+                            <p>Řešená formule je @Model.ExerciseFormula. Dokaž že to @Model.ExerciseType</p>
                             <p>
-                                Abys mohl dokázat že formule je tautologií musíme najít takovou formuli, kde její pravdivostní hodnota je 0 a zároveň zde bude semántická kontradikce.
+                                Abys mohl dokázat že formule je tautologií musíme najít takovou formuli, kde její pravdivostní hodnota je 0 a zároveň zde dojdeme k sémantickému sporu.
                                 V případě že to tautologie není hledej formuli, bez sémantického sporu.
                                 V případě toho že se jedná o kontradikci postupuj obdobně jen musíš nastavit pravdivostní hodnotu formule na 1.
                             </p>
@@ -341,7 +358,7 @@
                                 <div>Levá strana</div>
                             </div>
                             <form method="post" asp-action="Index" asp-controller="Home" id="TheForm3">
-                                <input type='submit' class="btn btn-primary" value='Check formula' id="myButton2" name='submit3' asp-page-handler="ExerciseProcessDAG" />
+                                <input type='submit' class="btn btn-primary" value='Zkontroluj' id="myButton2" name='submit3' asp-page-handler="ExerciseProcessDAG" />
                                 <input type="hidden" id="hiddenNumber2" name="pDAGNodes" value="" />
                                 <input type="hidden" id="hiddenNumber3" name="DAGPath" value="" />
                             </form>
@@ -364,7 +381,7 @@
                                         <div class="input-group">
                                             @Html.DropDownList("typeOfExercise", Model.TypesOfExercises, new { @class = "form-control custom-font"})
                                             <div class="input-group-append">
-                                                <input type="submit" class="btn btn-primary" value="Add New Formula" name="submit"/>
+                                                <input type="submit" class="btn btn-primary" value="Přidej novou formuli" name="submit"/>
                                             </div>
                                         </div>
                                     </div>
@@ -377,7 +394,7 @@
                     @if (!Model.Valid)
                     {
                         <div class="alert alert-danger" role="alert" id="errorAlert">
-                           Formule není v pořádku nebo nebyla vybrána.
+                           @Model.ErrorMessage
                         </div>
                     }
                 </div>

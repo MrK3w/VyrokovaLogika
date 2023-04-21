@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
 using VyrokovaLogika;
-using static System.Net.Mime.MediaTypeNames;
 
 public static class ListItemsHelper
 {
@@ -21,7 +19,7 @@ public static class ListItemsHelper
     }
 
     private static List<SelectListItem> _exerciseTypes;
-
+    public static string ErrorMesage;
     public static List<SelectListItem> ExerciseTypes
     {
         get
@@ -37,10 +35,10 @@ public static class ListItemsHelper
 
     private static void SetListItemExercises()
     {
-        SelectListItem item1 = new SelectListItem("Tautologie", "Tautologie");
-        SelectListItem item2 = new SelectListItem("Neni tautologie", "Neni tautologie");
-        SelectListItem item3 = new SelectListItem("Kontradikce", "Kontradikce");
-        SelectListItem item4 = new SelectListItem("Neni kontradikce", "Neni kontradikce");
+        SelectListItem item1 = new SelectListItem("je tautologie", "je tautologie");
+        SelectListItem item2 = new SelectListItem("není tautologie", "není tautologie");
+        SelectListItem item3 = new SelectListItem("je kontradikce", "je kontradikce");
+        SelectListItem item4 = new SelectListItem("není kontradikce", "není kontradikce");
         _exerciseTypes.Add(item1);
         _exerciseTypes.Add(item2);
         _exerciseTypes.Add(item3);
@@ -71,7 +69,7 @@ public static class ListItemsHelper
             SelectListItem item3 = new SelectListItem(mPropositionalSentence2, mPropositionalSentence2);
             SelectListItem item4 = new SelectListItem(mPropositionalSentence3, mPropositionalSentence3);
             SelectListItem item5 = new SelectListItem(mPropositionalSentence4, mPropositionalSentence4);
-
+            ErrorMesage = Validator.ErrorMessage;
             _listItems.Add(defaultItem);
             _listItems.Add(item1);
             _listItems.Add(item2);
