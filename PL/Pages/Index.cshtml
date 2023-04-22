@@ -48,7 +48,7 @@
             </div>
             <div class="col-md-10">
                 <div class="text-center">
-                    <h1 class="display-4">Vyrokova logika</h1>
+                    <h3 class="display-4">Vyrokova logika</h3>
                     <style>
                         .btn-group > input {
                             margin-right: 10px; /* Adjust this value to control the spacing between buttons */
@@ -65,26 +65,29 @@
 
                             <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
                                 <div class="btn-group flex-fill" role="group" aria-label="First group">
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vytvoř syntaktický strom.' name='submit' asp-page-handler="CreateTree" />
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Vytvoř DAG.' name='submit' asp-page-handler="CreateDAG" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vytvoř syntaktický strom' name='submit' asp-page-handler="CreateTree" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Vytvoř DAG' name='submit' asp-page-handler="CreateDAG" />
                                 </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Second group">
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Zkontroluj tautologi.' name='submit' asp-page-handler="CheckTautology" />
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Zkontroluj kontradikci.' name='submit' asp-page-handler="CheckContradiction" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Zkontroluj tautologii' name='submit' asp-page-handler="CheckTautology" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Zkontroluj kontradikci' name='submit' asp-page-handler="CheckContradiction" />
                                 </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Third group">
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli strom.' name='submit' asp-page-handler="DrawTree" />
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Procvičování.' name='submit' asp-page-handler="Exercise"/>
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli strom' name='submit' asp-page-handler="DrawTree" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Procvičování' name='submit' asp-page-handler="Exercise"/>
                                 </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Fourth group">
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověr tautologii v DAGU' name='submit' asp-page-handler="CheckTautologyDAG" />
-                                <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Ověr kontradikci v DAGU' name='submit' asp-page-handler="CheckContradictionDAG" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověř tautologii v DAGU' name='submit' asp-page-handler="CheckTautologyDAG" />
+                                <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Ověř kontradikci v DAGU' name='submit' asp-page-handler="CheckContradictionDAG" />
                             </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Fifth group">
                                 <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Procvičuj v DAGU' name='submit' asp-page-handler="ExerciseDAG" />
                                     <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Přidej formuli pro procvičování' name='submit' asp-page-handler="AddNewFormula" />
                             </div>
-
+                                <div class="btn-group flex-fill" role="group" aria-label="Sixth group">
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli strom tautologie' name='submit' asp-page-handler="DrawTreeTautology" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Vykresli strom kontradikce' name='submit' asp-page-handler="DrawTreeContradiction" />
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -97,7 +100,7 @@
                             <script>
                                 var myList = @Html.Raw(Json.Serialize(Model.DAGNodes));
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
-                                var i = 0;
+                                var i = 1;
 
                                 setInterval(function () {
                                     if (i < treeConnections.length) {
@@ -277,10 +280,7 @@
                                     }
                                 </table>
                             </div>
-                            <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
-
-
-                           
+                            <p>@Html.Raw(Model.ConvertedTreeTruth)</p> 
                         }
 
                         @if (Model.button == IndexModel.ButtonType.Exercise)
@@ -307,7 +307,7 @@
                                 @if (@Model.level != 0)
                                 {
                                     <p> Krok @Model.level</p>
-                                   
+
 
                                     <p>@Html.Raw(Model.ConvertedTree)</p>
                                     @Html.Raw(@Model.Arguments)
@@ -335,8 +335,57 @@
                                     <input type='submit' class="btn btn-primary" value='Sniž úroveň' name="buttonValue" asp-page-handler="DrawTree" />
                                     <input type='submit' class="btn btn-primary" value='Přidej úroveň' name="buttonValue" asp-page-handler="DrawTree" />
                                 </form>
-                    }
+                            }
                         }
+
+                        @if (Model.button == IndexModel.ButtonType.DrawTautology)
+                        {
+                            @if (Model.ConvertedTree != null)
+                            {
+                                <p> Krok @Model.level</p>
+                                <p> Formule @Model.Formula</p>
+                                    <p>@Html.Raw(Model.ConvertedTree)</p>
+                                    @Html.Raw(@Model.Arguments)
+
+                                    @foreach (var step in Model.Steps)
+                                    {
+                                        <div class="alert alert-primary" role="alert">
+                                            <p>@Html.Raw(step)</p>
+                                        </div>
+                                    }
+                                <form method="post" asp-action="Index" asp-controller="Home" id="TheForm5">
+                                    <input type="hidden" name="level" value="@Model.level" />
+                                    <input type="hidden" id="MyFormula" name="tree" value="@Model.Formula" />
+                                    <input type='submit' class="btn btn-primary" value='Sniž úroveň' name="buttonValue" asp-page-handler="DrawTreeTautology" />
+                                    <input type='submit' class="btn btn-primary" value='Přidej úroveň' name="buttonValue" asp-page-handler="DrawTreeTautology" />
+                                </form>
+                            }
+                        }
+
+                        @if (Model.button == IndexModel.ButtonType.DrawContradiction)
+                        {
+                            @if (Model.ConvertedTree != null)
+                            {
+                                <p> Krok @Model.level</p>
+                                <p> Formule @Model.Formula</p>
+                                <p>@Html.Raw(Model.ConvertedTree)</p>
+                                @Html.Raw(@Model.Arguments)
+
+                                @foreach (var step in Model.Steps)
+                                {
+                                    <div class="alert alert-primary" role="alert">
+                                        <p>@Html.Raw(step)</p>
+                                    </div>
+                                }
+                                <form method="post" asp-action="Index" asp-controller="Home" id="TheForm5">
+                                    <input type="hidden" name="level" value="@Model.level" />
+                                    <input type="hidden" id="MyFormula" name="tree" value="@Model.Formula" />
+                                    <input type='submit' class="btn btn-primary" value='Sniž úroveň' name="buttonValue" asp-page-handler="DrawTreeContradiction" />
+                                    <input type='submit' class="btn btn-primary" value='Přidej úroveň' name="buttonValue" asp-page-handler="DrawTreeContradiction" />
+                                </form>
+                            }
+                        }
+
                         @if (Model.button == IndexModel.ButtonType.ExerciseDAG)
                         {
                             <p>Řešená formule je @Model.ExerciseFormula. Dokaž že to @Model.ExerciseType</p>

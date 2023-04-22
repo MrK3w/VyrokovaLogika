@@ -5,7 +5,7 @@ function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1, tim
     var nodes = new vis.DataSet([]);
     var edges = new vis.DataSet([]);
     for (let i = 0; i < myList.length; i++) {
-        if (i >= timer) break;
+        if (i> timer) break;
         var node = { id: myList[i], label: myList[i], size: 100, font: { color: 'white', size: 16 } };
         if (i == 0) {
             node.color = 'purple';
@@ -17,7 +17,7 @@ function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1, tim
     }
 
     for (let i = 0; i < treeConnections.length; i++) {
-         if (i >= timer) break;
+         if (i > timer) break;
         let edgeColor = { color: 'orange' };
         var step = "Rozdělíme " + treeConnections[i].item1 + " pravá strana " + treeConnections[i].item2;
         console.log(treeConnections[i]);

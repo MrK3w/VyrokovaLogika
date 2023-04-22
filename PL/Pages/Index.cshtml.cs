@@ -22,7 +22,9 @@ namespace PL.Pages
             CheckTautologyDAG,
             CheckContradictionDAG,
             ExerciseDAG,
-            AddNewFormula
+            AddNewFormula,
+            DrawTautology,
+            DrawContradiction
         }
         private string vl;
         private string vl1;
@@ -151,6 +153,104 @@ namespace PL.Pages
             return Page();
         }
 
+        public IActionResult OnPostDrawTreeTautology(string buttonValue)
+        {
+            button = ButtonType.DrawTautology;
+            string mSentence;
+            int outLevel;
+            if (!int.TryParse(Request.Form["level"], out outLevel))
+            {
+                level = 0;
+            }
+            else
+            {
+                level = outLevel;
+            }
+            if (Request.Form.ContainsKey("tree"))
+            {
+                mSentence = Request.Form["tree"];
+            }
+            else
+            {
+                mSentence = getFormula();
+            }
+            Formula = mSentence;
+            if (!Valid) return Page();
+
+            Engine engine = PrepareEngine(mSentence);
+            var depth = engine.tree.MaxDepth();
+            if (buttonValue == "Přidej úroveň" && level < depth) level++;
+            else if (buttonValue == "Sniž úroveň" && level > 0) level--;
+            string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+            IsTautologyOrContradiction = engine.ProofSolver("Tautology");
+            if (level == 0) Steps.Add("Hledáme tautologii proto jako první hodnotu dosadíme 0");
+            distinctNodes = engine.distinctNodes;
+            DrawTree(engine.counterModel, level);
+            PrintLevelOrder(engine.counterModel, level);
+            ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+            if(level >= depth)
+            {
+                if (IsTautologyOrContradiction)
+                {
+                    Steps.Add("Našli jsme semántický spor, proto toto může být tautologie.");
+                }
+                else
+                {
+                    Steps.Add("Ke sporu jsme nedošli, proto toto není tautologie!");
+                }
+            }
+            return Page();
+        }
+
+        public IActionResult OnPostDrawTreeContradiction(string buttonValue)
+        {
+            button = ButtonType.DrawContradiction;
+            string mSentence;
+            int outLevel;
+            if (!int.TryParse(Request.Form["level"], out outLevel))
+            {
+                level = 0;
+            }
+            else
+            {
+                level = outLevel;
+            }
+            if (Request.Form.ContainsKey("tree"))
+            {
+                mSentence = Request.Form["tree"];
+            }
+            else
+            {
+                mSentence = getFormula();
+            }
+            Formula = mSentence;
+            if (!Valid) return Page();
+
+            Engine engine = PrepareEngine(mSentence);
+            var depth = engine.tree.MaxDepth();
+            if (buttonValue == "Přidej úroveň" && level < depth) level++;
+            else if (buttonValue == "Sniž úroveň" && level > 0) level--;
+            string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+            IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
+            if (level == 0) Steps.Add("Hledáme kontradikci proto jako první hodnotu dosadíme 1");
+            distinctNodes = engine.distinctNodes;
+            DrawTree(engine.counterModel, level);
+            PrintLevelOrder(engine.counterModel, level);
+            ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+            if (level >= depth)
+            {
+                if (IsTautologyOrContradiction)
+                {
+                    Steps.Add("Našli jsme semántický spor, proto toto může být kontradikce.");
+                }
+                else
+                {
+                    Steps.Add("Ke sporu jsme nedošli, proto toto není kontradikce!");
+                }
+            }
+            return Page();
+        }
+
         private void DrawTree(Tree tree, int maxLevel = 0,int level = 0, char letter = 'a')
         {
             htmlTree.Add("<li>");
@@ -184,9 +284,85 @@ namespace PL.Pages
             htmlTree.Add("</li>");
         }
 
+        private void DrawTree(TruthTree tree, int maxLevel = 0, int level = 0, char letter = 'a')
+        {
+            if (maxLevel >= level)
+            {
+                htmlTree.Add("<li>");
+                if (tree.literal == null)
+                    htmlTree.Add("<span class=tf-nc>" + GetEnumDescription(tree.mOperator) + "=" + tree.Item + "</span>");
+                else
+                {
+                    htmlTree.Add("<span class=tf-nc>" + tree.literal + "=" + tree.Item + "</span>");
+                }
+            }
+            else
+            {
+                htmlTree.Add("<li>");
+                if (tree.literal == null)
+                    htmlTree.Add("<span class=tf-nc>" + GetEnumDescription(tree.mOperator) + "= </span>");
+                else
+                {
+                    htmlTree.Add("<span class=tf-nc>" + tree.literal + "= </span>");
+                }
+            }
+            if (tree.ChildNodeLeft != null)
+            {
+                htmlTree.Add("<ul>");
+                DrawTree(tree.ChildNodeLeft, maxLevel, level +1);
+                if (tree.ChildNodeRight != null)
+                {
+                    DrawTree(tree.ChildNodeRight, maxLevel, level + 1);
+                }
+                htmlTree.Add("</ul>");
+            }
+            htmlTree.Add("</li>");
+        }
+
+        public void PrintLevelOrder(TruthTree tree, int startLevel = 2)
+        {
+            if (tree == null)
+            {
+                return;
+            }
+            Queue<(TruthTree, int)> queue = new Queue<(TruthTree, int)>();
+            queue.Enqueue((tree, 1));
+
+            while (queue.Count > 0)
+            {
+                int j = 1;
+                int levelSize = queue.Count;
+                for (int i = 0; i < levelSize; i++)
+                {
+                    (tree, int level) = queue.Dequeue();
+                    if (level == startLevel)
+                    {
+
+                        if (tree.mOperator != OperatorEnum.EMPTY && tree.ChildNodeRight != null)
+                        {
+                            Steps.Add((j + ") - Pokud operátor " + GetEnumDescription(tree.mOperator) + " má hodnotu "+ tree.Item + " tak můžeme zkusit dosadit " + tree.ChildNodeLeft.Item + " a " + tree.ChildNodeRight.Item +"<br>"));
+                            j++;
+                        }
+                        else if(tree.mOperator != OperatorEnum.EMPTY && tree.ChildNodeRight == null)
+                        {
+                            Steps.Add((j + ") - Pokud operátor " + GetEnumDescription(tree.mOperator) + " má hodnotu " + tree.Item + " tak dosadíme " + tree.ChildNodeLeft.Item+ "<br>"));
+                            j++;
+                        }
+                    }
+                    if (tree.ChildNodeLeft != null)
+                    {
+                        queue.Enqueue((tree.ChildNodeLeft, level + 1));
+                    }
+                    if (tree.ChildNodeRight != null)
+                    {
+                        queue.Enqueue((tree.ChildNodeRight, level + 1));
+                    }
+                }
+            }
+        }
+
         public IActionResult OnPostExercise()
         {
-            
             foreach (var item in listItems)
             {
                 item.Selected = false;
@@ -541,7 +717,7 @@ namespace PL.Pages
         }
 
         private void PrintTree(Tree tree, bool fullTree = false)
-            {
+        {
             htmlTree.Add("<li>");
 
             if (!fullTree)

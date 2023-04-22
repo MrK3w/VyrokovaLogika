@@ -41,6 +41,7 @@ namespace VyrokovaLogika
                     for (int j = 0; j < currentTreeListFromRightSide.Count(); j++)
                     {
                         TruthTree tempTree = new TruthTree();
+                        if (tree.IsRoot) tempTree.Item = truthValue;
                         tempTree.mOperator = tree.Item.mOperator;
                         currentTreeListFromLeftSide[i].Item = truthValues.Item1;
                         currentTreeListFromRightSide[j].Item = truthValues.Item2;
@@ -53,6 +54,7 @@ namespace VyrokovaLogika
                     for (int i = 0; i < currentTreeListFromLeftSide.Count(); i++)
                     {
                         TruthTree tempTree = new TruthTree();
+                        if (tree.IsRoot) tempTree.Item = truthValue;
                         tempTree.mOperator = tree.Item.mOperator;
                         currentTreeListFromLeftSide[i].Item = truthValues.Item1;
                         tempTree.AddChild(currentTreeListFromLeftSide[i], "left");
@@ -65,6 +67,7 @@ namespace VyrokovaLogika
                     for (int i = 0; i < currentTreeListFromRightSide.Count(); i++)
                     {
                         TruthTree tempTree = new TruthTree();
+                        if (tree.IsRoot) tempTree.Item = truthValue;
                         currentTreeListFromRightSide[i].Item = truthValues.Item2;
                         tempTree.mOperator = tree.Item.mOperator;
                         tempTree.AddChild(currentTreeListFromRightSide[i], "right");
