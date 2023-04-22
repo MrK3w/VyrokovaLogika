@@ -1,7 +1,11 @@
-function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1) {
+﻿
+var stepNumber = 1;
+
+function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1, timer = 999) {
     var nodes = new vis.DataSet([]);
     var edges = new vis.DataSet([]);
     for (let i = 0; i < myList.length; i++) {
+        if (i >= timer) break;
         var node = { id: myList[i], label: myList[i], size: 100, font: { color: 'white', size: 16 } };
         if (i == 0) {
             node.color = 'purple';
@@ -13,24 +17,30 @@ function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1) {
     }
 
     for (let i = 0; i < treeConnections.length; i++) {
+         if (i >= timer) break;
         let edgeColor = { color: 'orange' };
+        var step = "Rozdělíme " + treeConnections[i].item1 + " pravá strana " + treeConnections[i].item2;
         console.log(treeConnections[i]);
         if (i < treeConnections.length - 1 && treeConnections[i].item1 === treeConnections[i + 1].item1) {
             edgeColor.color = 'blue';
+            step = "Rozdělíme  " + treeConnections[i].item1 + " levá strana " + treeConnections[i].item2;
         }
         let firstChar = treeConnections[i].item1.charAt(0);
         let thirdChar = treeConnections[i].item1.charAt(2);
-        console.log(thirdChar);
+        
         if (firstChar.charCodeAt(0) === 172 && treeConnections[i].item1.length === 2) {
-            edgeColor.color = 'blue';
+            edgeColor.color = 'blue';   
+            step = "Rozdělíme  " + treeConnections[i].item1 + " levá strana " + treeConnections[i].item2;
         }
         if (firstChar.charCodeAt(0) === 172 && thirdChar.charCodeAt(0) === 61) {
-        edgeColor.color = 'blue';
+            edgeColor.color = 'blue';
+            step = "Rozdělíme  " + treeConnections[i].item1 + " levá strana " + treeConnections[i].item2;
         }
         else if (i < treeConnections.length - 1 && treeConnections[i].item2 === treeConnections[i + 1].item2) {
             edgeColor.color = 'blue';
+            step = "Rozdělíme  " + treeConnections[i].item1 + " levá strana " + treeConnections[i].item2;
         }
-
+        
         edges.add({ from: treeConnections[i].item1, to: treeConnections[i].item2, arrows: 'from', color: edgeColor });
     }
 
@@ -41,8 +51,15 @@ function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1) {
     };
     var options = {};
     network = new vis.Network(container, data, options);
-
-
+    console.log(step);
+    if (step != undefined) {
+        if (!exercise)
+    var stepAlert = document.createElement("div");
+    stepAlert.classList.add("alert", "alert-primary");
+        stepAlert.innerHTML = '<p>' + stepNumber + ". " + step + '</p>';
+        stepNumber++;
+        document.getElementById("mynetwork").parentNode.insertBefore(stepAlert, document.getElementById("mynetwork").nextSibling);
+    }
 
     if (exercise) {
         network.on('click', function (params) {

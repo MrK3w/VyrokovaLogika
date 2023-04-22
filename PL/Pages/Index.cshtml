@@ -97,8 +97,14 @@
                             <script>
                                 var myList = @Html.Raw(Json.Serialize(Model.DAGNodes));
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
-                                makeDAG(myList, treeConnections);
+                                var i = 0;
 
+                                setInterval(function () {
+                                    if (i < treeConnections.length) {
+                                        makeDAG(myList, treeConnections, false, -1, i);
+                                    }
+                                    i++;
+                                }, 1750); 
                             </script>
                             <div style="display: flex; justify-content: center;">
                                 <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
