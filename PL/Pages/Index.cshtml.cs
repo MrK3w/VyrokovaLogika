@@ -245,6 +245,7 @@ namespace PL.Pages
             {
                 truthTree = constructer.ProcessTree(true,false);
             }
+            //there must be some contradiction
             else if(ExerciseType == "není tautologie")
             {
                 truthTree = constructer.ProcessTree(true, true);
@@ -599,11 +600,16 @@ namespace PL.Pages
                 {
                     spanValue = "<span class=tf-nc>";
                 }
+                string contradiction = "";
+                if(tree.contradiction)
+                {
+                    contradiction = " x";
+                }
                 if (tree.literal == null)
-                    htmlTreeTruth.Add(spanValue + GetEnumDescription(tree.mOperator) + "=" + tree.Item + "</span>");
+                    htmlTreeTruth.Add(spanValue + GetEnumDescription(tree.mOperator) + "=" + tree.Item + contradiction + "</span>");
                 else
                 {
-                    htmlTreeTruth.Add(spanValue + tree.literal + "=" + tree.Item + "</span>");
+                    htmlTreeTruth.Add(spanValue + tree.literal + "=" + tree.Item + contradiction + "</span>");
                 }
             }
             if (tree.ChildNodeLeft != null)

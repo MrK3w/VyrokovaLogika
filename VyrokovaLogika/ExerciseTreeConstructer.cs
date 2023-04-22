@@ -63,6 +63,7 @@ namespace VyrokovaLogika
                         tree.literal = tag[0].ToString();
                     }
                     tree.Item = Int32.Parse(tag[2].ToString());
+                    if (tag.Length == 5 && tag[4] == 'x') tree.contradiction = true;
                     itIsItem = false;
                     continue;
                 }
@@ -98,7 +99,7 @@ namespace VyrokovaLogika
         private List<string> StripTree()
         {
 
-            mHtmlTree = mHtmlTree.Replace("<span class=\"tf-nc\">", "<item>").Replace("</span>","</item>").Replace("<span class=\"tf-nc\" style=\"color: red;\">","<item>");
+            mHtmlTree = mHtmlTree.Replace("<span class=\"tf-nc\">", "<item>").Replace("</span>","</item>").Replace("<span class=\"tf-nc\" style=\"color: red;\">","<item>").Replace("<span class=\"tf-nc\" style=\"color: green;\">", "<item>");
             string[] delimiters = { "<li>", "</li>", "<item>", "</item>", "<ul>", "</ul>" };
 
             // Split the input string by the delimiters

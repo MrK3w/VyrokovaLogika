@@ -31,12 +31,18 @@
                             <li>Negace: (-, &not;)</li>
                             <li>Implikace: (&gt;, &rarr;)</li>
                             <li>Ekvivalence: (= , &equiv;)</li>
+                            </ul>
                     </p>
                 </div>
                 <div class="square-div">
                     <p>
                         Pokud chceme dokázat tautologii nebo kontradikci, tak hledáme formule které obsahují semántický spor.
                         Semántický spor je pokud narazíme na část, který by pravdivá evaluace zároveň nabývala hodnoty 0 i 1.
+                    </p>
+                </div>
+                <div class="square-div">
+                    <p>
+                        Prosím použij jen jednopísmenkové literály. Například abc není validní litáral.
                     </p>
                 </div>
             </div>
@@ -278,11 +284,13 @@
                             <p> Abys mohl dokázat že formule je tautologií musíme najít takovou formuli, kde její pravdivostní hodnota je 0 a zároveň zde dojdeme k sémantickému sporu.
                                 V případě že to tautologie není hledej formuli, bez sémantického sporu.
                                 V případě toho že se jedná o kontradikci postupuj obdobně jen musíš nastavit pravdivostní hodnotu formule na 1.
+                                Sémantický spor označ na správném místě pomocí x.
                             </p>
                             <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
                             <p>@Model.ExerciseQuote</p>
                             <form method="post" asp-action="Index" asp-controller="Home" id="TheForm2">
                                 <input type='submit' class="btn btn-primary" value='Zkontroluj' id="myButton" name='submit2' asp-page-handler="ExerciseProcess" />
+                                <input type='button' class="btn btn-secondary" value='Označ sémantický spor' id='xButton' />
                                 <input type="hidden" id="hiddenNumber" name="tree" value="" />
                             </form>
                         }

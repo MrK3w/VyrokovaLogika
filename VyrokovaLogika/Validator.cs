@@ -19,7 +19,7 @@ namespace VyrokovaLogika
 
         public static bool ValidateSentence(ref string mPropositionalSentence)
         {
-            mPropositionalSentence = mPropositionalSentence.Replace(" ", string.Empty).ToLowerInvariant();
+            mPropositionalSentence = mPropositionalSentence.Replace(" ", string.Empty);
             Converter.ConvertLogicalOperators(ref mPropositionalSentence);
             Converter.ConvertParenthessis(ref mPropositionalSentence);
             Converter.RemoveExcessParentheses(ref mPropositionalSentence);
@@ -60,7 +60,11 @@ namespace VyrokovaLogika
                 return false;
             }
             //check if literal is only one
-            //if (!Validator.CheckIfLiteralIsSingle(mPropositionalSentence)) return false;
+            if (!Validator.CheckIfLiteralIsSingle(mPropositionalSentence))
+            {
+                ErrorMessage = "Povolené literály mají pouze jedno místo.";
+                return false;
+            }
             return true;
         }
 

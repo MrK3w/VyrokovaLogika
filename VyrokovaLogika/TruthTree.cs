@@ -18,6 +18,7 @@ namespace VyrokovaLogika
         public int Item { get; set; }
         public bool invalid = false;
         public int number = 0;
+        public bool contradiction = false;
         public TruthTree(int item)
         {
             Item = item;

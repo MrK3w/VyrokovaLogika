@@ -1,20 +1,40 @@
+var contradiction = false;
+
 $(document).ready(function () {
     var currentUrl = window.location.href;
-    console.log(currentUrl);
+
     // Check if the URL contains the query parameter "?handler=Exercise"
     if (currentUrl.indexOf("?handler=Exercise") !== -1) {
         // Attach a click event handler to the .tf-nc span element
         $(".tf-nc").on("click", function () {
             // Get the current span element
+            console.log("click");
             var spanElement = $(this);
 
             // Get the current content of the span element
             var currentContent = spanElement.text();
-            var newContent = currentContent.replace("0", "#").replace("1", "0").replace("#", "1");
+            if (!contradiction) {
+                var newContent = currentContent.replace("0", "#").replace("1", "0").replace("#", "1");
+                spanElement.text(newContent);
+            }
+            else { 
+                if ((/^[A-Za-z]/.test(currentContent))) {
+                    var hasX = currentContent.indexOf("x") !== -1;
 
+                    var newContent = hasX ? currentContent.replace(" x", "") : currentContent + " x";
+                    spanElement.text(newContent);
+                }
+            }
             // Modify the content of the span element
-            spanElement.text(newContent);
-        }); // <--- Add closing parenthesis here
+           
+        });
+
+        // Attach a click event handler to the #xButton element
+        $("#xButton").on("click", function () {
+            // Get the current value of the hiddenNumber input element
+            contradiction = !contradiction;
+            // Check if the hiddenNumber contains a number
+        });
     }
 });
 
