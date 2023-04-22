@@ -42,7 +42,7 @@ namespace VyrokovaLogika
             {
                 if (mContradiction)
                 {
-                    ExerciseQuote = "You have it right";
+                    ExerciseQuote = "Máš to správně";
                 }
 
             }
@@ -117,7 +117,7 @@ namespace VyrokovaLogika
                 {
                     if (value.Item1 == firstValueV && value.Item2 == secondValueV) return true;
                 }
-                ExerciseQuote = $"if {node.mOperator} has value {MainValue} his childrens can't have values {firstValueV} and {secondValueV}";
+                ExerciseQuote = $"Pokud {node.mOperator} má hodnotu {MainValue} jeho potomci nemůžou mít hodnotu {firstValueV} a {secondValueV}";
                 mIssueIndex = mDAGNodes.FindIndex(str => str == issue);
                 return false;
             }
@@ -130,7 +130,7 @@ namespace VyrokovaLogika
                 {
                     if (value.Item1 == firstValueV && value.Item2 == secondValueV || value.Item1 == firstValueVV && value.Item2 == secondValueV) return true;
                 }
-                ExerciseQuote = $"if {node.mOperator} has value {MainValue} his childrens can't have values {firstValueV} {firstValueVV} and {secondValueV}";
+                ExerciseQuote = $"Pokud {node.mOperator} má hodnotu {MainValue} jeho potomci nemůžou mít hodnotu {firstValueV} {firstValueVV} a {secondValueV}";
                 mIssueIndex = mDAGNodes.FindIndex(str => str == issue);
                 return false;
             }
@@ -143,7 +143,7 @@ namespace VyrokovaLogika
                 {
                     if (value.Item1 == firstValueV && value.Item2 == secondValueV || value.Item1 == firstValueV && value.Item2 == secondValueVV) return true;
                 }
-                ExerciseQuote = $"if {node.mOperator} has value {MainValue} his childrens can't have values {firstValueV} and {secondValueV} {secondValueVV}";
+                ExerciseQuote = $"Pokud {node.mOperator} má hodnotu {MainValue} jeho potomci nemůžou mít hodnotu {firstValueV} a {secondValueV} {secondValueVV}";
                 mIssueIndex = mDAGNodes.FindIndex(str => str == issue);
                 return false;
             }
@@ -158,7 +158,7 @@ namespace VyrokovaLogika
                     if (value.Item1 == firstValueV && value.Item2 == secondValueV || value.Item1 == firstValueV && value.Item2 == secondValueVV
                         || value.Item1 == firstValueVV && value.Item2 == secondValueV || value.Item1 == firstValueVV && value.Item2 == secondValueVV) return true;
                 }
-                ExerciseQuote = $"if {node.mOperator} has value {MainValue} his childrens can't have values {firstValueV} {firstValueVV} and {secondValueV} {secondValueVV}";
+                ExerciseQuote = $"Pokud {node.mOperator} má hodnotu {MainValue} jeho potomci nemůžou mít hodnotu {firstValueV} {firstValueVV} a {secondValueV} {secondValueVV}";
                 mIssueIndex = mDAGNodes.FindIndex(str => str == issue);
                 return false;
             }
@@ -186,17 +186,17 @@ namespace VyrokovaLogika
         {
             mIssueIndex = 0;
             if(mTautology)
-            ExerciseQuote = "Main node value must be 0 if you want to find contradiction in Tautology formula";
+            ExerciseQuote = "Formule musí mít hodnotu 0 pokud chceš hledat sémantický spor ve formuli, která je tautologii.";
 
             else
             {
-                ExerciseQuote = "Main node value must be 1 if you want to find contradiction in Contradiction formula";
+                ExerciseQuote = "Formule musí mít hodnotu 1 pokud chceš hledat sémantický spor ve formuli, která je kontradikci";
             }
             //Verify tautology
             var firstPart = mConnections[0].Item1.Split("=");
             if (firstPart.Length != 2)
             {
-                ExerciseQuote = "Main node can't have two values";
+                ExerciseQuote = "Formule nemůže mít dvě hodnoty.";
                 return false;
             }
             firstPart[1] = firstPart[1].Replace(" ", "");
@@ -208,7 +208,7 @@ namespace VyrokovaLogika
             {
                 return false;
             }
-            ExerciseQuote = "It is alright!";
+            ExerciseQuote = "Máš to správně!";
             mIssueIndex = -1;
             return true;
         }

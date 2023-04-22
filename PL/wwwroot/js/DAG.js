@@ -53,16 +53,18 @@ function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1, tim
     network = new vis.Network(container, data, options);
     console.log(step);
     if (step != undefined) {
-        if (!exercise)
-    var stepAlert = document.createElement("div");
-    stepAlert.classList.add("alert", "alert-primary");
-        stepAlert.innerHTML = '<p>' + stepNumber + ". " + step + '</p>';
-        stepNumber++;
-        document.getElementById("mynetwork").parentNode.insertBefore(stepAlert, document.getElementById("mynetwork").nextSibling);
+        if (!exercise) {
+            var stepAlert = document.createElement("div");
+            stepAlert.classList.add("alert", "alert-primary");
+            stepAlert.innerHTML = '<p>' + stepNumber + ". " + step + '</p>';
+            stepNumber++;
+            document.getElementById("mynetwork").parentNode.insertBefore(stepAlert, document.getElementById("mynetwork").nextSibling);
+        }
     }
 
     if (exercise) {
         network.on('click', function (params) {
+            console.log("HEllo")
             if (params.nodes.length > 0) {
                 var nodeId = params.nodes[0];
                 var node = nodes.get(nodeId);

@@ -14,6 +14,7 @@
     <script src="~/js/Exercise.js"></script>
     <script src="~/js/ExerciseDAG.js"></script>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="~/js/TruthDAG.js"></script>
     <link rel="stylesheet" href="~/css/styles.css" />
 </head>
 
@@ -48,7 +49,7 @@
             </div>
             <div class="col-md-10">
                 <div class="text-center">
-                    <h3 class="display-4">Vyrokova logika</h3>
+                    <h3 class="display-7">Výroková  logika</h3>
                     <style>
                         .btn-group > input {
                             margin-right: 10px; /* Adjust this value to control the spacing between buttons */
@@ -100,7 +101,7 @@
                             <script>
                                 var myList = @Html.Raw(Json.Serialize(Model.DAGNodes));
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
-                                var i = 1;
+                                var i = 0;
 
                                 setInterval(function () {
                                     if (i < treeConnections.length) {
@@ -193,12 +194,18 @@
                             <script>
                                 var myList = @Html.Raw(Json.Serialize(Model.DAGNodes));
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
-                                makeDAG(myList, treeConnections);
+                                var i = 0;
 
+                                setInterval(function () {
+                                    if (i < treeConnections.length) {
+                                        truthDAG(myList, treeConnections, false, -1, i);
+                                    }
+                                    i++;
+                                }, 1750);
                             </script>
                             <div style="display: flex; justify-content: center;">
                                 <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
-                                <div>>Pravá strana</div>
+                                <div>Pravá strana</div>
                             </div>
                             <div style="display: flex; justify-content: center;">
                                 <div style="background-color: blue; width: 20px; height: 20px; margin-right: 5px;"></div>
@@ -239,12 +246,18 @@
                             <script>
                                 var myList = @Html.Raw(Json.Serialize(Model.DAGNodes));
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
-                                makeDAG(myList, treeConnections);
+                                var i = 0;
 
+                                setInterval(function () {
+                                    if (i < treeConnections.length) {
+                                        truthDAG(myList, treeConnections, false, 0, i);
+                                    }
+                                    i++;
+                                }, 1750);
                             </script>
                             <div style="display: flex; justify-content: center;">
                                 <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
-                                <div>>Pravá strana</div>
+                                <div>Pravá strana</div>
                             </div>
                             <div style="display: flex; justify-content: center;">
                                 <div style="background-color: blue; width: 20px; height: 20px; margin-right: 5px;"></div>
@@ -394,7 +407,7 @@
                                 V případě že to tautologie není hledej formuli, bez sémantického sporu.
                                 V případě toho že se jedná o kontradikci postupuj obdobně jen musíš nastavit pravdivostní hodnotu formule na 1.
                             </p>
-                           
+
                             <div id="mynetwork">
                             </div>
                             <script>
