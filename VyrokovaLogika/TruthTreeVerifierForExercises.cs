@@ -53,7 +53,7 @@ namespace VyrokovaLogika
             {
                 if (mFindingContradiction)
                 {
-                    ExerciseQuote = "Máš ve formuli semantickou kontradikci! Takže to nemůže být tautologie.";
+                    ExerciseQuote = "Máš ve formuli semantický spor! Takže to nemůže být tautologie.";
                     return false;
                 }
                 else

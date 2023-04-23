@@ -83,7 +83,7 @@
                             </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Fifth group">
                                 <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Procvičuj v DAGU' name='submit' asp-page-handler="ExerciseDAG" />
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Přidej formuli pro procvičování' name='submit' asp-page-handler="AddNewFormula" />
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Přidej\odeber formuli' name='submit' asp-page-handler="AddNewFormula" />
                             </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Sixth group">
                                     <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli strom tautologie' name='submit' asp-page-handler="DrawTreeTautology" />
@@ -447,11 +447,29 @@
                                         <div class="input-group">
                                             @Html.DropDownList("typeOfExercise", Model.TypesOfExercises, new { @class = "form-control custom-font"})
                                             <div class="input-group-append">
-                                                <input type="submit" class="btn btn-primary" value="Přidej novou formuli" name="submit"/>
+                                                    <input type="submit" class="btn btn-primary" value="Přidej novou formuli" name="addNewFormulaButton" />
                                             </div>
+
+                                              
+                                              
                                         </div>
                                     </div>
                                 </div>
+                                    <div class="row">
+                                        <p> Zde odeber formuli pro procvičování. </p>
+                                        <div class="col-md-8">
+                                    @Html.DropDownList(
+                            "MyFormulas",
+                            Model.AllExerciseFormulas.Where(x => x != null),
+                            new { @class = "form-control custom-font" }
+                            )
+                            </div>
+                                        <div class="col-md-4">
+                                            <div class="input-group-append">
+                                                <input type="submit" class="btn btn-primary" value="Odstraň formuli" name="removeFormulaButton" />
+                                        </div>
+                                        </div>
+                            </div>
                             </div>
                             </form>
                         }
@@ -460,7 +478,14 @@
                     @if (!Model.Valid)
                     {
                         <div class="alert alert-danger" role="alert" id="errorAlert">
-                           @Model.ErrorMessage
+                            @if (Model.ErrorMessage != null)
+                            {
+                                @Model.ErrorMessage
+                            }
+                            else
+                            { 
+                                <p>Chyba</p>
+                            }
                         </div>
                     }
                 </div>

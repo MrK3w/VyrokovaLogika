@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using PL.Helpers;
-using System;
 using VyrokovaLogika;
 using static VyrokovaLogika.Operator;
 
@@ -60,7 +59,12 @@ namespace PL.Pages
         public string Formula { get; set; }
         public string ExerciseFormula { get; set; }
 
+        public string yourFormula {get;set;}
+
         public List<string> Steps { get; set; } = new List<string> { };
+
+        public List<SelectListItem> AllExerciseFormulas { get; set; }
+
 
         IWebHostEnvironment mEnv;
         public IndexModel(IWebHostEnvironment env)
@@ -73,8 +77,15 @@ namespace PL.Pages
         {
             button = ButtonType.SyntaxTree;
             string mSentence = getFormula();
-            if (!Valid) return Page();
-            Engine engine = PrepareEngine(mSentence);
+            if (!Valid)
+            {
+                if(mSentence != null)
+                {
+                    yourFormula = mSentence;
+                }
+                return Page();
+            }
+                Engine engine = PrepareEngine(mSentence);
 
             PrintTree(engine.tree, false);
            
@@ -87,20 +98,70 @@ namespace PL.Pages
         {
            button = ButtonType.AddNewFormula;
            TypesOfExercises = ListItemsHelper.ExerciseTypes;
-           return Page();
+           ExerciseHelper.GetFormulaList(mEnv);
+           AllExerciseFormulas = ExerciseHelper.formulaList.Select(x => new SelectListItem
+            {
+                Value = x.Item1 + " | " + x.Item2 ,
+                Text = x.Item1 + " | " + x.Item2
+           }).ToList();
+            return Page();
         }
 
         public IActionResult OnPostAddNewFormulaPost()
         {
-            button = ButtonType.AddNewFormula;
-            string formula = Request.Form["FormulaInput"];
-            string selectedValue = Request.Form["typeOfExercise"];
-            if (!Validator.ValidateSentence(ref formula))
+            if (Request.Form.ContainsKey("addNewFormulaButton"))
             {
-                Valid = false;
-                return Page();
+                button = ButtonType.AddNewFormula;
+                string formula = Request.Form["FormulaInput"];
+                string selectedValue = Request.Form["typeOfExercise"];
+                if (!Validator.ValidateSentence(ref formula))
+                {
+                    ErrorMessage = "Špatný formát";
+                    Valid = false;
+                    return Page();
+                }
+                Engine engine = PrepareEngine(formula);
+                if (selectedValue == "je tautologie" || selectedValue == "není tautologie")
+                {
+                    IsTautologyOrContradiction = engine.ProofSolver("Tautology");
+                    if(selectedValue != "je tautologie" && IsTautologyOrContradiction)
+                    {
+                        ErrorMessage = "Špatný typ formule";
+                        Valid = false;
+                        return Page();
+                    }
+                    if (selectedValue != "není tautologie" && !IsTautologyOrContradiction)
+                    {
+                        ErrorMessage = "Špatný typ formule";
+                        Valid = false;
+                        return Page();
+                    }
+                }
+                else
+                {
+                    IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
+                    if (selectedValue != "je kontradikce" && IsTautologyOrContradiction)
+                    {
+                        ErrorMessage = "Špatný typ formule";
+                        Valid = false;
+                        return Page();
+                    }
+                    if (selectedValue != "není kontradikce" && !IsTautologyOrContradiction)
+                    {
+                        ErrorMessage = "Špatný typ formule";
+                        Valid = false;
+                        return Page();
+                    }
+                }
+             
+                ExerciseHelper.SaveFormulaList(mEnv, formula, selectedValue);
             }
-            ExerciseHelper.SaveFormulaList(mEnv,formula, selectedValue);
+            else if (Request.Form.ContainsKey("removeFormulaButton"))
+            {
+                string selectedValue = Request.Form["MyFormulas"];
+                ExerciseHelper.RemoveFromFormulaList(mEnv, selectedValue);
+            }
+            button = ButtonType.None;
             return Page();
         }
 
@@ -126,8 +187,14 @@ namespace PL.Pages
                 mSentence = getFormula();
             }
             Formula = mSentence;
-            if (!Valid) return Page();
-            
+            if (!Valid)
+            {
+                if (mSentence != null)
+                {
+                    yourFormula = mSentence;
+                }
+                return Page();
+            }
             Engine engine = PrepareEngine(mSentence);
             var depth = engine.tree.MaxDepth();
             if (buttonValue == "Přidej úroveň" && level < depth) level++;
@@ -162,8 +229,14 @@ namespace PL.Pages
                 mSentence = getFormula();
             }
             Formula = mSentence;
-            if (!Valid) return Page();
-
+            if (!Valid)
+            {
+                if (mSentence != null)
+                {
+                    yourFormula = mSentence;
+                }
+                return Page();
+            }
             Engine engine = PrepareEngine(mSentence);
             var depth = engine.tree.MaxDepth();
             if (buttonValue == "Přidej úroveň" && level < depth) level++;
@@ -186,6 +259,7 @@ namespace PL.Pages
                 else
                 {
                     Steps.Add("Ke sporu jsme nedošli, proto toto není tautologie!");
+                    DrawTree(engine.counterModel, level, 0);
                 }
             }
             else
@@ -218,8 +292,14 @@ namespace PL.Pages
                 mSentence = getFormula();
             }
             Formula = mSentence;
-            if (!Valid) return Page();
-
+            if (!Valid)
+            {
+                if (mSentence != null)
+                {
+                    yourFormula = mSentence;
+                }
+                return Page();
+            }
             Engine engine = PrepareEngine(mSentence);
             var depth = engine.tree.MaxDepth();
             if (buttonValue == "Přidej úroveň" && level < depth) level++;
@@ -228,22 +308,27 @@ namespace PL.Pages
             IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
             if (level == 0) Steps.Add("Hledáme kontradikci proto jako první hodnotu dosadíme 1");
             distinctNodes = engine.distinctNodes;
-            DrawTree(engine.counterModel, level);
             PrintLevelOrder(engine.counterModel, level);
-            ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+            
             if (level >= depth)
             {
                 if (IsTautologyOrContradiction)
                 {
-                    Steps.Add("Našli jsme semántický spor, proto toto může být tautologie.");
+                    Steps.Add("Našli jsme semántický spor, proto toto může být kontradikce.");
                     var contradiction = GetContradiction();
                     DrawTree(engine.counterModel, level, 0, contradiction);
                 }
                 else
                 {
                     Steps.Add("Ke sporu jsme nedošli, proto toto není kontradikce!");
+                    DrawTree(engine.counterModel, level, 0);
                 }
             }
+            else
+            {
+                DrawTree(engine.counterModel, level);
+            }
+            ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
             return Page();
         }
 
@@ -255,14 +340,16 @@ namespace PL.Pages
             }
             ExerciseHelper.GetFormulaList(mEnv);
             button = ButtonType.Exercise;
-            ExerciseHelper.GeneratateNumber();
-
-            int number = ExerciseHelper.number;
-            if(ExerciseHelper.formulaList.Count == 0)
+            if (ExerciseHelper.formulaList.Count == 0)
             {
+                ErrorMessage = "Nejsou nahrána žádna cvičení!";
                 Valid = false;
                 return Page();
             }
+            ExerciseHelper.GeneratateNumber();
+
+            int number = ExerciseHelper.number;
+           
             string f = ExerciseHelper.formulaList[number].Item1;
             Valid = true;
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
@@ -340,12 +427,13 @@ namespace PL.Pages
             }
             ExerciseHelper.GetFormulaList(mEnv);
             button = ButtonType.ExerciseDAG;
-            ExerciseHelper.GeneratateNumber();
             if (ExerciseHelper.formulaList.Count == 0)
             {
+                ErrorMessage = "Nejsou nahrána žádna cvičení!";
                 Valid = false;
                 return Page();
             }
+            ExerciseHelper.GeneratateNumber();
             int number = ExerciseHelper.number;
             string f = ExerciseHelper.formulaList[number].Item1;
             ExerciseType = ExerciseHelper.formulaList[number].Item2;
@@ -419,7 +507,13 @@ namespace PL.Pages
         {
             button = ButtonType.DAG;
             string mSentence = getFormula();
-            if (!Valid) return Page();
+            if (!Valid) {
+                if (mSentence != null)
+                {
+                    yourFormula = mSentence;
+                }
+                return Page();
+            }
             Engine engine = PrepareEngine(mSentence);
             engine.ConvertTreeToDag();
             engine.PrepareDAG();
@@ -432,7 +526,14 @@ namespace PL.Pages
         {
             button = ButtonType.CheckTautologyDAG;
             string mSentence = getFormula();
-            if (!Valid) return Page();
+            if (!Valid)
+            {
+                if (mSentence != null)
+                {
+                    yourFormula = mSentence;
+                }
+                return Page();
+            }
             Engine engine = PrepareEngine(mSentence);
             engine.ConvertTreeToDag();
             IsTautologyOrContradiction = engine.ProofSolver("Tautology");
@@ -447,7 +548,13 @@ namespace PL.Pages
         {
             button = ButtonType.CheckContradictionDAG;
             string mSentence = getFormula();
-            if (!Valid) return Page();
+            if (!Valid) {
+                if (mSentence != null)
+                {
+                    yourFormula = mSentence;
+                }
+                return Page();
+            }
             Engine engine = PrepareEngine(mSentence);
             engine.ConvertTreeToDag();
             IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
@@ -462,7 +569,14 @@ namespace PL.Pages
         {
             button = ButtonType.CheckTautology;
             string mSentence = getFormula();
-            if (!Valid) return Page();
+            if (!Valid)
+            {
+                if (mSentence != null)
+                {
+                    yourFormula = mSentence;
+                }
+                return Page();
+            }
             Engine engine = PrepareEngine(mSentence);
 
             IsTautologyOrContradiction = engine.ProofSolver("Tautology");
@@ -479,7 +593,14 @@ namespace PL.Pages
         {
             button = ButtonType.CheckContradiction;
             string mSentence = getFormula();
-            if (!Valid) return Page();
+            if (!Valid)
+            {
+                if (mSentence != null)
+                {
+                    yourFormula = mSentence;
+                }
+                return Page();
+            }
             Engine engine = PrepareEngine(mSentence);
 
             IsTautologyOrContradiction = engine.ProofSolver("Contradiction");
@@ -557,6 +678,7 @@ namespace PL.Pages
                 {
                     ErrorMessage = Validator.ErrorMessage;
                     Valid = false;
+                    yourFormula = vl1;
                     return null;
                 }
                 Converter.ConvertLogicalOperators(ref vl1);

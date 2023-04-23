@@ -129,7 +129,6 @@ namespace VyrokovaLogika
         private List<string> SplitStringByOperator(string vl)
         {
             List<string> parts = new List<string>();
-            int tempSplitPoint = 0;
 
             List<char> separators = new List<char> { '∧', '∨', '⇒', '≡' };
             int operatorIndex = -1; 
@@ -150,7 +149,6 @@ namespace VyrokovaLogika
                         operatorIndex = separatorIndex;
                     }
                 }
-                tempSplitPoint++;
   
             }
             int sepIndex = vl.IndexOf(separators[operatorIndex]);

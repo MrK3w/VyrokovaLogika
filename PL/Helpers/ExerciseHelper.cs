@@ -34,7 +34,6 @@ namespace PL.Helpers
                 var json = File.ReadAllText(filePath);
                 formulas = JsonConvert.DeserializeObject<List<LogicalFormula>>(json);
 
-                // Convert the list of LogicalFormula objects to a list of Tuples
                 formulaList = formulas
                     .Select(f => Tuple.Create(f.formula, f.status))
                     .ToList();
@@ -49,12 +48,30 @@ namespace PL.Helpers
         {
             GetFormulaList(env);
             var newExercise = new LogicalFormula { formula = formula, status = formulaType };
-            formulas.Add(newExercise);
+            if(formulas == null) formulas = new List<LogicalFormula> { newExercise };
+            else formulas.Add(newExercise);
+            JsonWriteToFIle(env);
+            return;
+        }
+
+        private static void JsonWriteToFIle(IWebHostEnvironment env)
+        {
             var options = new JsonSerializerOptions { WriteIndented = true };
             var jsonString = System.Text.Json.JsonSerializer.Serialize(formulas, options);
             var filePath = Path.Combine(env.ContentRootPath, "Helpers", "formulas.json");
             File.WriteAllText(filePath, jsonString);
-            return;
+        }
+
+        internal static void RemoveFromFormulaList(IWebHostEnvironment env, string selectedValue)
+        {
+            GetFormulaList(env);
+            selectedValue = selectedValue.Trim();
+            var parts = selectedValue.Split('|');
+            parts[0] = parts[0].Trim();
+            parts[1] = parts[1].Trim();
+            var removedFormula = new LogicalFormula { formula = parts[0], status = parts[1] };
+            formulas.RemoveAll(f => f.formula == removedFormula.formula && f.status == removedFormula.status);
+            JsonWriteToFIle(env);
         }
     }
 }
