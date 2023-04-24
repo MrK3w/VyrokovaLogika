@@ -10,14 +10,14 @@ namespace VyrokovaLogika
 {
     public class TruthDagVerifier
     {
-        List<Tuple<string, string>> mConnections;
-        bool mTautology;
-        bool mContradiction;
-        List<string> mDAGNodes;
-        public int mIssueIndex { get; set; } = -1;
+        readonly List<Tuple<string, string>> mConnections;
+        readonly bool mTautology;
+        readonly bool mContradiction;
+        readonly List<string> mDAGNodes;
+        public int MIssueIndex { get; set; } = -1;
         public string ExerciseQuote { get; set; }
 
-        //IF we find contraction where we are trying to find Tautology is it okay
+        //If we find contraction where we are trying to find Tautology is it okay
         public TruthDagVerifier(List<Tuple<string,string>> connections, List<string> DAGNodes , bool tautology, bool contradiction) 
         {
             mConnections = connections;
@@ -29,15 +29,17 @@ namespace VyrokovaLogika
 
         public bool Verify()
         {
+            //if root of dag don't have right truth value return false
             if (!CheckFirstValue())
             {
                 return false;
             }
-            
+            //check evaluations on all sides of dag
             if (!CheckEvaluations())
             {
                 return false;
             }
+            //check contradiction in dag
             if (CheckContradiction())
             {
                 if (mContradiction)
@@ -80,8 +82,9 @@ namespace VyrokovaLogika
 
         private bool CheckValuesOnOneLine(int i)
         {
-            var item = mConnections[i].Item1.Split("=").Select(s => s.Trim()).ToList();
-            var item2 = mConnections[i].Item2.Split("=").Select(s => s.Trim()).ToList();
+            //split item and by '=' and check values
+            var leftSideItem = mConnections[i].Item1.Split("=").Select(s => s.Trim()).ToList();
+            var rightSideItem = mConnections[i].Item2.Split("=").Select(s => s.Trim()).ToList();
 
             return true;
         }
@@ -93,10 +96,10 @@ namespace VyrokovaLogika
             //in case we have issue to know which line it is
             string issue = mConnections[i].Item1;
             //we need to get operator from first item
-            Node node = new Node(item[0]);
-            Splitter splitter = new Splitter(node);
+            Node node = new(item[0]);
+            Splitter splitter = new(node);
             splitter.Split();
-            node.mOperator = splitter.mNode.mOperator;
+            node.MOperator = splitter.MNode.MOperator;
 
             //we need to get truth value
             var MainValue = int.Parse(item[1]);
@@ -107,7 +110,7 @@ namespace VyrokovaLogika
             int secondValueV = 0;
             int firstValueVV = -1;
             int secondValueVV = -1;
-            List<(int, int)> values = Rule.GetValuesOfBothSides(MainValue, node.mOperator);
+            List<(int, int)> values = Rule.GetValuesOfBothSides(MainValue, node.MOperator);
             if (firstValue.Count == 2 && secondValue.Count == 2)
             {
                 //we are controlling main truth value with items to check if evaluation is alright
@@ -117,8 +120,8 @@ namespace VyrokovaLogika
                 {
                     if (value.Item1 == firstValueV && value.Item2 == secondValueV) return true;
                 }
-                ExerciseQuote = $"Pokud {node.mOperator} má hodnotu {MainValue} jeho potomci nemůžou mít hodnotu {firstValueV} a {secondValueV}";
-                mIssueIndex = mDAGNodes.FindIndex(str => str == issue);
+                ExerciseQuote = $"Pokud {node.MOperator} má hodnotu {MainValue} jeho potomci nemůžou mít hodnotu {firstValueV} a {secondValueV}";
+                MIssueIndex = mDAGNodes.FindIndex(str => str == issue);
                 return false;
             }
             else if (firstValue.Count == 3 && secondValue.Count == 2)
@@ -130,8 +133,8 @@ namespace VyrokovaLogika
                 {
                     if (value.Item1 == firstValueV && value.Item2 == secondValueV || value.Item1 == firstValueVV && value.Item2 == secondValueV) return true;
                 }
-                ExerciseQuote = $"Pokud {node.mOperator} má hodnotu {MainValue} jeho potomci nemůžou mít hodnotu {firstValueV} {firstValueVV} a {secondValueV}";
-                mIssueIndex = mDAGNodes.FindIndex(str => str == issue);
+                ExerciseQuote = $"Pokud {node.MOperator} má hodnotu {MainValue} jeho potomci nemůžou mít hodnotu {firstValueV} {firstValueVV} a {secondValueV}";
+                MIssueIndex = mDAGNodes.FindIndex(str => str == issue);
                 return false;
             }
             else if (firstValue.Count == 2 && secondValue.Count == 3)
@@ -143,8 +146,8 @@ namespace VyrokovaLogika
                 {
                     if (value.Item1 == firstValueV && value.Item2 == secondValueV || value.Item1 == firstValueV && value.Item2 == secondValueVV) return true;
                 }
-                ExerciseQuote = $"Pokud {node.mOperator} má hodnotu {MainValue} jeho potomci nemůžou mít hodnotu {firstValueV} a {secondValueV} {secondValueVV}";
-                mIssueIndex = mDAGNodes.FindIndex(str => str == issue);
+                ExerciseQuote = $"Pokud {node.MOperator} má hodnotu {MainValue} jeho potomci nemůžou mít hodnotu {firstValueV} a {secondValueV} {secondValueVV}";
+                MIssueIndex = mDAGNodes.FindIndex(str => str == issue);
                 return false;
             }
             else if(firstValue.Count == 3 && secondValue.Count == 3)
@@ -158,8 +161,8 @@ namespace VyrokovaLogika
                     if (value.Item1 == firstValueV && value.Item2 == secondValueV || value.Item1 == firstValueV && value.Item2 == secondValueVV
                         || value.Item1 == firstValueVV && value.Item2 == secondValueV || value.Item1 == firstValueVV && value.Item2 == secondValueVV) return true;
                 }
-                ExerciseQuote = $"Pokud {node.mOperator} má hodnotu {MainValue} jeho potomci nemůžou mít hodnotu {firstValueV} {firstValueVV} a {secondValueV} {secondValueVV}";
-                mIssueIndex = mDAGNodes.FindIndex(str => str == issue);
+                ExerciseQuote = $"Pokud {node.MOperator} má hodnotu {MainValue} jeho potomci nemůžou mít hodnotu {firstValueV} {firstValueVV} a {secondValueV} {secondValueVV}";
+                MIssueIndex = mDAGNodes.FindIndex(str => str == issue);
                 return false;
             }
             return true;
@@ -184,7 +187,7 @@ namespace VyrokovaLogika
 
         private bool CheckFirstValue()
         {
-            mIssueIndex = 0;
+            MIssueIndex = 0;
             if(mTautology)
             ExerciseQuote = "Formule musí mít hodnotu 0 pokud chceš hledat sémantický spor ve formuli, která je tautologii.";
 
@@ -209,7 +212,7 @@ namespace VyrokovaLogika
                 return false;
             }
             ExerciseQuote = "Máš to správně!";
-            mIssueIndex = -1;
+            MIssueIndex = -1;
             return true;
         }
     }

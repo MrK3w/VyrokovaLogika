@@ -27,11 +27,11 @@ namespace VyrokovaLogika
             DOUBLENEGATION
         }
 
+        //get Enum value like operator
         public static string GetEnumDescription(Enum value)
         {
             var fieldInfo = value.GetType().GetField(value.ToString());
-            var attributes = fieldInfo.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false) as System.ComponentModel.DescriptionAttribute[];
-            if (attributes != null && attributes.Length > 0)
+            if (fieldInfo.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false) is System.ComponentModel.DescriptionAttribute[] attributes && attributes.Length > 0)
             {
                 return attributes[0].Description;
             }
@@ -40,23 +40,16 @@ namespace VyrokovaLogika
 
         public static OperatorEnum GetOperator(string sign)
         {
-            switch (sign)
+            return sign switch
             {
-                case "∨":
-                    return OperatorEnum.OR;
-                case "∧":
-                    return OperatorEnum.AND;
-                case "⇒":
-                    return OperatorEnum.IMPLICATION;
-                case "¬":
-                    return OperatorEnum.NEGATION;
-                case "≡":
-                    return OperatorEnum.EQUIVALENCE;
-                case "¬¬":
-                    return OperatorEnum.DOUBLENEGATION;
-                default:
-                    return OperatorEnum.EMPTY;
-            }
+                "∨" => OperatorEnum.OR,
+                "∧" => OperatorEnum.AND,
+                "⇒" => OperatorEnum.IMPLICATION,
+                "¬" => OperatorEnum.NEGATION,
+                "≡" => OperatorEnum.EQUIVALENCE,
+                "¬¬" => OperatorEnum.DOUBLENEGATION,
+                _ => OperatorEnum.EMPTY,
+            };
         }
     }
 }

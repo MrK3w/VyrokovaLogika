@@ -15,14 +15,14 @@
         {
             //We arre looking into dictionary if we didn't already seen this node, 
             //if yes return that node and don't continue
-            if (seen.TryGetValue(node.Item.mSentence, out DAGNode dagNode))
+            if (seen.TryGetValue(node.Item.MSentence, out DAGNode dagNode))
             {
                 return dagNode;
             }
             //we set content of this node to item of tree
             dagNode = new DAGNode { Item = node.Item };
             //we add node to dictionary
-            seen[node.Item.mSentence] = dagNode;
+            seen[node.Item.MSentence] = dagNode;
             //if it is leaf return new node otherwise we will use recursion
             if (node.childNodeLeft == null && node.childNodeRight == null)
             {

@@ -15,7 +15,6 @@ namespace VyrokovaLogika
         public Tree childNodeRight;
         public Tree Parent { get; set; }
 
-
         public Node Item { get; set; }
         public Tree(Node item)
         {
@@ -27,16 +26,19 @@ namespace VyrokovaLogika
         {
         }
 
+        //if tree is root return true
         public bool IsRoot
         {
             get { return Parent == null; }
         }
 
+        //if tree is leaf return true
         public bool IsLeaf
         {
             get { return childNodeLeft == null && childNodeRight == null; }
         }
 
+        //get depth of tree
         public int MaxDepth()
         {
             return MaxDepth(this);
@@ -49,14 +51,17 @@ namespace VyrokovaLogika
             int leftDepth = MaxDepth(node.childNodeLeft);
             int rightDepth = MaxDepth(node.childNodeRight);
 
+            //find bigger number
             return 1 + Math.Max(leftDepth, rightDepth);
         }
 
+        //return parent of the tree
         public Tree GetParent(Tree tree)
         {
             if (tree.Parent != null) return GetParent(tree.Parent);
             return tree;
         }
+        
         public Tree AddChild(Node child, string side, int number = 0)
         {
 
@@ -77,19 +82,23 @@ namespace VyrokovaLogika
             return null;
         }
 
-        public Tree AddChild(string side, int number = 0)
+        public Tree AddChild(string side)
         {
 
             if (side == "left")
             {
-                childNodeLeft = new Tree();
-                childNodeLeft.Parent = this;
+                childNodeLeft = new Tree
+                {
+                    Parent = this
+                };
                 return childNodeLeft;
             }
             else if (side == "right")
             {
-                childNodeRight = new Tree();
-                childNodeRight.Parent = this;
+                childNodeRight = new Tree
+                {
+                    Parent = this
+                };
                 return childNodeRight;
             }
             return null;
@@ -98,7 +107,7 @@ namespace VyrokovaLogika
         // Method to return the leaf nodes of the tree
         public List<Tree> GetLeafNodes()
         {
-            List<Tree> leafNodes = new List<Tree>();
+            List<Tree> leafNodes = new();
             Traverse(this, leafNodes);
             return leafNodes;
         }

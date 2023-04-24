@@ -77,8 +77,8 @@ namespace VyrokovaLogika
 
         private void PrepareDAGNodesList(DAGNode dag)
         {
-            DAGNodesNumbered.Add((new Tuple<string, int>(dag.Item.mSentence, dag.Item.number)));
-            DAGNodes.Add(dag.Item.mSentence);
+            DAGNodesNumbered.Add((new Tuple<string, int>(dag.Item.MSentence, dag.Item.number)));
+            DAGNodes.Add(dag.Item.MSentence);
             if (dag.LeftChild != null)
             {
                 PrepareDAGNodesList(dag.LeftChild);
@@ -91,9 +91,9 @@ namespace VyrokovaLogika
 
         private void PrepareDAGNodesList(DAGNode tree, TruthTree truthTree)
         {
-            DAGNodesNumbered.Add((new Tuple<string, int>(tree.Item.mSentence, tree.Item.number)));
+            DAGNodesNumbered.Add((new Tuple<string, int>(tree.Item.MSentence, tree.Item.number)));
             DAGNodesNumberedTruthTree.Add((new Tuple<string, int>(truthTree.Item.ToString(), tree.Item.number)));
-            DAGNodes.Add(tree.Item.mSentence);
+            DAGNodes.Add(tree.Item.MSentence);
             if (tree.LeftChild != null)
             {
                 PrepareDAGNodesList(tree.LeftChild,truthTree.ChildNodeLeft);

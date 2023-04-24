@@ -12,15 +12,15 @@ namespace VyrokovaLogika
 {
     public class Engine
     {
-        string mPropositionalSentence;
-        public Tree tree { get; set; }
+        readonly string mPropositionalSentence;
+        public Tree Tree { get; set; }
         public DAGNode Dag { get; set; }
         Node mainNode;
-        public TruthTree counterModel { get; set; } = new TruthTree(0);
+        public TruthTree CounterModel { get; set; } = new TruthTree(0);
         public List<string> DAGNodes { get; private set; } = new List<string>();
         public List<Tuple<string, string>> TreeConnections { get; private set; } = new List<Tuple<string, string>>();
 
-        public List<Tuple<string, int>> distinctNodes { get; set; } = new List<Tuple<string, int>>();
+        public List<Tuple<string, int>> DistinctNodes { get; set; } = new List<Tuple<string, int>>();
 
 
         int number = 1;
@@ -37,69 +37,69 @@ namespace VyrokovaLogika
 
             mainNode = new Node(mPropositionalSentence);
             //BUILD TREE
-            tree = new Tree(mainNode);
-            BuildTree(mainNode, tree);
+            Tree = new Tree(mainNode);
+            BuildTree(mainNode, Tree);
         }
 
         public void ConvertTreeToDag()
         {
             //CONVERT TREE TO DAG
             var dagConverter = new ASTtoDAGConverter();
-            Dag = dagConverter.Convert(tree);
+            Dag = dagConverter.Convert(Tree);
         }
 
 
         public bool ProofSolver(string proofSearch)
         {
             bool isTautologyOrContradiction = false;
-            TreeProof proofSolver = new TreeProof();
+            TreeProof proofSolver = new();
             if (proofSearch == "Tautology")
             {
-                var pathTrees = proofSolver.ProcessTree(tree);
+                var pathTrees = proofSolver.ProcessTree(Tree);
                 isTautologyOrContradiction = proofSolver.FindContradiction(pathTrees);
             }
             else if (proofSearch == "Contradiction")
             {
-                var pathTrees = proofSolver.ProcessTree(tree, 1);
+                var pathTrees = proofSolver.ProcessTree(Tree, 1);
                 isTautologyOrContradiction = proofSolver.FindContradiction(pathTrees);
             }
-            distinctNodes = proofSolver.distinctNodes;
-            counterModel = proofSolver.counterModel;
+            DistinctNodes = proofSolver.DistinctNodes;
+            CounterModel = proofSolver.CounterModel;
             return isTautologyOrContradiction;
         }
 
         private void BuildTree(Node node, Tree tree)
         {
-            if (Validator.isVariableWithNegation(node.mSentence))
+            if (Validator.IsLiteralWithNegation(node.MSentence))
             {
-                node.mSentence = node.mSentence.Replace("(", "").Replace(")", "");
+                node.MSentence = node.MSentence.Replace("(", "").Replace(")", "");
             }
-            Splitter splitter = new Splitter(node);
+            Splitter splitter = new(node);
             splitter.Split();
-            node.mOperator = splitter.mNode.mOperator;
+            node.MOperator = splitter.MNode.MOperator;
 
 
-            if (splitter.mLeftNode != null)
+            if (splitter.MLeftNode != null)
             {
                 number++;
-                var leftTree = tree.AddChild(splitter.mLeftNode, "left", number);
-                BuildTree(splitter.mLeftNode, leftTree);
+                var leftTree = tree.AddChild(splitter.MLeftNode, "left", number);
+                BuildTree(splitter.MLeftNode, leftTree);
             }
-            if (splitter.mRightNode != null)
+            if (splitter.MRightNode != null)
             {
                 number++;
-                var rightTree = tree.AddChild(splitter.mRightNode, "right", number);
-                BuildTree(splitter.mRightNode, rightTree);
+                var rightTree = tree.AddChild(splitter.MRightNode, "right", number);
+                BuildTree(splitter.MRightNode, rightTree);
             }
         }
 
         public void PrepareDAG(bool exercise = false)
         {
-            DAG dagConvert = new DAG(Dag);
-            if (counterModel.mOperator != Operator.OperatorEnum.EMPTY)
+            DAG dagConvert = new(Dag);
+            if (CounterModel.MOperator != Operator.OperatorEnum.EMPTY)
             {
                 AddNumbersToTruhTree();
-                dagConvert.PrepareDAG(counterModel, exercise);
+                dagConvert.PrepareDAG(CounterModel, exercise);
             }
             else dagConvert.PrepareDAG(null);
           
@@ -114,7 +114,7 @@ namespace VyrokovaLogika
 
         private void AddNumbersToTruhTree()
         {
-            counterModel.AddNumbers(tree);
+            CounterModel.AddNumbers(Tree);
         }
     }
 

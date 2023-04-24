@@ -13,7 +13,7 @@ namespace VyrokovaLogika
         public TruthTree ChildNodeRight;
         public TruthTree Parent { get; set; }
 
-        public Operator.OperatorEnum mOperator { get; set; }
+        public Operator.OperatorEnum MOperator { get; set; }
         public string literal;
         public int Item { get; set; }
         public bool invalid = false;
@@ -26,9 +26,7 @@ namespace VyrokovaLogika
 
         public TruthTree()
         {
-
         }
-
 
         public bool IsRoot
         {
@@ -40,34 +38,16 @@ namespace VyrokovaLogika
             get { return ChildNodeLeft == null && ChildNodeRight == null; }
         }
 
-
-
-        public TruthTree GetParent(TruthTree tree)
+        //returns root of truth tree
+        public TruthTree GetRoot(TruthTree tree)
         {
-            if (tree.Parent != null) return GetParent(tree.Parent);
+            if (tree.Parent != null) return GetRoot(tree.Parent);
             return tree;
         }
-        public TruthTree AddChild(int child, string side)
-        {
-
-            if (side == "left")
-            {
-                ChildNodeLeft = new TruthTree(child);
-                ChildNodeLeft.Parent = this;
-                return ChildNodeLeft;
-            }
-            else if (side == "right")
-            {
-                ChildNodeRight = new TruthTree(child);
-                ChildNodeRight.Parent = this;
-                return ChildNodeRight;
-            }
-            return null;
-        }
-
+        
+        //add just one child
         public TruthTree AddChild(TruthTree child, string side)
         {
-
             if (side == "left")
             {
                 ChildNodeLeft = child;
@@ -83,6 +63,7 @@ namespace VyrokovaLogika
             return null;
         }
 
+        //add both sides childs
         public void AddChild(TruthTree childNodeLeft, TruthTree childNodeRight)
         {
 
@@ -95,11 +76,12 @@ namespace VyrokovaLogika
         // Method to return the leaf nodes of the tree
         public List<TruthTree> GetLeafNodes()
         {
-            List<TruthTree> leafNodes = new List<TruthTree>();
+            List<TruthTree> leafNodes = new();
             Traverse(this, leafNodes);
             return leafNodes;
         }
 
+        //Mark contradiction in truth tree for requested literal
         public void MarkContradiction(string searchedLiteral)
         {
             Traverse(this,null, searchedLiteral);
@@ -108,31 +90,40 @@ namespace VyrokovaLogika
         // Private helper method to recursively traverse the tree
         private void Traverse(TruthTree node, List<TruthTree> leafNodes = null, string searchedLiteral = null)
         {
+            //if node is null return
             if (node == null) return;
-
+   
             if (node.ChildNodeLeft == null && node.ChildNodeRight == null)
             {
-                if(leafNodes != null)
-                // Node has no children, so it's a leaf node
-                leafNodes.Add(node);
-                if(searchedLiteral != null)
+                // Node has no children, so it's a leaf node, we add node to list
+                leafNodes?.Add(node);
+                // if we are searching for literal to mark him, we will do it here
+                if (searchedLiteral != null)
                 {
                     if(searchedLiteral == node.literal) node.invalid = true;
                 }
-
             }
             else
             {
-                // Node has children, so recursively traverse its children
-                Traverse(node.ChildNodeLeft, leafNodes,searchedLiteral);
+                // Node has children, so we recursively traverse its childrens
+                if (node.ChildNodeLeft != null)
+                {
+                    Traverse(node.ChildNodeLeft, leafNodes, searchedLiteral);
+                }
                 Traverse(node.ChildNodeRight, leafNodes, searchedLiteral);
             }
         }
+        //add numbers to tree
+        public void AddNumbers(Tree tree)
+        {
+            AddNumbers(tree, this);
+        }
 
-        internal TruthTree AddChild(string side)
+        //add new child by side this is needed for creating truthTree from html code 
+        public TruthTree AddChild(string side)
         {
             var tree = new TruthTree();
-            if(side == "left")
+            if (side == "left")
             {
                 tree.Parent = this;
                 this.ChildNodeLeft = tree;
@@ -143,14 +134,10 @@ namespace VyrokovaLogika
                 this.ChildNodeRight = tree;
             }
             return tree;
-           
+
         }
 
-        public void AddNumbers(Tree tree)
-        {
-            AddNumbers(tree, this);
-        }
-
+        //mark truthTree by same numbers like tree, it's used for DAG
         private TruthTree AddNumbers(Tree tree, TruthTree truthTree)
         {
             if(tree.IsLeaf)

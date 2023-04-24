@@ -9,9 +9,10 @@ namespace VyrokovaLogika
 {
     public static class Rule
     {
+        //values for each operator 
         public static List<(int, int)> GetValuesOfBothSides(int parentMustBe, OperatorEnum op)
         {
-            List<(int,int)> valuesList = new List<(int, int)>();
+            List<(int,int)> valuesList = new();
             switch (op)
             {
                 case OperatorEnum.IMPLICATION:

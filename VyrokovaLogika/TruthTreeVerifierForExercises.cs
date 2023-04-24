@@ -9,81 +9,94 @@ namespace VyrokovaLogika
 {
     public class TruthTreeVerifierForExercises
     {
-        bool mTautology = false;
-        bool mFindingContradiction = false;
-        TruthTree mTree { get; set; }
-        public bool green { get; set; }
+        readonly bool mTautology = false;
+        readonly bool mFindingContradiction = false;
+        TruthTree MTree { get; set; }
+        public bool Green { get; set; }
         public string ExerciseQuote { get; set; }
         bool mistake = false;
         bool MarkedContradiction = true;
         public TruthTreeVerifierForExercises(bool tautology, TruthTree tree, bool findingContradiction)
         {
-            mTree = tree;
+            MTree = tree;
             mTautology = tautology;
             mFindingContradiction = findingContradiction;
         }
 
-        public bool Verify()
+        public void Verify()
         {
+            //if we need to verify tautology
             if (mTautology)
             {
-                if (mTree.Item != 0)
+                //item must be 0
+                if (MTree.Item != 0)
                 {
                     ExerciseQuote = "Musíš hledat evaluaci, kde je formule 0, pokud chceš hledat tautologii.";
-                    mTree.invalid = true;
-                    return false;
+                    MTree.invalid = true;
+                    return;
                 }
             }
+            //if we need to verify contradiction
             if (!mTautology)
             {
-                if (mTree.Item != 1)
+                //item must be 1
+                if (MTree.Item != 1)
                 {
                     ExerciseQuote = "Musíš hledat evaluaci, kde je formule 1, pokud chceš hledat kontradikci.";
-                    mTree.invalid = true;
-                    return false;
+                    MTree.invalid = true;
+                    return;
                 }
             }
-            CheckEvaluation(mTree);
+            //check truth values for each logical operator and their children
+            CheckEvaluation(MTree);
             if (mistake)
             {
                 ExerciseQuote = "Máš chybu v potomcích! Podívej se na jejich hodnoty.";
-                return false;
+                return;
             }
+            //check if there is contradiction 
             if (CheckContradiction() )
             {
+                //check if we need contradiction in formula
                 if (mFindingContradiction)
                 {
                     ExerciseQuote = "Máš ve formuli semantický spor! Takže to nemůže být tautologie.";
-                    return false;
+                    return;
                 }
                 else
                 {
-                    green = true;
+                    Green = true;
                 }
             }            
+            //check if we marked contradiction
             if(!MarkedContradiction)
             {
                 ExerciseQuote = "Neoznačil jsi spor!";
-                return false;
+                return;
             }
             ExerciseQuote = "Máš to správně!";
-            return true;
+            return;
         }
 
 
 
         private void CheckEvaluation(TruthTree tree)
         {
+            //if there is already mistake don't continue
             if (mistake) return;
+            //if it is leaf don't continue
             if (tree.literal != null) return;
           
-
+            //tree has rightNode
             if (tree.ChildNodeRight != null)
             {
-                var listValues = Rule.GetValuesOfBothSides(tree.Item, tree.mOperator);
+                //we need to get values
+                var listValues = Rule.GetValuesOfBothSides(tree.Item, tree.MOperator);
+                //set temporary mistake to true
                 mistake = true;
                 foreach (var listValue in listValues)
                 {
+                    //we found this values in children, there is not mistake
                     if(listValue.Item1 == tree.ChildNodeLeft.Item && listValue.Item2 == tree.ChildNodeRight.Item)
                     {
                         mistake = false;
@@ -91,11 +104,13 @@ namespace VyrokovaLogika
                     }
                    
                 }
+                //there is mistake
                 if (mistake) tree.invalid = true;
             }
             else
             {
-                if (tree.mOperator == Operator.OperatorEnum.NEGATION)
+                //if operator is negation we need childNodeLeft to have different value
+                if (tree.MOperator == Operator.OperatorEnum.NEGATION)
                 {
                     if (tree.Item == tree.ChildNodeLeft.Item)
                     {
@@ -103,7 +118,8 @@ namespace VyrokovaLogika
                         tree.invalid = true;
                     }
                 }
-                if(tree.mOperator == Operator.OperatorEnum.DOUBLENEGATION)
+                //we need same value if it is double negation
+                if(tree.MOperator == Operator.OperatorEnum.DOUBLENEGATION)
                 {
                         if (tree.Item != tree.ChildNodeLeft.Item)
                         {
@@ -112,6 +128,7 @@ namespace VyrokovaLogika
                         }
                 }
             }
+            //checking child nodes leads to recursion
             if(tree.ChildNodeLeft != null) CheckEvaluation(tree.ChildNodeLeft);
             if (tree.ChildNodeRight != null) CheckEvaluation(tree.ChildNodeRight);
 
@@ -120,21 +137,25 @@ namespace VyrokovaLogika
 
         private bool CheckContradiction()
         {
-            var elementalNodes = mTree.GetLeafNodes();
+            //get leaf nodes for tree
+            var elementalNodes = MTree.GetLeafNodes();
+            //check if there is contradiction
             foreach (var node in elementalNodes)
             {
 
-                foreach (var node1 in elementalNodes)
+                foreach (var nodeSecondary in elementalNodes)
                 {
-                    if ((node1.literal == node.literal && node1.Item != node.Item))
+                    //check if literal is the same and value different - we have contradiction
+                    if ((nodeSecondary.literal == node.literal && nodeSecondary.Item != node.Item))
                     {
-                        if (!node1.contradiction || !node.contradiction)
+                        //check if contradiction was marked
+                        if (!nodeSecondary.contradiction || !node.contradiction)
                         {
                             MarkedContradiction = false;
                             return false;
                         }
-                            
-                        mTree.MarkContradiction(node.literal);
+                        //method to mark contradiction in tree
+                        MTree.MarkContradiction(node.literal);
 
                         return true;
                     }

@@ -8,23 +8,23 @@ namespace VyrokovaLogika
 {
     public class Splitter
     {
-        public Node mLeftNode { get; set; } = null;
-        public Node mRightNode { get; set; } = null;
+        public Node MLeftNode { get; set; } = null;
+        public Node MRightNode { get; set; } = null;
 
-        public Node mNode { get; set; }
+        public Node MNode { get; set; }
         private bool isNegation = false;
 
         public Splitter(Node node)
         {
-            mNode = node;     
+            MNode = node;     
         }
 
         public void Split()
         {
             //get formula from node
-            string vl = mNode.mSentence;
+            string vl = MNode.MSentence;
             //vl is final variable
-            if (Validator.isVariable(vl))
+            if (Validator.IsLiteral(vl))
             {
                 
                 return;
@@ -61,19 +61,19 @@ namespace VyrokovaLogika
             //¬x
             if (vl.Length == 2)
             {
-                mNode.mOperator = Operator.OperatorEnum.NEGATION;
-                mLeftNode = new Node(vl[1].ToString(), mNode.level + 1);
+                MNode.MOperator = Operator.OperatorEnum.NEGATION;
+                MLeftNode = new Node(vl[1].ToString(), MNode.level + 1);
             }
             //¬¬x
             else if (vl.Length == 3 && vl[0] == '¬' && vl[1] == '¬')
             {
-                mNode.mOperator = Operator.OperatorEnum.DOUBLENEGATION;
-                mLeftNode = new Node(vl[2].ToString(), mNode.level + 1);
+                MNode.MOperator = Operator.OperatorEnum.DOUBLENEGATION;
+                MLeftNode = new Node(vl[2].ToString(), MNode.level + 1);
             }
             //¬(
             else if (vl[1] == '(')
             {
-                mNode.mOperator = Operator.OperatorEnum.NEGATION;
+                MNode.MOperator = Operator.OperatorEnum.NEGATION;
                 isNegation = true;
                 SeparateByBrackets(vl);
             }
@@ -92,9 +92,9 @@ namespace VyrokovaLogika
                 parts[i] = Converter.ReduceParenthessis(parts[i]);
             }
             //check if new part is not same like upper just without brackets
-            if (mNode.mSentence != '(' + parts[0] + ')')
+            if (MNode.MSentence != '(' + parts[0] + ')')
             {
-                mLeftNode = new Node(parts[0], mNode.level + 1);
+                MLeftNode = new Node(parts[0], MNode.level + 1);
             }
             //otherwise separate by operator
             else
@@ -104,10 +104,10 @@ namespace VyrokovaLogika
             //if we have more than one part
             if (parts.Count > 1)
             {
-                if (mNode.mSentence != '(' + parts[2] + ')')
+                if (MNode.MSentence != '(' + parts[2] + ')')
                 {
-                    mNode.mOperator = Operator.GetOperator(parts[1]);
-                    mRightNode = new Node(parts[2], mNode.level + 1);
+                    MNode.MOperator = Operator.GetOperator(parts[1]);
+                    MRightNode = new Node(parts[2], MNode.level + 1);
                 }
                 else
                 {
@@ -121,84 +121,93 @@ namespace VyrokovaLogika
         {
             //separate parts by operator
             var parts = SplitStringByOperator(vl);
-            mLeftNode = new Node(parts[0], mNode.level + 1);
-            mNode.mOperator = Operator.GetOperator(parts[1]);
-            mRightNode = new Node(parts[2], mNode.level + 1);
+            MLeftNode = new Node(parts[0], MNode.level + 1);
+            MNode.MOperator = Operator.GetOperator(parts[1]);
+            MRightNode = new Node(parts[2], MNode.level + 1);
         }
 
-        private List<string> SplitStringByOperator(string vl)
+        private static List<string> SplitStringByOperator(string vl)
         {
-            List<string> parts = new List<string>();
-
-            List<char> separators = new List<char> { '∧', '∨', '⇒', '≡' };
+            List<string> parts = new();
+            //logical operators in formula
+            List<char> separators = new() { '∧', '∨', '⇒', '≡' };
             int operatorIndex = -1; 
             foreach (char s in vl)
             {
+                //if we found brackets stop searching
                 if (s == '(') break;
 
+                //if we found separator in vl
                 if (separators.Contains(s))
                 {
+                    //find his index
                     int separatorIndex = separators.IndexOf(s);
+                    //compare index with previous index to check priority
                     if (operatorIndex >= 0 && separatorIndex < operatorIndex)
                     {
                         continue;
                     }
                     else
                     {
-                      
                         operatorIndex = separatorIndex;
                     }
                 }
   
             }
             int sepIndex = vl.IndexOf(separators[operatorIndex]);
-            string firstPart = vl.Substring(0, sepIndex); // from index 0 to separatorIndex-1
-            string thirdPart = vl.Substring(sepIndex + 1); // from separatorIndex+1 to the end of the string
+            string firstPart = vl[..sepIndex]; // from index 0 to separatorIndex-1
+            string thirdPart = vl[(sepIndex + 1)..]; // from separatorIndex+1 to the end of the string
+            //add parts
             parts.Add(firstPart);
             parts.Add(separators[operatorIndex].ToString());
             parts.Add(thirdPart);
             return parts;
         }
 
-        private List<string> SplitStringByParenthessis(string vl)
+        //split string by parenthessis
+        private List<string>? SplitStringByParenthessis(string vl)
         {
-            List<string> parts = new List<string>();
-            Stack<char> parenthessesStack = new Stack<char>();
-            StringBuilder sb = new StringBuilder();
+            List<string> parts = new();
+            Stack<char> parenthessesStack = new();
+            StringBuilder sb = new();
             bool metParenthesses = false;
             int position = 0;
             foreach (char c in vl)
             {
                 sb.Append(c);
+                //if this brackets add to stack 
                 if (c == '(')
                 {
                     parenthessesStack.Push(c);
                     metParenthesses = true;
                 }
+                //if this brackets pop
                 else if (c == ')')
                 {
+                    //if parentheses stack is zero or there is not another ( 
                     if (parenthessesStack.Count == 0 || parenthessesStack.Pop() != '(')
                     {
                         throw new Exception();
                     }
                 }
-                //separating by brackets
+                //if there is zero parenthesses and we already met some we will split string
                 if (metParenthesses && parenthessesStack.Count == 0)
                 {
                     string part = sb.ToString();
 
-                    string op = null;
-                    string secondPart = null;
+                    string? op = null;
+                    string? secondPart = null;
                     if (position + 1 < vl.Length)
                     {
                         op = vl[position + 1].ToString();
-                        secondPart = vl.Substring(position + 2, vl.Length - (position + 2));
+                        secondPart = vl[(position + 2)..];
                     }
+                    // if there is negation we will split it away and return string without it
                     if (isNegation)
                     {
                         if (secondPart == null)
                         {
-                            part = part.Substring(1);
+                            part = part[1..];
                         }
                         
                     }

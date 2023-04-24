@@ -38,7 +38,7 @@ namespace VyrokovaLogika
                 {
                     if (openParenthesesIndex.Count == 1 && openParenthesesIndex.Peek() == 0 && i == sentence.Length - 1)
                     {
-                        return sentence.Substring(1, sentence.Length - 2);
+                        return sentence[1..^1];
                     }
                     openParenthesesIndex.Pop();
                 }
@@ -54,7 +54,7 @@ namespace VyrokovaLogika
                 return;
             }
 
-            Stack<char> stack = new Stack<char>();
+            Stack<char> stack = new();
             int position = 0;
             foreach (char c in sentence)
             {
@@ -77,7 +77,7 @@ namespace VyrokovaLogika
                     }
                     else if(stack.Count == 0)
                     {
-                        sentence = sentence.Substring(1, sentence.Length - 2);
+                        sentence = sentence[1..^1];
                         RemoveExcessParentheses(ref sentence);
                         return;
                     }

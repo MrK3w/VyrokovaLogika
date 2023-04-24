@@ -60,8 +60,8 @@
                     </style>
                     <form method="post" asp-action="Index" asp-controller="Home" id="TheForm" class="d-flex flex-column">
                         <div class="d-flex">
-                            @Html.DropDownList("formula", Model.listItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })
-                            @Html.TextBox("UserInput", "", new { @maxlength = "64", @class = "form-control ml-2 custom-font", @style = "height: 66.67%;" })
+                            @Html.DropDownList("formula", Model.ListItems, new { @class = "form-control custom-font", @style = "height: 66.67%;" })
+                            @Html.TextBox("UserInput", Model.YourFormula, new { @maxlength = "64", @class = "form-control ml-2 custom-font", @style = "height: 66.67%;" })
 
 
                             <div class="btn-toolbar ml-2 flex-fill" role="toolbar" aria-label="Toolbar with button groups">
@@ -96,7 +96,7 @@
                     </form>
                     @if (Model.Valid)
                     {
-                        @if (Model.button == IndexModel.ButtonType.DAG)
+                        @if (Model.Button == IndexModel.ButtonType.DAG)
                         {
                             <div id="mynetwork">
                             </div>
@@ -121,7 +121,7 @@
                                 <div>Levá strana</div>
                             </div>
                         }
-                        @if (Model.button == IndexModel.ButtonType.InteractiveTree)
+                        @if (Model.Button == IndexModel.ButtonType.InteractiveTree)
                         {
                             <p>Doplněním operátoru vytvoř syntaktický strom.</p> 
                             @if (Model.ConvertedTree != null)
@@ -141,14 +141,14 @@
                             </form>
                         }
 
-                        @if (Model.button == IndexModel.ButtonType.SyntaxTree)
+                        @if (Model.Button == IndexModel.ButtonType.SyntaxTree)
                         {
                             @if (Model.ConvertedTree != null)
                             {
                                 <p>@Html.Raw(Model.ConvertedTree)</p>
                             }
                         }
-                        @if (Model.button == IndexModel.ButtonType.CheckTautology)
+                        @if (Model.Button == IndexModel.ButtonType.CheckTautology)
                         {
                             @if (!Model.IsTautologyOrContradiction)
                             {
@@ -168,7 +168,7 @@
                                         <th>Hodnota</th>
                                         <th>Literál</th>
                                     </tr>
-                                    @foreach (var node in Model.distinctNodes)
+                                    @foreach (var node in Model.DistinctNodes)
                                     {
                                         <tr>
                                             <td>@node.Item1</td>
@@ -179,7 +179,7 @@
                             </div>
                             <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
                         }
-                        @if(Model.button == IndexModel.ButtonType.CheckTautologyDAG)
+                        @if(Model.Button == IndexModel.ButtonType.CheckTautologyDAG)
                             {
                             @if (!Model.IsTautologyOrContradiction)
                             {
@@ -198,7 +198,7 @@
                                         <th>Item</th>
                                         <th>Literal</th>
                                     </tr>
-                                    @foreach (var node in Model.distinctNodes)
+                                    @foreach (var node in Model.DistinctNodes)
                                     {
                                         <tr>
                                             <td>@node.Item1</td>
@@ -230,7 +230,7 @@
                                 <div>Levá strana</div>
                             </div>
                         }
-                        @if (Model.button == IndexModel.ButtonType.CheckContradictionDAG)
+                        @if (Model.Button == IndexModel.ButtonType.CheckContradictionDAG)
                         {
                             @if (!Model.IsTautologyOrContradiction)
                             {
@@ -249,7 +249,7 @@
                                         <th>Item</th>
                                         <th>Literal</th>
                                     </tr>
-                                    @foreach (var node in Model.distinctNodes)
+                                    @foreach (var node in Model.DistinctNodes)
                                     {
                                         <tr>
                                             <td>@node.Item1</td>
@@ -283,7 +283,7 @@
                             </div>
                         }
 
-                        @if (Model.button == IndexModel.ButtonType.CheckContradiction)
+                        @if (Model.Button == IndexModel.ButtonType.CheckContradiction)
                         {
                             @if (!Model.IsTautologyOrContradiction)
                             {
@@ -302,7 +302,7 @@
                                         <th>Item</th>
                                         <th>Literal</th>
                                     </tr>
-                                    @foreach (var node in Model.distinctNodes)
+                                    @foreach (var node in Model.DistinctNodes)
                                     {
                                         <tr>
                                             <td>@node.Item1</td>
@@ -314,7 +314,7 @@
                             <p>@Html.Raw(Model.ConvertedTreeTruth)</p> 
                         }
 
-                        @if (Model.button == IndexModel.ButtonType.Exercise)
+                        @if (Model.Button == IndexModel.ButtonType.Exercise)
                         {
                            
                             <p>Řešená formule je @Model.ExerciseFormula. Dokaž že to @Model.ExerciseType</p>
@@ -331,13 +331,13 @@
                                 <input type="hidden" id="hiddenNumber" name="tree" value="" />
                             </form>
                         }
-                        @if (Model.button == IndexModel.ButtonType.Draw)
+                        @if (Model.Button == IndexModel.ButtonType.Draw)
                         {
                             @if (Model.ConvertedTree != null)
                             {
-                                @if (@Model.level != 0)
+                                @if (@Model.Level != 0)
                                 {
-                                    <p> Krok @Model.level</p>
+                                    <p> Krok @Model.Level</p>
 
 
                                     <p>@Html.Raw(Model.ConvertedTree)</p>
@@ -349,7 +349,7 @@
                                             <p>@Html.Raw(step)</p>
                                         </div>
                                     }
-                                    @if (Model.Steps.Count == 0 && Model.level != 0)
+                                    @if (Model.Steps.Count == 0 && Model.Level != 0)
                                     {
                                         <div class="alert alert-primary" role="alert">
                                             <p>Hotovo</p>
@@ -361,7 +361,7 @@
                                     <p> Formule @Model.Formula</p>
                                 }
                                 <form method="post" asp-action="Index" asp-controller="Home" id="TheForm5">
-                                    <input type="hidden" name="level" value="@Model.level" />
+                                    <input type="hidden" name="level" value="@Model.Level" />
                                     <input type="hidden" id="MyFormula" name="tree" value="@Model.Formula" />
                                     <input type='submit' class="btn btn-primary" value='Sniž úroveň' name="buttonValue" asp-page-handler="DrawTree" />
                                     <input type='submit' class="btn btn-primary" value='Přidej úroveň' name="buttonValue" asp-page-handler="DrawTree" />
@@ -369,11 +369,11 @@
                             }
                         }
 
-                        @if (Model.button == IndexModel.ButtonType.DrawTautology)
+                        @if (Model.Button == IndexModel.ButtonType.DrawTautology)
                         {
                             @if (Model.ConvertedTree != null)
                             {
-                                <p> Krok @Model.level</p>
+                                <p> Krok @Model.Level</p>
                                 <p> Formule @Model.Formula</p>
                                     <p>@Html.Raw(Model.ConvertedTree)</p>
                                     @Html.Raw(@Model.Arguments)
@@ -385,7 +385,7 @@
                                         </div>
                                     }
                                 <form method="post" asp-action="Index" asp-controller="Home" id="TheForm5">
-                                    <input type="hidden" name="level" value="@Model.level" />
+                                    <input type="hidden" name="level" value="@Model.Level" />
                                     <input type="hidden" id="MyFormula" name="tree" value="@Model.Formula" />
                                     <input type='submit' class="btn btn-primary" value='Sniž úroveň' name="buttonValue" asp-page-handler="DrawTreeTautology" />
                                     <input type='submit' class="btn btn-primary" value='Přidej úroveň' name="buttonValue" asp-page-handler="DrawTreeTautology" />
@@ -393,11 +393,11 @@
                             }
                         }
 
-                        @if (Model.button == IndexModel.ButtonType.DrawContradiction)
+                        @if (Model.Button == IndexModel.ButtonType.DrawContradiction)
                         {
                             @if (Model.ConvertedTree != null)
                             {
-                                <p> Krok @Model.level</p>
+                                <p> Krok @Model.Level</p>
                                 <p> Formule @Model.Formula</p>
                                 <p>@Html.Raw(Model.ConvertedTree)</p>
                                 @Html.Raw(@Model.Arguments)
@@ -409,7 +409,7 @@
                                     </div>
                                 }
                                 <form method="post" asp-action="Index" asp-controller="Home" id="TheForm5">
-                                    <input type="hidden" name="level" value="@Model.level" />
+                                    <input type="hidden" name="level" value="@Model.Level" />
                                     <input type="hidden" id="MyFormula" name="tree" value="@Model.Formula" />
                                     <input type='submit' class="btn btn-primary" value='Sniž úroveň' name="buttonValue" asp-page-handler="DrawTreeContradiction" />
                                     <input type='submit' class="btn btn-primary" value='Přidej úroveň' name="buttonValue" asp-page-handler="DrawTreeContradiction" />
@@ -417,7 +417,7 @@
                             }
                         }
 
-                        @if (Model.button == IndexModel.ButtonType.ExerciseDAG)
+                        @if (Model.Button == IndexModel.ButtonType.ExerciseDAG)
                         {
                             <p>Řešená formule je @Model.ExerciseFormula. Dokaž že to @Model.ExerciseType</p>
                             <p>
@@ -431,7 +431,7 @@
                             <script>
                                 var myList = @Html.Raw(Json.Serialize(Model.DAGNodes));
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
-                                makeDAG(myList, treeConnections, true, @Model.mIssueIndex);
+                                makeDAG(myList, treeConnections, true, @Model.MIssueIndex);
                             </script>
                             <div style="display: flex; justify-content: center; text-align: center;">
                                 <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
@@ -450,7 +450,7 @@
                                 <p>@Model.ExerciseQuote</p>
                             </div>
                         }
-                        @if (Model.button == IndexModel.ButtonType.AddNewFormula)
+                        @if (Model.Button == IndexModel.ButtonType.AddNewFormula)
                         {
                             <p> Zde přidej novou formuli pro procvičování. </p>
                             <form method="post" asp-page-handler="AddNewFormulaPost">
