@@ -12,6 +12,7 @@ namespace VyrokovaLogika
     {
         string mHtmlTree;
         TruthTree tree;
+        public Tree interactiveTree { get; set; }
         private bool mSemanticContradiction;
         private bool mTautology;
         public bool Green { get; set; }
@@ -41,6 +42,13 @@ namespace VyrokovaLogika
             var strippedTags = StripTree();
             CreateTree(strippedTags);
             return tree;
+        }
+
+        public Tree ProcessTreeForInteractiveDrawing()
+        {
+            var strippedTags = StripTree();
+            CreateTreeForInteractiveDrawing(strippedTags);
+            return interactiveTree;
         }
 
         private void CreateTree(List<string> strippedTags)
@@ -93,6 +101,52 @@ namespace VyrokovaLogika
                             itIsItem = true;
                             continue;
                         }
+            }
+        }
+
+        private void CreateTreeForInteractiveDrawing(List<string> strippedTags)
+        {
+            bool itIsItem = false;
+            bool ThereWasLi = false;
+            foreach (string tag in strippedTags)
+            {
+                if (tag == "</li>")
+                {
+                    ThereWasLi = true;
+                    continue;
+                }
+                if (itIsItem)
+                {
+                    interactiveTree.Item = new Node(tag);
+                    itIsItem = false;
+                    continue;
+                }
+                else if (tag == "<start>")
+                {
+                    interactiveTree = new Tree();
+                }
+                else if (tag == "</item>") continue;
+                else if (tag == "<li>" && ThereWasLi)
+                {
+                    interactiveTree = interactiveTree.Parent;
+                    interactiveTree.AddChild("right");
+                    interactiveTree = interactiveTree.childNodeRight;
+                    ThereWasLi = false;
+                }
+                else if (tag == "</ul>")
+                {
+                    interactiveTree = interactiveTree.Parent;
+                }
+                else if (tag == "<ul>")
+                {
+                    interactiveTree.AddChild("left");
+                    interactiveTree = interactiveTree.childNodeLeft;
+                }
+                else if (tag == "<item>")
+                {
+                    itIsItem = true;
+                    continue;
+                }
             }
         }
 

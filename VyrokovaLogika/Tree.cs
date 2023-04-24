@@ -23,6 +23,10 @@ namespace VyrokovaLogika
             Item.number = 1;
         }
 
+        public Tree()
+        {
+        }
+
         public bool IsRoot
         {
             get { return Parent == null; }
@@ -53,7 +57,7 @@ namespace VyrokovaLogika
             if (tree.Parent != null) return GetParent(tree.Parent);
             return tree;
         }
-        public Tree AddChild(Node child, string side, int number)
+        public Tree AddChild(Node child, string side, int number = 0)
         {
 
             if (side == "left")
@@ -67,6 +71,24 @@ namespace VyrokovaLogika
             {
                 childNodeRight = new Tree(child);
                 childNodeRight.Item.number = number;
+                childNodeRight.Parent = this;
+                return childNodeRight;
+            }
+            return null;
+        }
+
+        public Tree AddChild(string side, int number = 0)
+        {
+
+            if (side == "left")
+            {
+                childNodeLeft = new Tree();
+                childNodeLeft.Parent = this;
+                return childNodeLeft;
+            }
+            else if (side == "right")
+            {
+                childNodeRight = new Tree();
                 childNodeRight.Parent = this;
                 return childNodeRight;
             }

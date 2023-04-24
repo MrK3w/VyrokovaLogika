@@ -89,6 +89,8 @@
                                     <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Vykresli strom tautologie' name='submit' asp-page-handler="DrawTreeTautology" />
                                     <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Vykresli strom kontradikce' name='submit' asp-page-handler="DrawTreeContradiction" />
                                 </div>
+                                <div class="btn-group flex-fill" role="group" aria-label="Sixth group">
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Interaktivní vykreslení stromu' name='submit' asp-page-handler="InteractiveTree" />                                </div>
                             </div>
                         </div>
                     </form>
@@ -119,15 +121,31 @@
                                 <div>Levá strana</div>
                             </div>
                         }
+                        @if (Model.button == IndexModel.ButtonType.InteractiveTree)
+                        {
+                            <p>Doplněním operátoru vytvoř syntaktický strom.</p> 
+                            @if (Model.ConvertedTree != null)
+                            {
+                                <p>@Html.Raw(Model.ConvertedTree)</p>
+                            }
+                            @foreach (var step in Model.Steps)
+                            {
+                                <div class="alert alert-primary" role="alert">
+                                    <p>@Html.Raw(step)</p>
+                                </div>
+                            }
+                            <form method="post" asp-action="Index" asp-controller="Home" id="TheForm8">
+                                <input type='submit' class="btn btn-primary" value='Zkontroluj' id="myButton3" name='submit2' asp-page-handler="InteractiveTreeProcess" />
+                                <input type="hidden" id="hiddenTree" name="tree" value="" />
+                                <input type="hidden" id="hiddenOriginalTree" name="originalTree" value=@Model.Formula />
+                            </form>
+                        }
+
                         @if (Model.button == IndexModel.ButtonType.SyntaxTree)
                         {
                             @if (Model.ConvertedTree != null)
                             {
                                 <p>@Html.Raw(Model.ConvertedTree)</p>
-                                @foreach (var step in Model.Steps)
-                                {
-                                    <p>@Html.Raw(step)</p>
-                                }
                             }
                         }
                         @if (Model.button == IndexModel.ButtonType.CheckTautology)

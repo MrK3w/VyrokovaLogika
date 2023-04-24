@@ -24,7 +24,8 @@ namespace PL.Pages
             ExerciseDAG,
             AddNewFormula,
             DrawTautology,
-            DrawContradiction
+            DrawContradiction,
+            InteractiveTree
         }
         private string vl;
         private string vl1;
@@ -92,6 +93,105 @@ namespace PL.Pages
             string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
             ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
             return Page();
+        }
+
+        public IActionResult OnPostInteractiveTree()
+        {
+            button = ButtonType.InteractiveTree;
+            string mSentence = getFormula();
+            if (!Valid)
+            {
+                if (mSentence != null)
+                {
+                    yourFormula = mSentence;
+                   
+                }
+                return Page();
+            }
+            Formula = mSentence;
+            Engine engine = PrepareEngine(mSentence);
+            PrintTreeInteractive(engine.tree);
+
+            string div = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+            ConvertedTree = div + string.Join("", htmlTree.ToArray()) + "</div>";
+            return Page();
+        }
+
+        public IActionResult OnPostInteractiveTreeProcess(string tree, string originalTree)
+        {
+            button = ButtonType.InteractiveTree;
+
+            ExerciseTreeConstructer constructer = new ExerciseTreeConstructer(tree);
+            constructer.ProcessTreeForInteractiveDrawing();
+            Formula = originalTree;
+            var interactiveTree = constructer.interactiveTree;
+            Engine engine = PrepareEngine(originalTree);
+            PrintTreeInteractiveCheck(engine.tree, interactiveTree);
+            if (Steps.Count == 0) Steps.Add("Máš to správně!");
+            string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+            ConvertedTree = d + string.Join("", htmlTree.ToArray()) + "</div>";
+            return Page();
+        }
+
+        private void PrintTreeInteractiveCheck(Tree tree, Tree userTree)
+        {
+            htmlTree.Add("<li>");
+            if (Operator.GetEnumDescription(tree.Item.mOperator) == userTree.Item.mSentence)
+            {
+                htmlTree.Add("<span class=tf-nc>"+userTree.Item.mSentence+"</span>");
+            }
+            else
+            {
+                if (Validator.isVariable(userTree.Item.mSentence))
+                {
+                    htmlTree.Add("<span class=tf-nc>" + userTree.Item.mSentence + "</span>");
+                }
+                else if (userTree.Item.mSentence == " ")
+                {
+                    htmlTree.Add("<span class=tf-nc> </span>");
+                }
+                else
+                {
+                    Steps.Add("Chyba! Špatně přiřazen operátor " +  userTree.Item.mSentence);
+                    htmlTree.Add("<span class=tf-nc style='color: red;'>" + userTree.Item.mSentence + "</span>");
+                }
+            }
+            if (tree.childNodeLeft != null)
+            {
+                htmlTree.Add("<ul>");
+                PrintTreeInteractiveCheck(tree.childNodeLeft, userTree.childNodeLeft);
+                if (tree.childNodeRight != null)
+                {
+                    PrintTreeInteractiveCheck(tree.childNodeRight,userTree.childNodeRight);
+                }
+                htmlTree.Add("</ul>");
+            }
+            htmlTree.Add("</li>");
+        }
+
+        private void PrintTreeInteractive(Tree tree)
+        {
+            htmlTree.Add("<li>");
+
+            if (tree.Item.mOperator != Operator.OperatorEnum.EMPTY)
+            {
+                htmlTree.Add("<span class=tf-nc> </span>");
+            }
+            else
+            {
+                htmlTree.Add("<span class=tf-nc>" + tree.Item.mSentence + "</span>");
+            }
+            if (tree.childNodeLeft != null)
+            {
+                htmlTree.Add("<ul>");
+                PrintTreeInteractive(tree.childNodeLeft);
+                if (tree.childNodeRight != null)
+                {
+                    PrintTreeInteractive(tree.childNodeRight);
+                }
+                htmlTree.Add("</ul>");
+            }
+            htmlTree.Add("</li>");
         }
 
         public IActionResult OnPostAddNewFormula()

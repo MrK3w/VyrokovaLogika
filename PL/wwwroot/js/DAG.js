@@ -64,7 +64,6 @@ function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1, tim
 
     if (exercise) {
         network.on('click', function (params) {
-            console.log("HEllo")
             if (params.nodes.length > 0) {
                 var nodeId = params.nodes[0];
                 var node = nodes.get(nodeId);

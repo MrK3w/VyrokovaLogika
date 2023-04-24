@@ -1,4 +1,4 @@
-var contradiction = false;
+﻿var contradiction = false;
 
 $(document).ready(function () {
     var currentUrl = window.location.href;
@@ -39,6 +39,45 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+    var currentUrl = window.location.href;
+
+    if (currentUrl.indexOf("?handler=InteractiveTree") !== -1) {
+        $(".tf-nc").on("click", function () {
+            // Get the current span element
+
+            var spanElement = $(this);
+
+            // Get the current content of the span element
+            var currentContent = spanElement.text();
+
+            // Define an object with key-value pairs for replacements
+            var replacements = {
+                "∨": "∧",
+                "∧": "¬",
+                "¬": "⇒",
+                "⇒": "≡",
+                "≡": "¬¬",
+                "¬¬": "∨",
+            };
+            
+            // Replace the current content with new content based on replacements
+            var newContent = "";
+            var char = currentContent;
+
+            if (replacements.hasOwnProperty(char)) {
+                newContent = replacements[char];
+            } else if (!/[a-zA-Z]/.test(char)) {
+                newContent = "∨";
+            }
+            else {
+                newContent = currentContent;
+            }
+            spanElement.text(newContent);
+        });
+    }
+});
+
+$(document).ready(function () {
     // Attach a click event handler to the #myButton element
     $("#myButton").on("click", function () {
         // Call your custom JavaScript function here
@@ -48,14 +87,18 @@ $(document).ready(function () {
 
 $(document).ready(function () {
     // Attach a click event handler to the #myButton element
-    $("#myButton2").on("click", function () {
+    $("#myButton3").on("click", function () {
         // Call your custom JavaScript function here
+        myFunction3();
+    });
+});
+
+$(document).ready(function () {
+    $("#myButton2").on("click", function () {
         myFunctionDAG();
     });
 });
 
-
-// Define your custom JavaScript function
 function myFunction() {
 
 
@@ -66,4 +109,14 @@ function myFunction() {
 
     // Set the hidden input value to the extracted number
     document.getElementById('hiddenNumber').value = number;
+}
+
+function myFunction3() {
+    // Get the element with class .tf-tree.tf-gap-sm
+    var elements = document.querySelectorAll(".tf-tree.tf-gap-sm");
+    console.log(elements[0]);
+    var number = elements[0].innerHTML;
+
+    // Set the hidden input value to the extracted number
+    document.getElementById('hiddenTree').value = number;
 }
