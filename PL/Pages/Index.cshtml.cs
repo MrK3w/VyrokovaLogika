@@ -802,7 +802,6 @@ namespace PL.Pages
                     if (vl == item.Value)
                     {
                         item.Selected = true;
-                        return vl;
                     }
                 }
                 return vl;
