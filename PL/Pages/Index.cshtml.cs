@@ -237,6 +237,7 @@ namespace PL.Pages
             Button = ButtonType.CheckFormula;
             string premisesAndConclusion = Request.Form["PremisesInput"];
             string sentence = null;
+            //check if there is conclusion
             if (!premisesAndConclusion.Contains('#'))
             {
                 Premises = "Nezadal jsi závěr";
@@ -244,7 +245,7 @@ namespace PL.Pages
                 return Page();
             }
            
-           
+            //check if there are premises
             if(premisesAndConclusion.Contains(','))
             {
                 sentence = SplitOnPremises(premisesAndConclusion);
@@ -254,8 +255,10 @@ namespace PL.Pages
                 }
 
             }
+            //if there is conclusion
             else if(premisesAndConclusion.Contains('#'))
             {
+                //there must be only one conclusion
                 int count = premisesAndConclusion.Count(o => o == '#');
 
                 if(count > 1)
@@ -265,24 +268,28 @@ namespace PL.Pages
                     return Page();
                 }
                 int hashIndex = premisesAndConclusion.IndexOf('#');
-
+                //if there is comma after conclusion
                 if (hashIndex != -1 && premisesAndConclusion.Substring(hashIndex).Contains(","))
                 {
                     Premises = "Chyba nemůžeš mít předpoklad až za závěrem";
                     PremisesAndConclusion = premisesAndConclusion;
                 }
+                //split sentecne on premises
                 sentence = SplitOnPremises(premisesAndConclusion);
                 if (sentence == null)
                 {
                     return Page();
                 }
             }
+            //validate each formula
             if(!Validator.ValidateSentence(ref sentence))
             {
                 Premises = sentence + "není platný";
                 PremisesAndConclusion = premisesAndConclusion;
             }
+            //convert to formula
             Premises = "Převedeme na " + sentence;
+            //try to find semantic contradiction in formula
             Engine engine = PrepareEngine(sentence);
             IsTautologyOrContradiction = engine.ProofSolver("Tautology");
             DistinctNodes = engine.DistinctNodes;
@@ -318,8 +325,8 @@ namespace PL.Pages
                     premisesAndConlusionList.Add(part);
                 }
             }
-            var sentence = '(' + string.Join(") ∧ (", premisesAndConlusionList.Take(premisesAndConlusionList.Count - 1))
-    + ") ⇒ ("
+            var sentence = "((" + string.Join(") ∧ (", premisesAndConlusionList.Take(premisesAndConlusionList.Count - 1))
+    + ")) ⇒ ("
     + premisesAndConlusionList.Last() + ')' ;
             return sentence.Replace(" ","");
         }
