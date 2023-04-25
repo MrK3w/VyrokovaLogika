@@ -30,11 +30,8 @@ namespace VyrokovaLogika
             mPropositionalSentence = propositionalSentence;
         }
 
-
-
         public void ProcessSentence()
         {
-
             mainNode = new Node(mPropositionalSentence);
             //BUILD TREE
             Tree = new Tree(mainNode);
@@ -53,32 +50,42 @@ namespace VyrokovaLogika
         {
             bool isTautologyOrContradiction = false;
             TreeProof proofSolver = new();
+            //if we are searching for tautology we will proceed this way
             if (proofSearch == "Tautology")
             {
+                //return all valid variants of tree for tautology
                 var pathTrees = proofSolver.ProcessTree(Tree);
+                //will find contradiction if trees if there is any
                 isTautologyOrContradiction = proofSolver.FindContradiction(pathTrees);
             }
             else if (proofSearch == "Contradiction")
             {
+                //in case of contradiction we will send 1 to search for tree, which evaluation will be 1
                 var pathTrees = proofSolver.ProcessTree(Tree, 1);
                 isTautologyOrContradiction = proofSolver.FindContradiction(pathTrees);
             }
+            //all distinct nodes with literal for specific tree
             DistinctNodes = proofSolver.DistinctNodes;
+            //tree counter model to show on page
             CounterModel = proofSolver.CounterModel;
             return isTautologyOrContradiction;
         }
 
         private void BuildTree(Node node, Tree tree)
         {
+            //does literal has negation, then wwe will remove brackets
             if (Validator.IsLiteralWithNegation(node.MSentence))
             {
                 node.MSentence = node.MSentence.Replace("(", "").Replace(")", "");
             }
+            //new instance of splitter for current node
             Splitter splitter = new(node);
+            //split sentence by it
             splitter.Split();
+            //get operator from splitter instance
             node.MOperator = splitter.MNode.MOperator;
 
-
+            //if MLeft node is not null we will proceed for it and add numbering
             if (splitter.MLeftNode != null)
             {
                 number++;
@@ -95,23 +102,26 @@ namespace VyrokovaLogika
 
         public void PrepareDAG(bool exercise = false)
         {
+            //create new instance of dag for this 
             DAG dagConvert = new(Dag);
             if (CounterModel.MOperator != Operator.OperatorEnum.EMPTY)
             {
+                //add truth values to that dag and prepare him
                 AddNumbersToTruhTree();
                 dagConvert.PrepareDAG(CounterModel, exercise);
             }
+            //if we dont need truth values in dag we will use this option
             else dagConvert.PrepareDAG(null);
-          
-            TreeConnections = dagConvert.TreeConnections;
+            //get TreeConnections from dag class
+            TreeConnections = dagConvert.DAGConnections;
 
+            //we will get all nodes from treeConnections
             foreach (var treeConnect in TreeConnections)
             {
                 if (!DAGNodes.Contains(treeConnect.Item1)) DAGNodes.Add(treeConnect.Item1);
                 if (!DAGNodes.Contains(treeConnect.Item2)) DAGNodes.Add(treeConnect.Item2);
             }
         }
-
         private void AddNumbersToTruhTree()
         {
             CounterModel.AddNumbers(Tree);

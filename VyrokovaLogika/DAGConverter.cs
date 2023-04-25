@@ -9,8 +9,6 @@
             return ReplaceSubtreeWithDAG(root);
         }
 
-
-
         DAGNode ReplaceSubtreeWithDAG(Tree node)
         {
             //We arre looking into dictionary if we didn't already seen this node, 

@@ -50,7 +50,7 @@ namespace VyrokovaLogika
             }
             return true;
         }
-
+        //check evaluations based on list values
         private bool CheckEvaluations()
         {
             int i = 0;
@@ -80,6 +80,7 @@ namespace VyrokovaLogika
             return true;
         }
 
+        //check values on one line
         private bool CheckValuesOnOneLine(int i)
         {
             //split item and by '=' and check values

@@ -1,5 +1,6 @@
 ﻿namespace PL.Helpers
 {
+    //Classes for JSON
     public class JsonTreeNodes
     {
         public string Label { get; set; }

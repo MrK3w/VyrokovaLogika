@@ -10,13 +10,16 @@ namespace VyrokovaLogika
 {
     public class DAG
     {
+        //all unique dagNodes
         public List<string> DAGNodes { get; set; } = new List<string>();
-        private List<Tuple<int, int>> TreeConnectionsNumbered = new List<Tuple<int, int>>();
+        //DAG connections by number
+        private List<Tuple<int, int>> DAGConnectionsNumbered = new List<Tuple<int, int>>();
 
-        public List<Tuple<string, string>> TreeConnections { get; set; } = new List<Tuple<string, string>>();
-
+        //DAG connections by their formula value
+        public List<Tuple<string, string>> DAGConnections { get; set; } = new List<Tuple<string, string>>();
+        //DAG nodes
         private List<Tuple<string, int>> DAGNodesNumbered = new List<Tuple<string, int>>();
-        private List<Tuple<string, int>> DAGNodesNumberedTruthTree = new List<Tuple<string, int>>();
+        private List<Tuple<string, int>> DAGNodesNumberedAddedTruthValues = new List<Tuple<string, int>>();
         private DAGNode dag;
 
         public DAG(DAGNode dag)
@@ -24,27 +27,31 @@ namespace VyrokovaLogika
             this.dag = dag;
         }
 
-        internal void PrepareDAG(TruthTree counterModel = null, bool exercise = false)
+        public void PrepareDAG(TruthTree counterModel = null, bool exercise = false)
         {
+            //if we need truth values use this option
             if(counterModel != null)
             PrepareDAGNodesList(this.dag, counterModel);
             else
             {
                 PrepareDAGNodesList(this.dag);
             }
+            //get DAGNodes 
             DAGNodes = DAGNodes.Distinct().ToList();
-
+            //PrepareDAGNodesCOnnection
             PrepareDAGNodesListConnection(this.dag);
+            //Replace this connections for their formula values
             ReplaceConnectionNumbersForString(exercise);
+            //Distinct paths to not repeat
             DiscinctListOfPaths();
            
 
         }
-
+        //Distinc paths so their don't repat
         private void DiscinctListOfPaths()
         {
             //to remove double arrow in case it leads to literal
-            var filteredTuples = TreeConnections.Where(t =>
+            var filteredTuples = DAGConnections.Where(t =>
                 (t.Item2.Length == 1 && char.IsLetter(t.Item2[0])) ||
                 (t.Item2.Length >= 2 && char.IsLetter(t.Item2[0]) && t.Item2[1] == '=') ||
                 (t.Item2.Length == 2 && t.Item2[0] == '¬' && char.IsLetter(t.Item2[1])) ||
@@ -56,7 +63,7 @@ namespace VyrokovaLogika
             var distinctTuples = filteredTuples.GroupBy(t => t.Item2).Select(g => g.First()).ToList();
             var seenList = new List<Tuple<string,string>>();
             List<Tuple<string, string>> newConnections = new List<Tuple<string, string>>();
-            foreach (var tuple in TreeConnections)
+            foreach (var tuple in DAGConnections)
             {
                     if (distinctTuples.Contains(tuple))
                     {
@@ -72,9 +79,10 @@ namespace VyrokovaLogika
                     newConnections.Add(tuple);
                 
             }
-            TreeConnections = newConnections;
+            DAGConnections = newConnections;
         }
 
+        //prepare DAGNodesList add with numbers
         private void PrepareDAGNodesList(DAGNode dag)
         {
             DAGNodesNumbered.Add((new Tuple<string, int>(dag.Item.MSentence, dag.Item.number)));
@@ -89,10 +97,11 @@ namespace VyrokovaLogika
             }
         }
 
+        //prepare DAGNodesList add with numbers and their truth values
         private void PrepareDAGNodesList(DAGNode tree, TruthTree truthTree)
         {
             DAGNodesNumbered.Add((new Tuple<string, int>(tree.Item.MSentence, tree.Item.number)));
-            DAGNodesNumberedTruthTree.Add((new Tuple<string, int>(truthTree.Item.ToString(), tree.Item.number)));
+            DAGNodesNumberedAddedTruthValues.Add((new Tuple<string, int>(truthTree.Item.ToString(), tree.Item.number)));
             DAGNodes.Add(tree.Item.MSentence);
             if (tree.LeftChild != null)
             {
@@ -104,15 +113,16 @@ namespace VyrokovaLogika
             }
         }
 
+        //getDAgNodes connections numbered
         private void PrepareDAGNodesListConnection(DAGNode tree)
         {
             if (tree.LeftChild != null)
             {
-                TreeConnectionsNumbered.Add(new Tuple<int, int>(tree.Item.number, tree.LeftChild.Item.number));
+                DAGConnectionsNumbered.Add(new Tuple<int, int>(tree.Item.number, tree.LeftChild.Item.number));
             }
             if (tree.RightChild != null)
             {
-                TreeConnectionsNumbered.Add(new Tuple<int, int>(tree.Item.number, tree.RightChild.Item.number));
+                DAGConnectionsNumbered.Add(new Tuple<int, int>(tree.Item.number, tree.RightChild.Item.number));
             }
             if (tree.LeftChild != null)
             {
@@ -124,20 +134,20 @@ namespace VyrokovaLogika
             }
         }
 
-        
-
+        //get this connections with string
         private void ReplaceConnectionNumbersForString(bool exercise = false)
         {
-            foreach (var connection in TreeConnectionsNumbered)
+            foreach (var connection in DAGConnectionsNumbered)
             {
                 var ConnectionsTuple = new Tuple<string, string>(SearchByNumber(connection.Item1), SearchByNumber(connection.Item2));
                 var firstItem = AddEvaluationValuesToTuple(ConnectionsTuple.Item1,exercise);
                 var secondItem = AddEvaluationValuesToTuple(ConnectionsTuple.Item2, exercise);
                 ConnectionsTuple = new Tuple<string, string>(firstItem,secondItem);
-                TreeConnections.Add(ConnectionsTuple);
+                DAGConnections.Add(ConnectionsTuple);
             }
         }
 
+        //add truth values to DAG
         private string AddEvaluationValuesToTuple(string item, bool exercise = false)
         {
             if(exercise) return item += $"= 0 ";
@@ -146,7 +156,7 @@ namespace VyrokovaLogika
             List<string> valueToAdd = new List<string>();
             foreach (var r in result)
             {
-                valueToAdd = DAGNodesNumberedTruthTree
+                valueToAdd = DAGNodesNumberedAddedTruthValues
                     .Where(tuple => tuple.Item2 == r)
                     .Select(tuple => tuple.Item1)
                     .ToList();
@@ -159,7 +169,8 @@ namespace VyrokovaLogika
            
         }
 
-        public string SearchByNumber(int number)
+        //we searching for dag nodes by their number
+        private string SearchByNumber(int number)
         {
             return DAGNodesNumbered.FirstOrDefault(t => t.Item2 == number).Item1;
         }

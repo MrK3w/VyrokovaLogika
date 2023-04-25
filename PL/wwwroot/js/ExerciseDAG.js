@@ -1,4 +1,5 @@
-﻿function myFunctionDAG() {
+﻿//function to get dag from page
+function myFunctionDAG() {
     var updatedNodes = network.body.data.nodes.get();
     var updatedEdges = network.body.data.edges.get();
 

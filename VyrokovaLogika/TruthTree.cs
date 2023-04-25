@@ -28,11 +28,12 @@ namespace VyrokovaLogika
         {
         }
 
+        //return true if tree is root
         public bool IsRoot
         {
             get { return Parent == null; }
         }
-
+        //return true if tree is leaf
         public bool IsLeaf
         {
             get { return ChildNodeLeft == null && ChildNodeRight == null; }

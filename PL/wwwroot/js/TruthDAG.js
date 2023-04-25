@@ -1,4 +1,4 @@
-﻿
+﻿//truth dag if we need to print dag with truth values also
 var stepNumber = 1;
 var firstTime = true;
 function truthDAG(myList, treeConnections, exercise = false, issueIndex = -1, timer = 999) {

@@ -27,8 +27,10 @@ namespace VyrokovaLogika
             //we must iterate for each available option which can tree childs evaluate to get parent value
             foreach (var truthValues in listOfTruthValues)
             {
+                //create new list for left and right side
                 List<TruthTree> currentTreeListFromLeftSide = new();
                 List<TruthTree> currentTreeListFromRightSide = new();
+                //if tree has childNodeLeft or childNodeRight do recursion for this tree
                 if (tree.childNodeLeft != null)
                 {
                     currentTreeListFromLeftSide = ProcessTree(tree.childNodeLeft, truthValues.Item1);
@@ -36,18 +38,26 @@ namespace VyrokovaLogika
                 if (tree.childNodeRight != null) {
                     currentTreeListFromRightSide = ProcessTree(tree.childNodeRight, truthValues.Item2);
                 }
+                //connect right and left trees this dont iterate if we dont have any of this lists
                 for (int i = 0; i < currentTreeListFromLeftSide.Count; i++) {
                     for (int j = 0; j < currentTreeListFromRightSide.Count; j++)
                     {
+                        //create new tempTree where we store trees
                         TruthTree tempTree = new();
+                        //if tree is root take value from parameter
                         if (tree.IsRoot) tempTree.Item = truthValue;
+                        //set parameter on tree
                         tempTree.MOperator = tree.Item.MOperator;
+                        //set values of trees based on truthValues, which we get from Rule
                         currentTreeListFromLeftSide[i].Item = truthValues.Item1;
                         currentTreeListFromRightSide[j].Item = truthValues.Item2;
+                        //add to tempTree his tree childs
                         tempTree.AddChild(currentTreeListFromLeftSide[i], currentTreeListFromRightSide[j]);
+                        //add this childs to combinedTree list
                         combinedTrees.Add(tempTree);
                     }
                 }
+                //if tree don't have right side to the same 
                 if(currentTreeListFromRightSide.Count == 0)
                 {
                     for (int i = 0; i < currentTreeListFromLeftSide.Count; i++)
@@ -60,8 +70,8 @@ namespace VyrokovaLogika
                         combinedTrees.Add(tempTree);
                     }
                 }
-
-                if (currentTreeListFromRightSide.Count == 0)
+                //if tree don't have left side to the same 
+                if (currentTreeListFromLeftSide.Count == 0)
                 {
                     for (int i = 0; i < currentTreeListFromRightSide.Count; i++)
                     {
@@ -77,6 +87,7 @@ namespace VyrokovaLogika
             return combinedTrees;
         }
 
+        //get values for both sides based on side values
         private static List<Tuple<int, int>> GetValuesFromBothSides(Tree tree,List<(int, int)> sideValues)
         {
             List<Tuple<int, int>> list = new();
@@ -97,6 +108,7 @@ namespace VyrokovaLogika
             return list;
         }
 
+        //get leaf in tree
         private static List<TruthTree> GetLeave(Tree tree, int truthValue)
         {
             TruthTree leafTree = new(truthValue)

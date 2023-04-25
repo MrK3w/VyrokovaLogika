@@ -8,18 +8,20 @@ namespace VyrokovaLogika
 {
     public static class Converter
     {
-
+        //convert logical operators to their right format
         public static void ConvertLogicalOperators(ref string sentence)
         {
             sentence = sentence.Replace("&", "∧").Replace("|", "∨").Replace("-", "¬").Replace(">", "⇒").Replace("=", "≡");
         }
 
+        //convert all parenthesses to format ()
         public static void ConvertParenthessis(ref string sentence)
         {
             sentence = sentence.Replace("[", "(").Replace("]", ")")
                      .Replace("{", "(").Replace("}", ")");
         }
 
+        //reduce excess parenthesses
         public static string ReduceParenthessis(string sentence)
         {
             if (sentence == null || sentence.Length < 2 || sentence[0] != '(' || sentence[^1] != ')')
@@ -47,6 +49,7 @@ namespace VyrokovaLogika
             return sentence;
         }
 
+        //remove excess parenthesses
         public static void RemoveExcessParentheses(ref string sentence)
         {
             if (string.IsNullOrEmpty(sentence) || sentence[0] != '(')

@@ -5,8 +5,9 @@ namespace PL.Helpers
 {
     public static class ListItemsHelper
     {
+        //list item used on page
         private static List<SelectListItem> _listItems;
-
+        //if it is empty create new one and set this to default values otherwise return
         public static List<SelectListItem> ListItems
         {
             get
@@ -19,13 +20,15 @@ namespace PL.Helpers
                 return _listItems;
             }
         }
-
+        //get all types of exercises
         private static List<SelectListItem>? _exerciseTypes;
+        //Error messasge to print on page in case something didn't worked like it should
         public static string? ErrorMesage;
         public static List<SelectListItem> ExerciseTypes
         {
             get
             {
+                //if we don't have exerciseTypes yet create them
                 if (_exerciseTypes == null)
                 {
                     _exerciseTypes = new List<SelectListItem>();
@@ -34,7 +37,7 @@ namespace PL.Helpers
                 return _exerciseTypes;
             }
         }
-
+        //create new list of items for types of exercises
         private static void SetListItemExercises()
         {
             SelectListItem item1 = new("je tautologie", "je tautologie");
@@ -47,6 +50,7 @@ namespace PL.Helpers
             _exerciseTypes.Add(item4);
         }
 
+        //create new list of formulas for exercises
         public static void SetListItems(string mSentence = null)
         {
             if (_listItems.Count == 0)

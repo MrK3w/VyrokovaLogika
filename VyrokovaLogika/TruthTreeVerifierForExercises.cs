@@ -166,6 +166,7 @@ namespace VyrokovaLogika
 
                         return true;
                     }
+                    //check if we truly marked only contradiction on right places
                     else if((nodeSecondary.literal == node.literal && nodeSecondary.Item == node.Item) && (nodeSecondary.contradiction && node.contradiction) && (node.number != nodeSecondary.number))
                     {
                         ContradictionMarkedBadly = true;
