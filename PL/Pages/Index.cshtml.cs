@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using PL.Helpers;
+using System.IO;
 using VyrokovaLogika;
 using static VyrokovaLogika.Operator;
 
@@ -26,7 +27,8 @@ namespace PL.Pages
             AddNewFormula,
             DrawTautology,
             DrawContradiction,
-            InteractiveTree
+            InteractiveTree,
+            CheckFormula
         }
         private string vl;
         private string vl1;
@@ -62,11 +64,15 @@ namespace PL.Pages
 
         public string YourFormula { get; set; } = "";
 
+        public string Premises { get; set; } = null;
+
         public List<string> Steps { get; set; } = new List<string> { };
 
         public List<SelectListItem> AllExerciseFormulas { get; set; }
 
         readonly IWebHostEnvironment mEnv;
+
+        public string PremisesAndConclusion { get; set; } = "";
         public IndexModel(IWebHostEnvironment env)
         {
             mEnv = env;
@@ -218,6 +224,104 @@ namespace PL.Pages
                 Text = x.Item1 + " | " + x.Item2
            }).ToList();
             return Page();
+        }
+
+        public IActionResult OnPostCheckFormula()
+        {
+            Button = ButtonType.CheckFormula;
+            return Page();
+        }
+
+        public IActionResult OnPostCheckFormulaValidate()
+        {
+            Button = ButtonType.CheckFormula;
+            string premisesAndConclusion = Request.Form["PremisesInput"];
+            string sentence = null;
+            if (!premisesAndConclusion.Contains('#'))
+            {
+                Premises = "Nezadal jsi závěr";
+                PremisesAndConclusion = premisesAndConclusion;
+                return Page();
+            }
+           
+           
+            if(premisesAndConclusion.Contains(','))
+            {
+                sentence = SplitOnPremises(premisesAndConclusion);
+                if(sentence == null)
+                {
+                    return Page();
+                }
+
+            }
+            else if(premisesAndConclusion.Contains('#'))
+            {
+                int count = premisesAndConclusion.Count(o => o == '#');
+
+                if(count > 1)
+                {
+                    Premises = "Chyba nemůžeš mít více závěru";
+                    PremisesAndConclusion = premisesAndConclusion;
+                    return Page();
+                }
+                int hashIndex = premisesAndConclusion.IndexOf('#');
+
+                if (hashIndex != -1 && premisesAndConclusion.Substring(hashIndex).Contains(","))
+                {
+                    Premises = "Chyba nemůžeš mít předpoklad až za závěrem";
+                    PremisesAndConclusion = premisesAndConclusion;
+                }
+                sentence = SplitOnPremises(premisesAndConclusion);
+                if (sentence == null)
+                {
+                    return Page();
+                }
+            }
+            if(!Validator.ValidateSentence(ref sentence))
+            {
+                Premises = sentence + "není platný";
+                PremisesAndConclusion = premisesAndConclusion;
+            }
+            Premises = "Převedeme na " + sentence;
+            Engine engine = PrepareEngine(sentence);
+            IsTautologyOrContradiction = engine.ProofSolver("Tautology");
+            DistinctNodes = engine.DistinctNodes;
+            var contradiction = GetContradiction();
+            //prepare tree for printing using treeflex
+            PrintTree(engine.CounterModel, false, contradiction);
+            string d = "<div class='tf-tree tf-gap-sm'>".Replace("'", "\"");
+            ConvertedTreeTruth = d + string.Join("", htmlTreeTruth.ToArray()) + "</div>";
+            return Page();
+        }
+
+        private string SplitOnPremises(string premisesAndConclusion)
+        {
+            List<string> premisesAndConlusionList = new List<string>();
+            List<string> parts = new List<string>();
+            parts = premisesAndConclusion.Split(',').ToList();
+            var tempPart = parts[parts.Count - 1].Split("#");
+            parts.RemoveAt(parts.Count - 1);
+            foreach (var tPart in tempPart)
+            {
+                parts.Add(tPart);
+            }
+            for (int i = 0; i < parts.Count; i++)
+            {
+                string part = parts[i];
+                if (!Validator.ValidateSentence(ref part))
+                {
+                    Premises = "Špatně zadáno " + part;
+                    return null;
+                }
+                else
+                {
+                    premisesAndConlusionList.Add(part);
+                }
+            }
+            var sentence = '(' + string.Join(") ∧ (", premisesAndConlusionList.Take(premisesAndConlusionList.Count - 1))
+    + ") ⇒ ("
+    + premisesAndConlusionList.Last() + ')' ;
+            return sentence.Replace(" ","");
         }
 
         public IActionResult OnPostAddNewFormulaPost()

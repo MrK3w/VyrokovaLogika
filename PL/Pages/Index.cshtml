@@ -90,7 +90,9 @@
                                     <input type='submit' class="btn btn-primary flex-fill mb-2 " value='Vykresli strom kontradikce' name='submit' asp-page-handler="DrawTreeContradiction" />
                                 </div>
                                 <div class="btn-group flex-fill" role="group" aria-label="Sixth group">
-                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Interaktivní vykreslení stromu' name='submit' asp-page-handler="InteractiveTree" />                                </div>
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Interaktivní vykreslení stromu' name='submit' asp-page-handler="InteractiveTree" />    
+                                    <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověř platnost' name='submit' asp-page-handler="CheckFormula" />
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -311,7 +313,7 @@
                             else
                             {
                                 <p> Toto je kontradikce!</p>
-                                <p> Příklady sémantické kontradikce.</p>
+                                <p> Příklady sémantického sporu.</p>
                             }
                             <div class="table-container">
 
@@ -508,6 +510,46 @@
                             </div>
                             </div>
                             </form>
+                        }
+                    }
+                    @if (Model.Button == IndexModel.ButtonType.CheckFormula)
+                    {
+                        <p> Prosím všechny předpoklady odděluj , a závěr #</p>
+                        <form method="post" asp-action="Index" asp-controller="Home" id="TheForm0">
+                        @Html.TextBox("PremisesInput", Model.PremisesAndConclusion, new { @maxlength = "200", @class = "form-control ml-2 custom-font"})
+                        <input type='submit' class="btn btn-primary flex-fill mb-2 mr-1" value='Ověř platnost' name='submit' asp-page-handler="CheckFormulaValidate" />
+                        </form>
+                        <p> @Model.Premises</p>
+                        @if(Model.ConvertedTreeTruth != null)
+                        {
+                            @if (!Model.IsTautologyOrContradiction)
+                            {
+                                <p> Není platný úsudek!</p>
+                                <p>Protiargumenty</p>
+
+                            }
+                            else
+                            {
+                                <p> Toto je platný úsudek!</p>
+                                <p> Příklad semantického sporu ve formuli</p>
+                            }
+                            <div class="table-container">
+
+                                <table>
+                                    <tr>
+                                        <th>Hodnota</th>
+                                        <th>Literál</th>
+                                    </tr>
+                                    @foreach (var node in Model.DistinctNodes)
+                                    {
+                                        <tr>
+                                            <td>@node.Item1</td>
+                                            <td>@node.Item2</td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                            <p>@Html.Raw(Model.ConvertedTreeTruth)</p>
                         }
                     }
 

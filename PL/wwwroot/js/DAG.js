@@ -51,7 +51,7 @@ function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1, tim
             step = "Rozdělíme  " + treeConnections[i].item1 + " levá strana " + treeConnections[i].item2;
         }
         //add this paths to list of edges
-        edges.add({ from: treeConnections[i].item1, to: treeConnections[i].item2, arrows: 'from', color: edgeColor });
+        if(timer != 0) edges.add({ from: treeConnections[i].item1, to: treeConnections[i].item2, arrows: 'from', color: edgeColor });
     }
     //create container for that svg element
     var container = document.getElementById("mynetwork");
@@ -62,16 +62,20 @@ function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1, tim
     var options = {};
     network = new vis.Network(container, data, options);
     console.log(step);
-    //if we have steps and it is not exercise print steps in alert-primary divs
-    if (step != undefined) {
-        if (!exercise) {
-            var stepAlert = document.createElement("div");
-            stepAlert.classList.add("alert", "alert-primary");
-            stepAlert.innerHTML = '<p>' + stepNumber + ". " + step + '</p>';
-            stepNumber++;
-            document.getElementById("mynetwork").parentNode.insertBefore(stepAlert, document.getElementById("mynetwork").nextSibling);
-        }
+    if (timer == 0) {
+        console.log("RETURNED STEP 0");
+        return;
     }
+    //if we have steps and it is not exercise print steps in alert-primary divs
+        if (step != undefined) {
+            if (!exercise) {
+                var stepAlert = document.createElement("div");
+                stepAlert.classList.add("alert", "alert-primary");
+                stepAlert.innerHTML = '<p>' + stepNumber + ". " + step + '</p>';
+                stepNumber++;
+                document.getElementById("mynetwork").parentNode.insertBefore(stepAlert, document.getElementById("mynetwork").nextSibling);
+            }
+        }
     //if it is exercise
     if (exercise) {
         //add on click event
