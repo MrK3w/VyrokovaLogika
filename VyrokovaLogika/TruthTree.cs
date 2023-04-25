@@ -96,6 +96,8 @@ namespace VyrokovaLogika
             if (node.ChildNodeLeft == null && node.ChildNodeRight == null)
             {
                 // Node has no children, so it's a leaf node, we add node to list
+                node.number = number;
+                number++;
                 leafNodes?.Add(node);
                 // if we are searching for literal to mark him, we will do it here
                 if (searchedLiteral != null)

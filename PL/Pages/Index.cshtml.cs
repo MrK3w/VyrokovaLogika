@@ -874,7 +874,7 @@ namespace PL.Pages
             htmlTree.Add("</li>");
         }
 
-        private void PrintTree(TruthTree tree, bool exercise = false, List<string> contradictionValues = null)
+        private void PrintTree(TruthTree tree, bool exercise = false, List<string>? contradictionValues = null)
         {
             htmlTreeTruth.Add("<li>");
             if(exercise)
@@ -968,7 +968,7 @@ namespace PL.Pages
             htmlTree.Add("</li>");
         }
 
-        private void DrawTree(TruthTree tree, int maxLevel = 0, int level = 0, List<string> contradiction = null)
+        private void DrawTree(TruthTree tree, int maxLevel = 0, int level = 0, List<string>? contradiction = null)
         {
             if (maxLevel >= level)
             {

@@ -5,7 +5,8 @@ function makeDAG(myList, treeConnections, exercise = false, issueIndex = -1, tim
     var nodes = new vis.DataSet([]);
     var edges = new vis.DataSet([]);
     for (let i = 0; i < myList.length; i++) {
-        if (i> timer) break;
+        if (i > timer) break;
+        console.log("here is that node" + myList[i]);
         var node = { id: myList[i], label: myList[i], size: 100, font: { color: 'white', size: 16 } };
         if (i == 0) {
             node.color = 'purple';

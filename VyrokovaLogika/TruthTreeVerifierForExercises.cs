@@ -16,6 +16,7 @@ namespace VyrokovaLogika
         public string ExerciseQuote { get; set; }
         bool mistake = false;
         bool MarkedContradiction = true;
+        bool ContradictionMarkedBadly = false;
         public TruthTreeVerifierForExercises(bool tautology, TruthTree tree, bool findingContradiction)
         {
             MTree = tree;
@@ -72,6 +73,11 @@ namespace VyrokovaLogika
             if(!MarkedContradiction)
             {
                 ExerciseQuote = "Neoznačil jsi spor!";
+                return;
+            }
+            if(ContradictionMarkedBadly)
+            {
+                ExerciseQuote = "Označil jsi spor na nesprávném místě!";
                 return;
             }
             ExerciseQuote = "Máš to správně!";
@@ -154,10 +160,16 @@ namespace VyrokovaLogika
                             MarkedContradiction = false;
                             return false;
                         }
+
                         //method to mark contradiction in tree
                         MTree.MarkContradiction(node.literal);
 
                         return true;
+                    }
+                    else if((nodeSecondary.literal == node.literal && nodeSecondary.Item == node.Item) && (nodeSecondary.contradiction && node.contradiction) && (node.number != nodeSecondary.number))
+                    {
+                        ContradictionMarkedBadly = true;
+                        return false;
                     }
                 }
             }

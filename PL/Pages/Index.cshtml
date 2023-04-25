@@ -103,14 +103,20 @@
                             <script>
                                 var myList = @Html.Raw(Json.Serialize(Model.DAGNodes));
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
+                                var lengthOfLists = treeConnections.length;
+
+                                if (myList.length > treeConnections.length) {
+                                    lengthOfLists = myList.length;
+                                }
+
                                 var i = 0;
 
                                 setInterval(function () {
-                                    if (i < treeConnections.length) {
+                                    if (i < lengthOfLists) {
                                         makeDAG(myList, treeConnections, false, -1, i);
                                     }
                                     i++;
-                                }, 1750); 
+                                }, 1750);
                             </script>
                             <div style="display: flex; justify-content: center;">
                                 <div style="background-color: orange; width: 20px; height: 20px; margin-right: 5px;"></div>
@@ -212,11 +218,17 @@
                             <script>
                                 var myList = @Html.Raw(Json.Serialize(Model.DAGNodes));
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
+                                var lengthOfLists = treeConnections.length;
+
+                                if (myList.length > treeConnections.length) {
+                                    lengthOfLists = myList.length;
+                                }
+
                                 var i = 0;
 
                                 setInterval(function () {
-                                    if (i < treeConnections.length) {
-                                        truthDAG(myList, treeConnections, false, -1, i);
+                                    if (i < lengthOfLists) {
+                                        makeDAG(myList, treeConnections, false, -1, i);
                                     }
                                     i++;
                                 }, 1750);
@@ -264,11 +276,17 @@
                             <script>
                                 var myList = @Html.Raw(Json.Serialize(Model.DAGNodes));
                                 var treeConnections = @Html.Raw(Json.Serialize(Model.TreeConnections));
+                                var lengthOfLists = treeConnections.length;
+
+                                if (myList.length > treeConnections.length) {
+                                    lengthOfLists = myList.length;
+                                }
+
                                 var i = 0;
 
                                 setInterval(function () {
-                                    if (i < treeConnections.length) {
-                                        truthDAG(myList, treeConnections, false, 0, i);
+                                    if (i < lengthOfLists) {
+                                        makeDAG(myList, treeConnections, false, -1, i);
                                     }
                                     i++;
                                 }, 1750);
